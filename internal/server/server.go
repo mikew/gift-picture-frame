@@ -1,8 +1,10 @@
 package server
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io"
 	"net/http"
 	"os"
@@ -14,9 +16,9 @@ import (
 )
 
 type Server struct {
-	port    string
-	dataDir string
-	router  *gin.Engine
+	dataDir       string
+	router        *gin.Engine
+	embeddedFiles embed.FS
 }
 
 type MediaItem struct {
@@ -28,38 +30,41 @@ type MediaItem struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func NewServer(port, dataDir string) *Server {
+func NewServer(embeddedFiles embed.FS) *Server {
 	return &Server{
-		port:    port,
-		dataDir: dataDir,
-		router:  gin.Default(),
+		dataDir:       "data",
+		router:        gin.Default(),
+		embeddedFiles: embeddedFiles,
 	}
 }
 
-func (s *Server) Start() error {
+func (s *Server) Start(port int) error {
 	// Ensure data directory exists
 	if err := os.MkdirAll(s.dataDir, 0755); err != nil {
 		return fmt.Errorf("failed to create data directory: %v", err)
 	}
 
 	s.setupRoutes()
-	return s.router.Run(":" + s.port)
+	return s.router.Run(fmt.Sprintf(":%d", port))
 }
 
 func (s *Server) setupRoutes() {
-	// Serve static files
-	s.router.Static("/static", "./web/static")
-	s.router.LoadHTMLGlob("web/templates/*")
+	// Setup embedded templates
+	tmpl := template.Must(template.New("").ParseFS(s.embeddedFiles, "web/templates/*"))
+	s.router.SetHTMLTemplate(tmpl)
+
+	// Serve embedded static files
+	s.router.StaticFS("/static", http.FS(s.embeddedFiles))
 
 	// Upload UI route
 	s.router.GET("/:id", s.handleUploadUI)
-	
+
 	// Upload endpoint
 	s.router.POST("/:id/upload", s.handleUpload)
-	
+
 	// Media retrieval endpoint
 	s.router.GET("/:id/media", s.handleGetMedia)
-	
+
 	// Serve uploaded files
 	s.router.Static("/files", s.dataDir)
 }
@@ -73,7 +78,7 @@ func (s *Server) handleUploadUI(c *gin.Context) {
 
 func (s *Server) handleUpload(c *gin.Context) {
 	frameID := c.Param("id")
-	
+
 	// Create frame directory if it doesn't exist
 	frameDir := filepath.Join(s.dataDir, frameID)
 	if err := os.MkdirAll(frameDir, 0755); err != nil {
@@ -90,12 +95,12 @@ func (s *Server) handleUpload(c *gin.Context) {
 			Content:   textContent,
 			CreatedAt: time.Now(),
 		}
-		
+
 		if err := s.saveMediaMetadata(frameDir, media); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save text"})
 			return
 		}
-		
+
 		c.JSON(http.StatusOK, gin.H{"message": "Text uploaded successfully", "id": media.ID})
 		return
 	}
@@ -152,40 +157,40 @@ func (s *Server) handleUpload(c *gin.Context) {
 func (s *Server) handleGetMedia(c *gin.Context) {
 	frameID := c.Param("id")
 	frameDir := filepath.Join(s.dataDir, frameID)
-	
+
 	media, err := s.loadMediaMetadata(frameDir)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load media"})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, media)
 }
 
 func (s *Server) saveMediaMetadata(frameDir string, media MediaItem) error {
 	metadataFile := filepath.Join(frameDir, "metadata.json")
-	
+
 	// Load existing metadata
 	var mediaList []MediaItem
 	if data, err := os.ReadFile(metadataFile); err == nil {
 		json.Unmarshal(data, &mediaList)
 	}
-	
+
 	// Add new media item
 	mediaList = append(mediaList, media)
-	
+
 	// Save updated metadata
 	data, err := json.MarshalIndent(mediaList, "", "  ")
 	if err != nil {
 		return err
 	}
-	
+
 	return os.WriteFile(metadataFile, data, 0644)
 }
 
 func (s *Server) loadMediaMetadata(frameDir string) ([]MediaItem, error) {
 	metadataFile := filepath.Join(frameDir, "metadata.json")
-	
+
 	data, err := os.ReadFile(metadataFile)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -193,11 +198,11 @@ func (s *Server) loadMediaMetadata(frameDir string) ([]MediaItem, error) {
 		}
 		return nil, err
 	}
-	
+
 	var media []MediaItem
 	if err := json.Unmarshal(data, &media); err != nil {
 		return nil, err
 	}
-	
+
 	return media, nil
 }

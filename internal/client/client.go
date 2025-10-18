@@ -1,7 +1,9 @@
 package client
 
 import (
+	"embed"
 	"fmt"
+	"html/template"
 	"net/http"
 	"os/exec"
 	"path/filepath"
@@ -11,27 +13,29 @@ import (
 )
 
 type Client struct {
-	frameID   string
-	serverURL string
-	port      string
-	router    *gin.Engine
+	frameID       string
+	serverURL     string
+	port          int
+	router        *gin.Engine
+	embeddedFiles embed.FS
 }
 
-func NewClient(frameID, serverURL, port string) *Client {
+func NewClient(frameID string, serverURL string, port int, embeddedFiles embed.FS) *Client {
 	return &Client{
-		frameID:   frameID,
-		serverURL: serverURL,
-		port:      port,
-		router:    gin.Default(),
+		frameID:       frameID,
+		serverURL:     serverURL,
+		port:          port,
+		router:        gin.Default(),
+		embeddedFiles: embeddedFiles,
 	}
 }
 
 func (c *Client) Start() error {
 	c.setupRoutes()
-	
+
 	// Start the local server in a goroutine
 	go func() {
-		if err := c.router.Run(":" + c.port); err != nil {
+		if err := c.router.Run(fmt.Sprintf(":%d", c.port)); err != nil {
 			fmt.Printf("Failed to start client server: %v\n", err)
 		}
 	}()
@@ -41,13 +45,16 @@ func (c *Client) Start() error {
 }
 
 func (c *Client) setupRoutes() {
-	// Serve static files for the picture frame display
-	c.router.Static("/static", "./web/static")
-	c.router.LoadHTMLGlob("web/templates/*")
+	// Setup embedded templates
+	tmpl := template.Must(template.New("").ParseFS(c.embeddedFiles, "web/templates/*"))
+	c.router.SetHTMLTemplate(tmpl)
+
+	// Serve embedded static files
+	c.router.StaticFS("/static", http.FS(c.embeddedFiles))
 
 	// Picture frame display route
 	c.router.GET("/", c.handleFrameDisplay)
-	
+
 	// API endpoint to get media from the main server
 	c.router.GET("/api/media", c.handleGetMedia)
 }
@@ -73,10 +80,10 @@ func (c *Client) handleGetMedia(ctx *gin.Context) {
 }
 
 func (c *Client) launchKioskMode() error {
-	url := fmt.Sprintf("http://localhost:%s", c.port)
-	
+	url := fmt.Sprintf("http://localhost:%d", c.port)
+
 	var cmd *exec.Cmd
-	
+
 	switch runtime.GOOS {
 	case "linux":
 		// Try different browser options
@@ -86,7 +93,7 @@ func (c *Client) launchKioskMode() error {
 			"chromium",
 			"firefox",
 		}
-		
+
 		var browserPath string
 		for _, browser := range browsers {
 			if path, err := exec.LookPath(browser); err == nil {
@@ -94,16 +101,16 @@ func (c *Client) launchKioskMode() error {
 				break
 			}
 		}
-		
+
 		if browserPath == "" {
 			return fmt.Errorf("no suitable browser found. Please install chromium-browser, google-chrome, or firefox")
 		}
-		
+
 		if filepath.Base(browserPath) == "firefox" {
 			cmd = exec.Command(browserPath, "--kiosk", url)
 		} else {
-			cmd = exec.Command(browserPath, 
-				"--kiosk", 
+			cmd = exec.Command(browserPath,
+				"--kiosk",
 				"--no-first-run",
 				"--disable-infobars",
 				"--disable-session-crashed-bubble",
@@ -112,15 +119,15 @@ func (c *Client) launchKioskMode() error {
 				"--disable-ipc-flooding-protection",
 				url)
 		}
-		
+
 	case "darwin":
 		// macOS
 		cmd = exec.Command("open", "-a", "Google Chrome", "--args", "--kiosk", url)
-		
+
 	case "windows":
 		// Windows
 		cmd = exec.Command("cmd", "/c", "start", "chrome", "--kiosk", url)
-		
+
 	default:
 		return fmt.Errorf("unsupported operating system: %s", runtime.GOOS)
 	}
