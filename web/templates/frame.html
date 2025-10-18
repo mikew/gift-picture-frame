@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Picture Frame {{.FrameID}}</title>
+    <link rel="stylesheet" href="/static/frame.css">
+</head>
+<body>
+    <div class="frame-container">
+        <div class="media-display" id="media-display">
+            <div class="loading-message">
+                <div class="loading-spinner"></div>
+                <p>Loading your memories...</p>
+            </div>
+        </div>
+        
+        <div class="frame-info" id="frame-info">
+            <div class="frame-id">Frame: {{.FrameID}}</div>
+            <div class="media-counter" id="media-counter">0 / 0</div>
+            <div class="upload-hint">
+                Upload photos at: <span class="upload-url">{{.ServerURL}}/{{.FrameID}}</span>
+            </div>
+        </div>
+
+        <div class="controls" id="controls">
+            <button class="control-btn" id="prev-btn" title="Previous">‹</button>
+            <button class="control-btn" id="play-pause-btn" title="Play/Pause">⏸</button>
+            <button class="control-btn" id="next-btn" title="Next">›</button>
+        </div>
+    </div>
+
+    <script>
+        const frameConfig = {
+            frameId: '{{.FrameID}}',
+            serverUrl: '{{.ServerURL}}'
+        };
+    </script>
+    <script src="/static/frame.js"></script>
+</body>
+</html>

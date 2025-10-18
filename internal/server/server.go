@@ -1,0 +1,203 @@
+package server
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
+
+	"github.com/gin-gonic/gin"
+)
+
+type Server struct {
+	port    string
+	dataDir string
+	router  *gin.Engine
+}
+
+type MediaItem struct {
+	ID        string    `json:"id"`
+	FrameID   string    `json:"frame_id"`
+	Type      string    `json:"type"` // "image", "video", "text"
+	Filename  string    `json:"filename,omitempty"`
+	Content   string    `json:"content,omitempty"` // for text content
+	CreatedAt time.Time `json:"created_at"`
+}
+
+func NewServer(port, dataDir string) *Server {
+	return &Server{
+		port:    port,
+		dataDir: dataDir,
+		router:  gin.Default(),
+	}
+}
+
+func (s *Server) Start() error {
+	// Ensure data directory exists
+	if err := os.MkdirAll(s.dataDir, 0755); err != nil {
+		return fmt.Errorf("failed to create data directory: %v", err)
+	}
+
+	s.setupRoutes()
+	return s.router.Run(":" + s.port)
+}
+
+func (s *Server) setupRoutes() {
+	// Serve static files
+	s.router.Static("/static", "./web/static")
+	s.router.LoadHTMLGlob("web/templates/*")
+
+	// Upload UI route
+	s.router.GET("/:id", s.handleUploadUI)
+	
+	// Upload endpoint
+	s.router.POST("/:id/upload", s.handleUpload)
+	
+	// Media retrieval endpoint
+	s.router.GET("/:id/media", s.handleGetMedia)
+	
+	// Serve uploaded files
+	s.router.Static("/files", s.dataDir)
+}
+
+func (s *Server) handleUploadUI(c *gin.Context) {
+	frameID := c.Param("id")
+	c.HTML(http.StatusOK, "upload.html", gin.H{
+		"FrameID": frameID,
+	})
+}
+
+func (s *Server) handleUpload(c *gin.Context) {
+	frameID := c.Param("id")
+	
+	// Create frame directory if it doesn't exist
+	frameDir := filepath.Join(s.dataDir, frameID)
+	if err := os.MkdirAll(frameDir, 0755); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create frame directory"})
+		return
+	}
+
+	// Handle text content
+	if textContent := c.PostForm("text"); textContent != "" {
+		media := MediaItem{
+			ID:        fmt.Sprintf("%d", time.Now().UnixNano()),
+			FrameID:   frameID,
+			Type:      "text",
+			Content:   textContent,
+			CreatedAt: time.Now(),
+		}
+		
+		if err := s.saveMediaMetadata(frameDir, media); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save text"})
+			return
+		}
+		
+		c.JSON(http.StatusOK, gin.H{"message": "Text uploaded successfully", "id": media.ID})
+		return
+	}
+
+	// Handle file upload
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No file uploaded"})
+		return
+	}
+	defer file.Close()
+
+	// Determine media type
+	mediaType := "image"
+	ext := strings.ToLower(filepath.Ext(header.Filename))
+	if ext == ".mp4" || ext == ".avi" || ext == ".mov" || ext == ".webm" {
+		mediaType = "video"
+	}
+
+	// Generate unique filename
+	filename := fmt.Sprintf("%d_%s", time.Now().UnixNano(), header.Filename)
+	filePath := filepath.Join(frameDir, filename)
+
+	// Save file
+	dst, err := os.Create(filePath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		return
+	}
+	defer dst.Close()
+
+	if _, err := io.Copy(dst, file); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		return
+	}
+
+	// Save metadata
+	media := MediaItem{
+		ID:        fmt.Sprintf("%d", time.Now().UnixNano()),
+		FrameID:   frameID,
+		Type:      mediaType,
+		Filename:  filename,
+		CreatedAt: time.Now(),
+	}
+
+	if err := s.saveMediaMetadata(frameDir, media); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save metadata"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully", "id": media.ID})
+}
+
+func (s *Server) handleGetMedia(c *gin.Context) {
+	frameID := c.Param("id")
+	frameDir := filepath.Join(s.dataDir, frameID)
+	
+	media, err := s.loadMediaMetadata(frameDir)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load media"})
+		return
+	}
+	
+	c.JSON(http.StatusOK, media)
+}
+
+func (s *Server) saveMediaMetadata(frameDir string, media MediaItem) error {
+	metadataFile := filepath.Join(frameDir, "metadata.json")
+	
+	// Load existing metadata
+	var mediaList []MediaItem
+	if data, err := os.ReadFile(metadataFile); err == nil {
+		json.Unmarshal(data, &mediaList)
+	}
+	
+	// Add new media item
+	mediaList = append(mediaList, media)
+	
+	// Save updated metadata
+	data, err := json.MarshalIndent(mediaList, "", "  ")
+	if err != nil {
+		return err
+	}
+	
+	return os.WriteFile(metadataFile, data, 0644)
+}
+
+func (s *Server) loadMediaMetadata(frameDir string) ([]MediaItem, error) {
+	metadataFile := filepath.Join(frameDir, "metadata.json")
+	
+	data, err := os.ReadFile(metadataFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return []MediaItem{}, nil // Return empty slice if no metadata file exists
+		}
+		return nil, err
+	}
+	
+	var media []MediaItem
+	if err := json.Unmarshal(data, &media); err != nil {
+		return nil, err
+	}
+	
+	return media, nil
+}
