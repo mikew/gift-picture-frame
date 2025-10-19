@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"os/exec"
-	"path/filepath"
-	"runtime"
+	// "os/exec"
+	// "path/filepath"
+	// "runtime"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,15 +33,12 @@ func NewClient(frameID string, serverURL string, port int, embeddedFiles embed.F
 func (c *Client) Start() error {
 	c.setupRoutes()
 
-	// Start the local server in a goroutine
+	// Launch Chromium in kiosk mode
 	go func() {
-		if err := c.router.Run(fmt.Sprintf(":%d", c.port)); err != nil {
-			fmt.Printf("Failed to start client server: %v\n", err)
-		}
+		c.launchKioskMode()
 	}()
 
-	// Launch Chromium in kiosk mode
-	return c.launchKioskMode()
+	return c.router.Run(fmt.Sprintf(":%d", c.port))
 }
 
 func (c *Client) setupRoutes() {
@@ -80,58 +77,62 @@ func (c *Client) handleGetMedia(ctx *gin.Context) {
 }
 
 func (c *Client) launchKioskMode() error {
-	url := fmt.Sprintf("http://localhost:%d", c.port)
-
-	var cmd *exec.Cmd
-
-	switch runtime.GOOS {
-	case "linux":
-		// Try different browser options
-		browsers := []string{
-			"chromium-browser",
-			"google-chrome",
-			"chromium",
-			"firefox",
-		}
-
-		var browserPath string
-		for _, browser := range browsers {
-			if path, err := exec.LookPath(browser); err == nil {
-				browserPath = path
-				break
-			}
-		}
-
-		if browserPath == "" {
-			return fmt.Errorf("no suitable browser found. Please install chromium-browser, google-chrome, or firefox")
-		}
-
-		if filepath.Base(browserPath) == "firefox" {
-			cmd = exec.Command(browserPath, "--kiosk", url)
-		} else {
-			cmd = exec.Command(browserPath,
-				"--kiosk",
-				"--no-first-run",
-				"--disable-infobars",
-				"--disable-session-crashed-bubble",
-				"--disable-translate",
-				"--disable-features=TranslateUI",
-				"--disable-ipc-flooding-protection",
-				url)
-		}
-
-	case "darwin":
-		// macOS
-		cmd = exec.Command("open", "-a", "Google Chrome", "--args", "--kiosk", url)
-
-	case "windows":
-		// Windows
-		cmd = exec.Command("cmd", "/c", "start", "chrome", "--kiosk", url)
-
-	default:
-		return fmt.Errorf("unsupported operating system: %s", runtime.GOOS)
-	}
-
-	fmt.Printf("Launching browser in kiosk mode: %s\n", url)
-	return cmd.Start()
+	return nil
 }
+
+// func (c *Client) launchKioskMode() error {
+// 	url := fmt.Sprintf("http://localhost:%d", c.port)
+
+// 	var cmd *exec.Cmd
+
+// 	switch runtime.GOOS {
+// 	case "linux":
+// 		// Try different browser options
+// 		browsers := []string{
+// 			"chromium-browser",
+// 			"google-chrome",
+// 			"chromium",
+// 			"firefox",
+// 		}
+
+// 		var browserPath string
+// 		for _, browser := range browsers {
+// 			if path, err := exec.LookPath(browser); err == nil {
+// 				browserPath = path
+// 				break
+// 			}
+// 		}
+
+// 		if browserPath == "" {
+// 			return fmt.Errorf("no suitable browser found. Please install chromium-browser, google-chrome, or firefox")
+// 		}
+
+// 		if filepath.Base(browserPath) == "firefox" {
+// 			cmd = exec.Command(browserPath, "--kiosk", url)
+// 		} else {
+// 			cmd = exec.Command(browserPath,
+// 				"--kiosk",
+// 				"--no-first-run",
+// 				"--disable-infobars",
+// 				"--disable-session-crashed-bubble",
+// 				"--disable-translate",
+// 				"--disable-features=TranslateUI",
+// 				"--disable-ipc-flooding-protection",
+// 				url)
+// 		}
+
+// 	case "darwin":
+// 		// macOS
+// 		cmd = exec.Command("open", "-a", "Google Chrome", "--args", "--kiosk", url)
+
+// 	case "windows":
+// 		// Windows
+// 		cmd = exec.Command("cmd", "/c", "start", "chrome", "--kiosk", url)
+
+// 	default:
+// 		return fmt.Errorf("unsupported operating system: %s", runtime.GOOS)
+// 	}
+
+// 	fmt.Printf("Launching browser in kiosk mode: %s\n", url)
+// 	return cmd.Start()
+// }
