@@ -4,7 +4,7 @@ class PictureFrame {
         this.currentIndex = 0;
         this.isPlaying = true;
         this.slideInterval = null;
-        this.slideDuration = 10000; // 10 seconds per slide
+        this.slideDuration = 3000; // 10 seconds per slide
         this.init();
     }
 
@@ -142,7 +142,7 @@ class PictureFrame {
         
         if (item.type === 'image') {
             element = document.createElement('img');
-            element.src = `${frameConfig.serverUrl}/files/${item.filename}`;
+            element.src = `${frameConfig.serverUrl}/files/${frameConfig.frameId}/${item.filename}`;
             element.alt = item.filename;
             element.className = 'media-item';
             
@@ -154,7 +154,7 @@ class PictureFrame {
             
         } else if (item.type === 'video') {
             element = document.createElement('video');
-            element.src = `${frameConfig.serverUrl}/files/${item.filename}`;
+            element.src = `${frameConfig.serverUrl}/files/${frameConfig.frameId}/${item.filename}`;
             element.className = 'media-item';
             element.muted = true;
             element.loop = true;

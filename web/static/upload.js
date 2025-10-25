@@ -316,7 +316,7 @@ class UploadManager {
 
             if (item.type === 'image') {
                 const img = document.createElement('img');
-                img.src = `/files/${item.filename}`;
+                img.src = `/files/${this.frameId}/${item.filename}`;
                 img.alt = item.filename;
                 recentItem.appendChild(img);
             } else if (item.type === 'video') {

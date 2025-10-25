@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -52,6 +53,12 @@ func (s *Server) setupRoutes() {
 	// Setup embedded templates
 	tmpl := template.Must(template.New("").ParseFS(s.embeddedFiles, "web/templates/*"))
 	s.router.SetHTMLTemplate(tmpl)
+
+	s.router.Use(cors.Default())
+	s.router.Use(func(ctx *gin.Context) {
+		ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, 10<<20)
+		ctx.Next()
+	})
 
 	// Serve embedded static files
 	s.router.StaticFS("/static", http.FS(s.embeddedFiles))
