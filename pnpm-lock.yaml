@@ -6,7 +6,9 @@ settings:
 
 importers:
 
-  .:
+  .: {}
+
+  internal/ui/client-ui:
     devDependencies:
       '@promoboxx/eslint-config':
         specifier: ^4.0.3
@@ -14,15 +16,12 @@ importers:
       '@promoboxx/react-scripts-vite':
         specifier: ^0.2.7
         version: 0.2.7(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(optionator@0.9.4)(postcss@8.5.6)(rollup@2.79.2)(terser@5.44.0)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
-  internal/ui/client-ui:
-    dependencies:
       shared:
         specifier: workspace:*
         version: link:../shared
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   internal/ui/server-ui: {}
 
