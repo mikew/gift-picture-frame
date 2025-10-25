@@ -2,5 +2,3 @@ packages:
   - ./internal/ui/client-ui/
   - ./internal/ui/server-ui/
   - ./internal/ui/shared/
-
-nodeLinker: hoisted

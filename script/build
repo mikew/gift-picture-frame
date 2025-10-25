@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -ex
+
+pushd ./internal/ui/client-ui
+  pnpm exec react-scripts build
+popd
+
+pushd ./internal/ui/server-ui
+  pnpm exec react-scripts build
+popd
+
+go build main.go

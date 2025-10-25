@@ -1,4 +1,4 @@
 import "shared/test";
 
-console.log("Client UI initialized");
-console.log(import.meta.resolve("../node_modules/shared/src/test.ts"));
+console.info("Client UI initialized");
+console.info(import.meta.resolve("../node_modules/shared/src/test.ts"));

@@ -43,3 +43,6 @@ data/
 *.log
 /main
 node_modules/
+/internal/ui/client-ui/build
+/internal/ui/server-ui/build
+.eslintcache
