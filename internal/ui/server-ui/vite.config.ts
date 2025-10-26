@@ -8,5 +8,10 @@ export default defineConfig(async (env) => {
 
   config.base = env.command === "serve" ? undefined : "/static";
 
+  config.server = {
+    ...config.server,
+    open: "/test",
+  };
+
   return config;
 });

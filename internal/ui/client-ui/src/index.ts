@@ -13,6 +13,19 @@ declare global {
   };
 }
 
+declare global {
+  interface Window {
+    PICTURE_FRAME_CONFIG: {
+      mode: "development" | "production";
+    };
+  }
+}
+
+const FRAME_SERVER_BASE =
+  window.PICTURE_FRAME_CONFIG.mode === "development"
+    ? "http://localhost:6376"
+    : "";
+
 class PictureFrame {
   media: MediaItem[] = [];
   currentIndex = 0;
@@ -120,7 +133,7 @@ class PictureFrame {
 
   async loadMedia() {
     try {
-      const response = await fetch("/api/media");
+      const response = await fetch(`${FRAME_SERVER_BASE}/api/media`);
       if (!response.ok) throw new Error("Failed to fetch media");
 
       const newMedia = await response.json();

@@ -7,6 +7,19 @@ interface MediaItem {
   content: string;
 }
 
+declare global {
+  interface Window {
+    PICTURE_FRAME_CONFIG: {
+      mode: "development" | "production";
+    };
+  }
+}
+
+const UPLOAD_SERVER_BASE =
+  window.PICTURE_FRAME_CONFIG.mode === "development"
+    ? "http://localhost:8080"
+    : "";
+
 class UploadManager {
   frameId = window.location.pathname.split("/")[1] || "";
   selectedFiles: File[] = [];
@@ -277,10 +290,13 @@ class UploadManager {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch(`/${this.frameId}/upload`, {
-      method: "POST",
-      body: formData,
-    });
+    const response = await fetch(
+      `${UPLOAD_SERVER_BASE}/${this.frameId}/upload`,
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
 
     if (!response.ok) {
       const error = await response.json();
@@ -327,10 +343,13 @@ class UploadManager {
       };
       formData.append("text", JSON.stringify(textData));
 
-      const response = await fetch(`/${this.frameId}/upload`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `${UPLOAD_SERVER_BASE}/${this.frameId}/upload`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
 
       if (!response.ok) {
         const error = await response.json();
@@ -368,7 +387,9 @@ class UploadManager {
 
   async loadRecentUploads() {
     try {
-      const response = await fetch(`/${this.frameId}/media`);
+      const response = await fetch(
+        `${UPLOAD_SERVER_BASE}/${this.frameId}/media`,
+      );
       if (!response.ok) throw new Error("Failed to load recent uploads");
 
       const media = await response.json();

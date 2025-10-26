@@ -57,7 +57,7 @@ func main() {
 							},
 							&cli.IntFlag{
 								Name:  "port",
-								Value: 3000,
+								Value: 6376,
 								Usage: "Local port for the client server",
 							},
 						},

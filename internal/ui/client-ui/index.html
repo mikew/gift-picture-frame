@@ -33,9 +33,22 @@
     </div>
 
     <script>
+      window.PICTURE_FRAME_CONFIG = {
+        mode:
+          "{{ .FrameID }}" === "{" + "{ .FrameID }}"
+            ? "development"
+            : "production",
+      };
+
       const frameConfig = {
-        frameId: "{{.FrameID}}",
-        serverUrl: "{{.ServerURL}}",
+        frameId:
+          window.PICTURE_FRAME_CONFIG.mode === "development"
+            ? "test"
+            : "{{.FrameID}}",
+        serverUrl:
+          window.PICTURE_FRAME_CONFIG.mode === "development"
+            ? "http://localhost:8080"
+            : "{{.ServerURL}}",
       };
     </script>
     <script type="module" src="./src/index.ts"></script>
