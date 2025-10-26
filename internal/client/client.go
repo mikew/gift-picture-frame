@@ -10,6 +10,7 @@ import (
 	// "path/filepath"
 	// "runtime"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -44,11 +45,10 @@ func (c *Client) Start() error {
 
 func (c *Client) setupRoutes() {
 	// Setup templates
-	tmpl, err := template.New("").ParseFS(c.fs, "*.html")
-	if err != nil {
-		fmt.Println("Error parsing templates:", err)
-	}
+	tmpl := template.Must(template.New("").ParseFS(c.fs, "*.html"))
 	c.router.SetHTMLTemplate(tmpl)
+
+	c.router.Use(cors.Default())
 
 	// Serve static files
 	c.router.StaticFS("/static", http.FS(c.fs))
