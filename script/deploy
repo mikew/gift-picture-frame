@@ -6,4 +6,4 @@ RELEASE_VERSION="${1}"
 RELEASE_TAG="${2}"
 
 # Upload artifacts.
-gh release upload "${RELEASE_TAG}" dist/*
+gh release upload "${RELEASE_TAG}" build/*
