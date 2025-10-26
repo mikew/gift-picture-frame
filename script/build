@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -ex
 
+if [ -z "$CI" ]; then
+  ./script/prepare-env
+fi
+
 pushd ./internal/ui/client-ui
   pnpm exec react-scripts build
 popd

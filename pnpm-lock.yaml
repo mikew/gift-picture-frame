@@ -24,8 +24,8 @@ importers:
         specifier: ^4.0.3
         version: 4.0.3(@types/node@24.9.1)(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(graphql@16.11.0)(typescript@5.9.3)(vitest@4.0.3(@types/node@24.9.1)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(terser@5.44.0))
       '@promoboxx/react-scripts-vite':
-        specifier: ^0.2.7
-        version: 0.2.7(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(optionator@0.9.4)(postcss@8.5.6)(rollup@2.79.2)(terser@5.44.0)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
+        specifier: ^0.2.8
+        version: 0.2.8(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(optionator@0.9.4)(postcss@8.5.6)(rollup@2.79.2)(terser@5.44.0)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
       shared:
         specifier: workspace:*
         version: link:../shared
@@ -39,14 +39,11 @@ importers:
         specifier: ^4.0.3
         version: 4.0.3(@types/node@24.9.1)(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(graphql@16.11.0)(typescript@5.9.3)(vitest@4.0.3(@types/node@24.9.1)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(terser@5.44.0))
       '@promoboxx/react-scripts-vite':
-        specifier: ^0.2.7
-        version: 0.2.7(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(optionator@0.9.4)(postcss@8.5.6)(rollup@4.52.5)(terser@5.44.0)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
+        specifier: ^0.2.8
+        version: 0.2.8(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(optionator@0.9.4)(postcss@8.5.6)(rollup@4.52.5)(terser@5.44.0)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
       shared:
         specifier: workspace:*
         version: link:../shared
-      signal-polyfill:
-        specifier: ^0.2.2
-        version: 0.2.2
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1121,8 +1118,8 @@ packages:
   '@promoboxx/eslint-config@4.0.3':
     resolution: {integrity: sha512-HOJOUUa35Irc9eH5jeVaIpgla6i5G8InmVB4lZ75dR2IVnD0f43Hk9ZUiZkqb1Xj8YpxVlmp/KehSYeUIaMzDQ==}
 
-  '@promoboxx/react-scripts-vite@0.2.7':
-    resolution: {integrity: sha512-s59tjbHeFUVcxmElOViTLEVUZMvRTpnPcVMLK+YPXg0jkJ2kqqirsLDgMHBKTRxCvJmdggDz3vxuuBxTLHiGwg==}
+  '@promoboxx/react-scripts-vite@0.2.8':
+    resolution: {integrity: sha512-eGBq64oEkFrp5s9mhCya3GBdVYQP/htP90WXymq/A70kxpYEcuyEe3bC76tRi7VCjBUVojZWg0BfBcxqISKrmA==}
     hasBin: true
 
   '@repeaterjs/repeater@3.0.6':
@@ -3274,9 +3271,6 @@ packages:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
 
-  signal-polyfill@0.2.2:
-    resolution: {integrity: sha512-p63Y4Er5/eMQ9RHg0M0Y64NlsQKpiu6MDdhBXpyywRuWiPywhJTpKJ1iB5K2hJEbFZ0BnDS7ZkJ+0AfTuL37Rg==}
-
   simple-update-notifier@2.0.0:
     resolution: {integrity: sha512-a2B9Y0KlNXl9u/vsW6sTIu9vGEpfKu2wRV6l1H3XEas/0gUIzGzBoP/IouTcUQbm9JWZLH3COxyn03TYlFax6w==}
     engines: {node: '>=10'}
@@ -5252,7 +5246,7 @@ snapshots:
       - utf-8-validate
       - vitest
 
-  '@promoboxx/react-scripts-vite@0.2.7(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(optionator@0.9.4)(postcss@8.5.6)(rollup@2.79.2)(terser@5.44.0)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)':
+  '@promoboxx/react-scripts-vite@0.2.8(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(optionator@0.9.4)(postcss@8.5.6)(rollup@2.79.2)(terser@5.44.0)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)':
     dependencies:
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.9.3))
       '@svgr/plugin-svgo': 8.1.0(@svgr/core@8.1.0(typescript@5.9.3))(typescript@5.9.3)
@@ -5308,7 +5302,7 @@ snapshots:
       - workbox-window
       - yaml
 
-  '@promoboxx/react-scripts-vite@0.2.7(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(optionator@0.9.4)(postcss@8.5.6)(rollup@4.52.5)(terser@5.44.0)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)':
+  '@promoboxx/react-scripts-vite@0.2.8(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(optionator@0.9.4)(postcss@8.5.6)(rollup@4.52.5)(terser@5.44.0)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)':
     dependencies:
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.9.3))
       '@svgr/plugin-svgo': 8.1.0(@svgr/core@8.1.0(typescript@5.9.3))(typescript@5.9.3)
@@ -7781,8 +7775,6 @@ snapshots:
   siginfo@2.0.0: {}
 
   signal-exit@4.1.0: {}
-
-  signal-polyfill@0.2.2: {}
 
   simple-update-notifier@2.0.0:
     dependencies:
