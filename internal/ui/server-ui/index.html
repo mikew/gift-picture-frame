@@ -95,10 +95,10 @@
     <script>
       window.PICTURE_FRAME_CONFIG = {
         mode:
-          "{{ .FrameID }}" === "{" + "{ .FrameID }}"
-            ? "development"
-            : "production",
-      };
+          '{{ .FrameID }}' === '{' + '{ .FrameID }}'
+            ? 'development'
+            : 'production',
+      }
     </script>
     <script type="module" src="./src/index.ts"></script>
   </body>

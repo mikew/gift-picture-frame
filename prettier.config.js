@@ -1,3 +1,3 @@
-import config from "@promoboxx/eslint-config/prettier.config";
+import config from '@promoboxx/eslint-config/prettier.config'
 
-export default config;
+export default config

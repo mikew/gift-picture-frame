@@ -1,6 +1,6 @@
-import pbxxBase from "@promoboxx/eslint-config";
-import pbxxPrettier from "@promoboxx/eslint-config/prettier";
-import { defineConfig } from "eslint/config";
+import pbxxBase from '@promoboxx/eslint-config'
+import pbxxPrettier from '@promoboxx/eslint-config/prettier'
+import { defineConfig } from 'eslint/config'
 
 const config = defineConfig([
   // Base config applies to all projects.
@@ -13,6 +13,6 @@ const config = defineConfig([
   // ...pbxxGraphql,
   // If the project uses prettier:
   ...pbxxPrettier,
-]);
+])
 
-export default config;
+export default config
