@@ -12,7 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@promoboxx/eslint-config": "^4.0.3",
-    "@promoboxx/react-scripts-vite": "^0.2.7",
+    "@promoboxx/react-scripts-vite": "^0.2.8",
     "shared": "workspace:*",
     "typescript": "^5.9.3"
   }

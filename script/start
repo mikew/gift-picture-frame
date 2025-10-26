@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -ex
 
+./script/prepare-env
+
 exec pnpm exec concurrently \
   "nodemon --watch ./ --ext go --signal SIGHUP --exec ./script/start-backends" \
   "cd ./internal/ui/client-ui && react-scripts-vite start" \
