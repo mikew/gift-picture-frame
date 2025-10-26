@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
 set -ex
 
-# TODO
-# - `go run main.go server start`
-# - `go run main.go client start --id test --server http://localhost:8080`
-# - Figure out how to use the running dev servers instead of embedded files (env vars?)
-# - Figure out how to stub id and server in client dev mode
 exec pnpm exec concurrently \
+  "nodemon --watch ./ --ext go --signal SIGHUP --exec ./script/start-backends" \
   "cd ./internal/ui/client-ui && react-scripts-vite start" \
-  "cd ./internal/ui/server-ui && react-scripts-vite start" \
-  "go run ./main.go server start" \
-  "go run ./main.go client start --id test --server http://localhost:8080"
+  "cd ./internal/ui/server-ui && react-scripts-vite start"

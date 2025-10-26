@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -ex
+
+exec pnpm exec concurrently \
+  "go run ./main.go server start" \
+  "go run ./main.go client start --id test --server http://localhost:8080"
