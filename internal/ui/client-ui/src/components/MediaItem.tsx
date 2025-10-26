@@ -2,13 +2,6 @@ import type { MediaItem, TextData } from 'shared/types'
 import { Show } from 'solid-js'
 import './MediaItem.css'
 
-declare global {
-  const frameConfig: {
-    frameId: string
-    serverUrl: string
-  }
-}
-
 interface MediaItemProps {
   item: MediaItem
   index: number

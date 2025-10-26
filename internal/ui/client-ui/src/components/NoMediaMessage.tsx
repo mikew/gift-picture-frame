@@ -1,12 +1,5 @@
 import './NoMediaMessage.css'
 
-declare global {
-  const frameConfig: {
-    frameId: string
-    serverUrl: string
-  }
-}
-
 export default function NoMediaMessage() {
   return (
     <div class="no-media-message">
@@ -14,7 +7,9 @@ export default function NoMediaMessage() {
       <p>Your picture frame is ready and waiting for memories!</p>
       <div class="upload-instructions">
         <p>To add photos, videos, or messages:</p>
-        <span class="upload-url">{frameConfig.serverUrl}/{frameConfig.frameId}</span>
+        <span class="upload-url">
+          {frameConfig.serverUrl}/{frameConfig.frameId}
+        </span>
       </div>
     </div>
   )

@@ -8,14 +8,18 @@ import ProgressBar from './ProgressBar.tsx'
 
 import './App.css'
 
-// declare global {
-//   const frameConfig: FrameConfig
-//   interface Window {
-//     PICTURE_FRAME_CONFIG: {
-//       mode: 'development' | 'production'
-//     }
-//   }
-// }
+declare global {
+  const frameConfig: {
+    frameId: string
+    serverUrl: string
+  }
+
+  interface Window {
+    PICTURE_FRAME_CONFIG: {
+      mode: 'development' | 'production'
+    }
+  }
+}
 
 const FRAME_SERVER_BASE =
   window.PICTURE_FRAME_CONFIG.mode === 'development'

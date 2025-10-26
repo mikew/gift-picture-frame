@@ -7,7 +7,7 @@ pluginOptions.react = false
 export default defineConfig(async (env) => {
   const config = await viteConfig(env)
 
-  config.plugins = [solid(), ...config.plugins]
+  config.plugins?.unshift(solid())
   config.base = env.command === 'serve' ? undefined : '/static'
 
   config.build = {

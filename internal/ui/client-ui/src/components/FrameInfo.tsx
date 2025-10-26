@@ -2,13 +2,6 @@ import type { MediaItem } from 'shared/types'
 
 import './FrameInfo.css'
 
-declare global {
-  const frameConfig: {
-    frameId: string
-    serverUrl: string
-  }
-}
-
 interface FrameInfoProps {
   media: MediaItem[]
   currentIndex: number
