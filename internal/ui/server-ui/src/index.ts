@@ -1,4 +1,37 @@
+import { Signal } from 'signal-polyfill'
+
+import { effect } from './effect.js'
+
 import './index.css'
+
+type TabType = 'file' | 'text'
+
+const currentTab = new Signal.State<TabType>('file')
+
+function assertValidTab(tab: unknown): asserts tab is TabType {
+  const validTabs: TabType[] = ['file', 'text']
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we need to assert here
+  if (!validTabs.includes(tab as TabType)) {
+    throw new Error(`Invalid tab: ${tab}`)
+  }
+}
+
+effect(() => {
+  const tab = currentTab.get()
+
+  document.querySelectorAll('.tab-content').forEach((tab) => {
+    tab.classList.remove('active')
+  })
+  document.getElementById(`${tab}-tab`)?.classList.add('active')
+
+  document.querySelectorAll('.tab-button').forEach((btn) => {
+    btn.classList.remove('active')
+  })
+  document
+    .querySelector(`.tab-button[data-tab="${tab}"]`)
+    ?.classList.add('active')
+})
 
 // TODO This is shared.
 interface MediaItem {
@@ -47,6 +80,16 @@ class UploadManager {
       uploadArea?.addEventListener('click', () => fileInput.click())
       fileInput.addEventListener('change', this.handleFileSelect.bind(this))
     }
+
+    document.querySelector('.upload-tabs')?.addEventListener('click', (e) => {
+      const target = e.target
+      if (target instanceof HTMLElement) {
+        if (target.classList.contains('tab-button') && target.dataset.tab) {
+          assertValidTab(target.dataset.tab)
+          currentTab.set(target.dataset.tab)
+        }
+      }
+    })
 
     const uploadFilesBtn = document.getElementById('upload-files-btn')
     if (uploadFilesBtn) {
@@ -425,7 +468,7 @@ class UploadManager {
 
         if (item.type === 'image') {
           const img = document.createElement('img')
-          img.src = `/files/${this.frameId}/${item.filename}`
+          img.src = `${UPLOAD_SERVER_BASE}/files/${this.frameId}/${item.filename}`
           img.alt = item.filename
           recentItem.appendChild(img)
         } else if (item.type === 'video') {
@@ -468,24 +511,15 @@ class UploadManager {
 }
 
 // Global function for tab switching
-function showTab(event: MouseEvent, tabName: string) {
-  document.querySelectorAll('.tab-content').forEach((tab) => {
-    tab.classList.remove('active')
-  })
-  document.querySelectorAll('.tab-button').forEach((btn) => {
-    btn.classList.remove('active')
-  })
-
-  document.getElementById(`${tabName}-tab`)?.classList.add('active')
-  if (event.target instanceof HTMLElement) {
-    event.target.classList.add('active')
-  }
-}
-
 declare global {
   interface Window {
     showTab: (event: MouseEvent, tabName: string) => void
   }
+}
+
+function showTab(event: MouseEvent, tabName: string) {
+  assertValidTab(tabName)
+  currentTab.set(tabName)
 }
 
 window.showTab = showTab
