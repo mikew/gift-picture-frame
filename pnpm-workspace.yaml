@@ -1,3 +1,9 @@
+publicHoistPattern:
+  - eslint
+  - vite
+  - vitest
+  - workbox-window
+
 packages:
   - ./internal/ui/client-ui/
   - ./internal/ui/server-ui/
