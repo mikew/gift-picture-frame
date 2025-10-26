@@ -1,3 +1,18 @@
+import { render } from 'solid-js/web'
+
+import App from './components/App.tsx'
+
+const root = document.getElementById('app')
+
+if (!root) {
+  throw new Error(
+    'Root element not found. Did you forget to add it to your index.html? Or maybe the id attribute got misspelled?',
+  )
+}
+
+render(() => <App />, root)
+
+/*
 import './index.css'
 
 // TODO This is shared.
@@ -69,22 +84,6 @@ class UploadManager {
     const uploadTextBtn = document.getElementById('upload-text-btn')
     uploadTextBtn?.addEventListener('click', this.uploadText.bind(this))
   }
-
-  /*
-  showTab(tabName: string) {
-    // Hide all tabs
-    document.querySelectorAll(".tab-content").forEach((tab) => {
-      tab.classList.remove("active");
-    });
-    document.querySelectorAll(".tab-button").forEach((btn) => {
-      btn.classList.remove("active");
-    });
-
-    // Show selected tab
-    document.getElementById(`${tabName}-tab`)?.classList.add("active");
-    event?.target?.classList.add("active");
-  }
-  */
 
   handleDragOver(e: MouseEvent) {
     e.preventDefault()
@@ -494,3 +493,4 @@ window.showTab = showTab
 document.addEventListener('DOMContentLoaded', () => {
   new UploadManager()
 })
+*/
