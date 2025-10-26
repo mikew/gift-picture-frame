@@ -9,4 +9,24 @@ pushd ./internal/ui/server-ui
   pnpm exec react-scripts build
 popd
 
-go build main.go
+ARCHS=(
+  amd64
+  arm64
+)
+OSES=(
+  linux
+  darwin
+  windows
+)
+
+for os in "${OSES[@]}"; do
+  for arch in "${ARCHS[@]}"; do
+    FILENAME="./build/$(basename "$PWD")-$os-$arch"
+    GOOS="$os" GOARCH="$arch" go build -ldflags "-s -w" -o "$FILENAME" ./main.go
+    chmod +x "$FILENAME"
+  done
+done
+
+find ./build -name '*-windows-*' -not -name '*.exe' | while read -r line; do
+  mv "$line" "$line.exe"
+done

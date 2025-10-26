@@ -13,5 +13,10 @@ export default defineConfig(async (env) => {
     open: '/test',
   }
 
+  config.build = {
+    ...config.build,
+    sourcemap: false,
+  }
+
   return config
 })
