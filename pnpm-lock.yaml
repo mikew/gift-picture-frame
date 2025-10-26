@@ -11,6 +11,9 @@ importers:
       concurrently:
         specifier: ^9.2.1
         version: 9.2.1
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
 
   internal/ui/client-ui:
     devDependencies:
@@ -19,7 +22,7 @@ importers:
         version: 4.0.3(@types/node@24.9.1)(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(graphql@16.11.0)(typescript@5.9.3)(vitest@4.0.3(@types/node@24.9.1)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(terser@5.44.0))
       '@promoboxx/react-scripts-vite':
         specifier: ^0.2.7
-        version: 0.2.7(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(optionator@0.9.4)(postcss@8.5.6)(rollup@4.52.5)(terser@5.44.0)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
+        version: 0.2.7(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(optionator@0.9.4)(postcss@8.5.6)(rollup@2.79.2)(terser@5.44.0)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
       shared:
         specifier: workspace:*
         version: link:../shared
@@ -34,7 +37,7 @@ importers:
         version: 4.0.3(@types/node@24.9.1)(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(graphql@16.11.0)(typescript@5.9.3)(vitest@4.0.3(@types/node@24.9.1)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(terser@5.44.0))
       '@promoboxx/react-scripts-vite':
         specifier: ^0.2.7
-        version: 0.2.7(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(optionator@0.9.4)(postcss@8.5.6)(rollup@2.79.2)(terser@5.44.0)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
+        version: 0.2.7(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(optionator@0.9.4)(postcss@8.5.6)(rollup@4.52.5)(terser@5.44.0)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
       shared:
         specifier: workspace:*
         version: link:../shared
@@ -3006,6 +3009,11 @@ packages:
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
+
+  prettier@3.6.2:
+    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
+    engines: {node: '>=14'}
+    hasBin: true
 
   pretty-bytes@5.6.0:
     resolution: {integrity: sha512-FFw039TmrBqFK8ma/7OL3sDz/VytdtJr044/QUJtH0wK9lb9jLq9tJyIxUwtQJHwar2BqtiA4iCWSwo9JLkzFg==}
@@ -7408,6 +7416,8 @@ snapshots:
       source-map-js: 1.2.1
 
   prelude-ls@1.2.1: {}
+
+  prettier@3.6.2: {}
 
   pretty-bytes@5.6.0: {}
 

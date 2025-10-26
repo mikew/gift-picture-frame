@@ -3,6 +3,7 @@ publicHoistPattern:
   - vite
   - vitest
   - workbox-window
+  - "@promoboxx/eslint-config"
 
 packages:
   - ./internal/ui/client-ui/
