@@ -1,17 +1,14 @@
 package main
 
 import (
-	"embed"
 	"log"
 	"os"
 	"picture-frame/internal/client"
 	"picture-frame/internal/server"
+	"picture-frame/internal/ui"
 
 	"github.com/urfave/cli/v2"
 )
-
-//go:embed web/templates/* web/static/*
-var embeddedFiles embed.FS
 
 func main() {
 	app := &cli.App{
@@ -34,7 +31,7 @@ func main() {
 						},
 						Action: func(ctx *cli.Context) error {
 							port := ctx.Int("port")
-							srv := server.NewServer(embeddedFiles)
+							srv := server.NewServer(ui.ServerFiles())
 							return srv.Start(port)
 						},
 					},
@@ -69,7 +66,7 @@ func main() {
 							serverURL := ctx.String("server")
 							port := ctx.Int("port")
 
-							c := client.NewClient(id, serverURL, port, embeddedFiles)
+							c := client.NewClient(id, serverURL, port, ui.ClientFiles())
 							return c.Start()
 						},
 					},

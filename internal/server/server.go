@@ -1,11 +1,11 @@
 package server
 
 import (
-	"embed"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"io"
+	"io/fs"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -17,9 +17,9 @@ import (
 )
 
 type Server struct {
-	dataDir       string
-	router        *gin.Engine
-	embeddedFiles embed.FS
+	dataDir string
+	router  *gin.Engine
+	fs      fs.FS
 }
 
 type MediaItem struct {
@@ -31,11 +31,11 @@ type MediaItem struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func NewServer(embeddedFiles embed.FS) *Server {
+func NewServer(fs fs.FS) *Server {
 	return &Server{
-		dataDir:       "data",
-		router:        gin.Default(),
-		embeddedFiles: embeddedFiles,
+		dataDir: "data",
+		router:  gin.Default(),
+		fs:      fs,
 	}
 }
 
@@ -50,8 +50,8 @@ func (s *Server) Start(port int) error {
 }
 
 func (s *Server) setupRoutes() {
-	// Setup embedded templates
-	tmpl := template.Must(template.New("").ParseFS(s.embeddedFiles, "web/templates/*"))
+	// Setup templates
+	tmpl := template.Must(template.New("").ParseFS(s.fs, "*.html"))
 	s.router.SetHTMLTemplate(tmpl)
 
 	s.router.Use(cors.Default())
@@ -60,8 +60,8 @@ func (s *Server) setupRoutes() {
 		ctx.Next()
 	})
 
-	// Serve embedded static files
-	s.router.StaticFS("/static", http.FS(s.embeddedFiles))
+	// Serve static files
+	s.router.StaticFS("/static", http.FS(s.fs))
 
 	// Upload UI route
 	s.router.GET("/:id", s.handleUploadUI)
@@ -78,7 +78,7 @@ func (s *Server) setupRoutes() {
 
 func (s *Server) handleUploadUI(c *gin.Context) {
 	frameID := c.Param("id")
-	c.HTML(http.StatusOK, "upload.html", gin.H{
+	c.HTML(http.StatusOK, "index.html", gin.H{
 		"FrameID": frameID,
 	})
 }

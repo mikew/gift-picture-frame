@@ -1,10 +1,11 @@
 package client
 
 import (
-	"embed"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"net/http"
+
 	// "os/exec"
 	// "path/filepath"
 	// "runtime"
@@ -13,20 +14,20 @@ import (
 )
 
 type Client struct {
-	frameID       string
-	serverURL     string
-	port          int
-	router        *gin.Engine
-	embeddedFiles embed.FS
+	frameID   string
+	serverURL string
+	port      int
+	router    *gin.Engine
+	fs        fs.FS
 }
 
-func NewClient(frameID string, serverURL string, port int, embeddedFiles embed.FS) *Client {
+func NewClient(frameID string, serverURL string, port int, fs fs.FS) *Client {
 	return &Client{
-		frameID:       frameID,
-		serverURL:     serverURL,
-		port:          port,
-		router:        gin.Default(),
-		embeddedFiles: embeddedFiles,
+		frameID:   frameID,
+		serverURL: serverURL,
+		port:      port,
+		router:    gin.Default(),
+		fs:        fs,
 	}
 }
 
@@ -42,12 +43,15 @@ func (c *Client) Start() error {
 }
 
 func (c *Client) setupRoutes() {
-	// Setup embedded templates
-	tmpl := template.Must(template.New("").ParseFS(c.embeddedFiles, "web/templates/*"))
+	// Setup templates
+	tmpl, err := template.New("").ParseFS(c.fs, "*.html")
+	if err != nil {
+		fmt.Println("Error parsing templates:", err)
+	}
 	c.router.SetHTMLTemplate(tmpl)
 
-	// Serve embedded static files
-	c.router.StaticFS("/static", http.FS(c.embeddedFiles))
+	// Serve static files
+	c.router.StaticFS("/static", http.FS(c.fs))
 
 	// Picture frame display route
 	c.router.GET("/", c.handleFrameDisplay)
@@ -57,7 +61,7 @@ func (c *Client) setupRoutes() {
 }
 
 func (c *Client) handleFrameDisplay(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "frame.html", gin.H{
+	ctx.HTML(http.StatusOK, "index.html", gin.H{
 		"FrameID":   c.frameID,
 		"ServerURL": c.serverURL,
 	})
