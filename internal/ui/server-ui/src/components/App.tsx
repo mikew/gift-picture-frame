@@ -19,7 +19,8 @@ declare global {
 }
 
 const UPLOAD_SERVER_BASE =
-  window.PICTURE_FRAME_CONFIG.mode === 'development'
+  typeof window !== 'undefined'
+  && window.PICTURE_FRAME_CONFIG.mode === 'development'
     ? 'http://localhost:8080'
     : ''
 
@@ -33,7 +34,10 @@ export default function App() {
   >('info')
   const [showStatus, setShowStatus] = createSignal(false)
 
-  const frameId = window.location.pathname.split('/')[1] || ''
+  const frameId =
+    typeof window !== 'undefined'
+      ? window.location.pathname.split('/')[1] || ''
+      : ''
 
   const showStatusMessage = (
     message: string,
@@ -142,7 +146,6 @@ export default function App() {
   return (
     <div class="container">
       <Header frameId={frameId} />
-
       <div class="upload-section">
         <UploadTabs activeTab={activeTab()} onTabChange={setActiveTab} />
 
@@ -156,13 +159,11 @@ export default function App() {
 
         {activeTab() === 'text' && <TextUploadTab onUpload={uploadText} />}
       </div>
-
       <UploadStatus
         message={statusMessage()}
         type={statusType()}
         show={showStatus()}
       />
-
       <RecentUploads uploads={recentUploads()} frameId={frameId} />
     </div>
   )

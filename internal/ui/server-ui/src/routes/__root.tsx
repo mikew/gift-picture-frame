@@ -7,7 +7,10 @@ import {
 import { Suspense } from 'solid-js'
 import { HydrationScript } from 'solid-js/web'
 
+import App from '../components/App'
+
 export const Route = createRootRoute({
+  notFoundComponent: () => <div>404 Not Found</div>,
   head: () => ({
     meta: [
       {
@@ -30,9 +33,9 @@ window.PICTURE_FRAME_CONFIG = {
       ? 'development'
       : 'production',
 }
-`
-      }
-    ]
+`,
+      },
+    ],
   }),
   component: RootComponent,
 })
@@ -53,7 +56,10 @@ function RootDocument({ children }: Readonly<{ children: Solid.JSX.Element }>) {
       </head>
       <body>
         <HeadContent />
-        <Suspense>{children}</Suspense>
+        <Suspense>
+          <App />
+          {children}
+        </Suspense>
         <Scripts />
       </body>
     </html>

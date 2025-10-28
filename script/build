@@ -11,6 +11,11 @@ popd
 
 pushd ./internal/ui/server-ui
   pnpm exec react-scripts build
+  mv ./build/client/static/assets ./build/client
+  rmdir ./build/client/static
+
+  mv ./build/client/_shell/index.html ./build/client/index.html
+  rmdir ./build/client/_shell
 popd
 
 ARCHS=(

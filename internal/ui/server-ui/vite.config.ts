@@ -3,44 +3,67 @@ import { tanstackStart } from '@tanstack/solid-start/plugin/vite'
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
 
+// It's solid ...
 pluginOptions.react = false
+// package.json import aliasing
 pluginOptions.aliasHq = false
+
+// TODO Check if works as expected in tanstack start
+pluginOptions.svgr = false
+// Just commit to import.meta.env
+pluginOptions.envCompatible = false
+// TODO Check if works as expected in tanstack start
+pluginOptions.pwa = false
+// Breaks tanstack start
+pluginOptions.splitVendorChunkPlugin = false
+
 pluginOptions.checker = false
 
-pluginOptions.svgr = false
-pluginOptions.envCompatible = false
-pluginOptions.pwa = false
-
 export default defineConfig(async (env) => {
-  return {
-    // base: '/vite-config-base',
+  console.log(env)
+  const config = await viteConfig(env)
 
-    plugins: [
-      tanstackStart({
-        // target: 'static',
+  config.plugins?.push(
+    tanstackStart({
+      // target: 'static',
 
+      // prerender: {
+      //   enabled: true,
+      //   autoSubfolderIndex: true,
+      //   autoStaticPathsDiscovery: true,
+      // },
+
+      // pages: [
+      //   {
+      //     path: '/',
+      //     prerender: {
+      //       enabled: true,
+      //       crawlLinks: true,
+      //       autoSubfolderIndex: true,
+      //       onSuccess: ({ page }) => {
+      //         console.log(`pages prerender Rendered ${page.path}!`)
+      //       },
+      //     },
+      //   },
+
+      //   {
+      //     path: '/lol',
+      //     prerender: {
+      //       enabled: true,
+      //       crawlLinks: true,
+      //       autoSubfolderIndex: true,
+      //       onSuccess: ({ page }) => {
+      //         console.log(`pages prerender Rendered ${page.path}!`)
+      //       },
+      //     },
+      //   },
+      // ],
+
+      spa: {
+        enabled: true,
         prerender: {
           enabled: true,
-          onSuccess: ({ page }) => {
-            console.log(`Rendered ${page.path}!`)
-          },
         },
-
-        // pages: [
-        //   {
-        //     path: '/',
-        //     prerender: {
-        //       enabled: true, crawlLinks: true,
-        //       autoSubfolderIndex: true,
-        //       onSuccess: ({ page }) => {
-        //         console.log(`pages prerender Rendered ${page.path}!`)
-        //       },
-        //     }
-        //   }
-        // ],
-
-        // spa: {
-        //   enabled: true,
         //   prerender: {
         //     autoSubfolderIndex: true,
         //     enabled: true,
@@ -50,17 +73,11 @@ export default defineConfig(async (env) => {
         // //       console.log(`spa Rendered ${page.path}!`)
         // //     },
         //   }
-        // }
-      }),
-
-      solid({ ssr: true }),
-    ]
-  }
-
-  const config = await viteConfig(env)
-
-  config.plugins?.push(tanstackStart(), solid({ ssr: true }))
-  config.base = env.command === 'serve' ? undefined : '/static'
+      },
+    }),
+    solid({ ssr: true }),
+  )
+  // config.base = env.command === 'serve' ? undefined : '/static'
 
   config.server = {
     ...config.server,
@@ -69,10 +86,15 @@ export default defineConfig(async (env) => {
 
   config.build = {
     ...config.build,
-    sourcemap: false,
+    // sourcemap: false,
+    rollupOptions: {
+      output: {
+        entryFileNames: 'static/assets/[name]-[hash].js',
+        chunkFileNames: 'static/assets/[name]-[hash].js',
+        assetFileNames: 'static/assets/[name]-[hash][extname]',
+      },
+    },
   }
-
-  console.log(config.plugins)
 
   return config
 })
