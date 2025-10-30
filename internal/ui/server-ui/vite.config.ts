@@ -24,59 +24,20 @@ export default defineConfig(async (env) => {
 
   config.plugins?.push(
     tanstackStart({
-      // target: 'static',
-
-      // prerender: {
-      //   enabled: true,
-      //   autoSubfolderIndex: true,
-      //   autoStaticPathsDiscovery: true,
-      // },
-
-      // pages: [
-      //   {
-      //     path: '/',
-      //     prerender: {
-      //       enabled: true,
-      //       crawlLinks: true,
-      //       autoSubfolderIndex: true,
-      //       onSuccess: ({ page }) => {
-      //         console.log(`pages prerender Rendered ${page.path}!`)
-      //       },
-      //     },
-      //   },
-
-      //   {
-      //     path: '/lol',
-      //     prerender: {
-      //       enabled: true,
-      //       crawlLinks: true,
-      //       autoSubfolderIndex: true,
-      //       onSuccess: ({ page }) => {
-      //         console.log(`pages prerender Rendered ${page.path}!`)
-      //       },
-      //     },
-      //   },
-      // ],
-
-      spa: {
-        enabled: true,
-        prerender: {
-          enabled: true,
+      pages: [
+        // Prerender the $catchall route.
+        {
+          path: '/prerender',
+          prerender: {
+            enabled: true,
+            outputPath: 'index.html',
+          },
         },
-        //   prerender: {
-        //     autoSubfolderIndex: true,
-        //     enabled: true,
-        //     // outputPath: '.',
-        //     crawlLinks: true,
-        // //     onSuccess: ({ page }) => {
-        // //       console.log(`spa Rendered ${page.path}!`)
-        // //     },
-        //   }
-      },
+      ],
     }),
+
     solid({ ssr: true }),
   )
-  // config.base = env.command === 'serve' ? undefined : '/static'
 
   config.server = {
     ...config.server,
@@ -85,7 +46,7 @@ export default defineConfig(async (env) => {
 
   config.build = {
     ...config.build,
-    // sourcemap: false,
+    sourcemap: false,
     rollupOptions: {
       output: {
         entryFileNames: 'static/assets/[name]-[hash].js',

@@ -57,7 +57,7 @@ func (s *Server) Start(port int) error {
 
 func (s *Server) setupRoutes() {
 	// Setup templates
-	tmpl := template.Must(template.New("").ParseFS(s.fs, "**/*.html"))
+	tmpl := template.Must(template.New("").ParseFS(s.fs, "*.html"))
 	s.router.SetHTMLTemplate(tmpl)
 
 	s.router.Use(cors.Default())
@@ -84,7 +84,7 @@ func (s *Server) setupRoutes() {
 }
 
 func (s *Server) handleUploadUI(c *gin.Context) {
-	b, err := fs.ReadFile(s.fs, "_shell/index.html")
+	b, err := fs.ReadFile(s.fs, "index.html")
 	if err != nil {
 		c.Status(http.StatusInternalServerError)
 		return
