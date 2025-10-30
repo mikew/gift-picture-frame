@@ -2,6 +2,7 @@ import type { MediaItem } from 'shared/types'
 import { For, Show } from 'solid-js'
 
 import './RecentUploads.css'
+import AppConfig from '../appConfig'
 
 interface RecentUploadsProps {
   uploads: MediaItem[]
@@ -13,7 +14,7 @@ export default function RecentUploads(props: RecentUploadsProps) {
     if (item.type === 'image') {
       return (
         <img
-          src={`/files/${props.frameId}/${item.filename}`}
+          src={`${AppConfig.apiBase}/files/${props.frameId}/${item.filename}`}
           alt={item.filename}
         />
       )

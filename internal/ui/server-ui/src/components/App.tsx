@@ -5,7 +5,7 @@ import AppConfig from '#src/appConfig.ts'
 
 import FileUploadTab from './FileUploadTab.tsx'
 import Header from './Header.tsx'
-import RecentUploads from './RecentUploads.tsx'
+// import RecentUploads from './RecentUploads.tsx'
 import TextUploadTab from './TextUploadTab.tsx'
 import UploadStatus from './UploadStatus.tsx'
 import UploadTabs from './UploadTabs.tsx'
@@ -149,7 +149,6 @@ export default function App() {
         type={statusType()}
         show={showStatus()}
       />
-      <RecentUploads uploads={recentUploads()} frameId={frameId} />
     </div>
   )
 }
