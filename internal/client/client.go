@@ -1,16 +1,19 @@
 package client
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
 	"io/fs"
 	"net/http"
+	"picture-frame/internal/ui"
 
 	// "os/exec"
 	// "path/filepath"
 	// "runtime"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -50,21 +53,26 @@ func (c *Client) setupRoutes() {
 
 	c.router.Use(cors.Default())
 
-	// Serve static files
-	c.router.StaticFS("/static", http.FS(c.fs))
-
 	// Picture frame display route
 	c.router.GET("/", c.handleFrameDisplay)
 
 	// API endpoint to get media from the main server
 	c.router.GET("/api/media", c.handleGetMedia)
+
+	// Serve static files
+	c.router.NoRoute(static.Serve("/", ui.StaticLocalFS{http.FS(c.fs)}))
 }
 
 func (c *Client) handleFrameDisplay(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "index.html", gin.H{
-		"FrameID":   c.frameID,
-		"ServerURL": c.serverURL,
-	})
+	b, err := fs.ReadFile(c.fs, "index.html")
+	if err != nil {
+		ctx.Status(http.StatusInternalServerError)
+		return
+	}
+	// id := c.Param("id")
+	b = bytes.ReplaceAll(b, []byte("__APP_IS_EMBEDDED__"), []byte("true"))
+
+	ctx.Data(http.StatusOK, "text/html; charset=utf-8", b) // exact markup preserved
 }
 
 func (c *Client) handleGetMedia(ctx *gin.Context) {

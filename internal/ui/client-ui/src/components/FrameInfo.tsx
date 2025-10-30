@@ -17,15 +17,8 @@ export default function FrameInfo(props: FrameInfoProps) {
 
   return (
     <div class="frame-info" id="frame-info">
-      <div class="frame-id">Frame: {frameConfig.frameId}</div>
       <div class="media-counter" id="media-counter">
         {getCounterText()}
-      </div>
-      <div class="upload-hint">
-        Upload photos at:
-        <span class="upload-url">
-          {frameConfig.serverUrl}/{frameConfig.frameId}
-        </span>
       </div>
     </div>
   )

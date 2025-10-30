@@ -1,6 +1,8 @@
 import type { MediaItem, TextData } from 'shared/types'
 import { Show } from 'solid-js'
+
 import './MediaItem.css'
+import AppConfig from '#src/appConfig.ts'
 
 interface MediaItemProps {
   item: MediaItem
@@ -9,8 +11,11 @@ interface MediaItemProps {
 }
 
 export default function MediaItemComponent(props: MediaItemProps) {
-  const getMediaUrl = () =>
-    `${frameConfig.serverUrl}/files/${frameConfig.frameId}/${props.item.filename}`
+  const getMediaUrl = () => {
+    const base =
+      AppConfig.deployEnv === 'production' ? '' : 'http://localhost:8080'
+    return `${base}/files/${base}/${props.item.filename}`
+  }
 
   const parseTextData = (): TextData => {
     try {

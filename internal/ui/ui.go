@@ -10,7 +10,7 @@ import (
 var clientFiles embed.FS
 
 func ClientFiles() fs.FS {
-	prefixed, _ := fs.Sub(clientFiles, "client-ui/build")
+	prefixed, _ := fs.Sub(clientFiles, "client-ui/build/client")
 
 	Dump(prefixed, ".")
 

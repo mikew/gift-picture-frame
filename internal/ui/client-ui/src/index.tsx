@@ -1,6 +1,6 @@
 import { render } from 'solid-js/web'
 
-import App from './components/App.tsx'
+import App from '#src/components/App.tsx'
 
 import './index.css'
 

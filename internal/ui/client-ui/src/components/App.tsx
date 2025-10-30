@@ -1,30 +1,14 @@
 import type { MediaItem } from 'shared/types'
 import { createSignal, createEffect, onMount, onCleanup } from 'solid-js'
 
+import AppConfig from '#src/appConfig.ts'
+
 import Controls from './Controls.tsx'
 import FrameInfo from './FrameInfo.tsx'
 import MediaDisplay from './MediaDisplay.tsx'
 import ProgressBar from './ProgressBar.tsx'
 
 import './App.css'
-
-declare global {
-  const frameConfig: {
-    frameId: string
-    serverUrl: string
-  }
-
-  interface Window {
-    PICTURE_FRAME_CONFIG: {
-      mode: 'development' | 'production'
-    }
-  }
-}
-
-const FRAME_SERVER_BASE =
-  window.PICTURE_FRAME_CONFIG.mode === 'development'
-    ? 'http://localhost:6376'
-    : ''
 
 export default function App() {
   const [media, setMedia] = createSignal<MediaItem[]>([])
@@ -39,7 +23,7 @@ export default function App() {
 
   const loadMedia = async () => {
     try {
-      const response = await fetch(`${FRAME_SERVER_BASE}/api/media`)
+      const response = await fetch(`${AppConfig.apiBase}/api/media`)
       if (!response.ok) throw new Error('Failed to fetch media')
 
       const newMedia = await response.json()
