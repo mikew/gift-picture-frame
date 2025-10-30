@@ -1,6 +1,8 @@
 import type { MediaItem } from 'shared/types'
 import { createSignal, onMount } from 'solid-js'
 
+import AppConfig from '#src/appConfig.ts'
+
 import FileUploadTab from './FileUploadTab.tsx'
 import Header from './Header.tsx'
 import RecentUploads from './RecentUploads.tsx'
@@ -9,20 +11,6 @@ import UploadStatus from './UploadStatus.tsx'
 import UploadTabs from './UploadTabs.tsx'
 
 import './App.css'
-
-declare global {
-  interface Window {
-    PICTURE_FRAME_CONFIG: {
-      mode: 'development' | 'production'
-    }
-  }
-}
-
-const UPLOAD_SERVER_BASE =
-  typeof window !== 'undefined'
-  && window.PICTURE_FRAME_CONFIG.mode === 'development'
-    ? 'http://localhost:8080'
-    : ''
 
 export default function App() {
   const [activeTab, setActiveTab] = createSignal<'file' | 'text'>('file')
@@ -51,7 +39,7 @@ export default function App() {
 
   const loadRecentUploads = async () => {
     try {
-      const response = await fetch(`${UPLOAD_SERVER_BASE}/${frameId}/media`)
+      const response = await fetch(`${AppConfig.apiBase}/${frameId}/media`)
       if (!response.ok) throw new Error('Failed to load recent uploads')
 
       const media = await response.json()
@@ -74,13 +62,10 @@ export default function App() {
         const formData = new FormData()
         formData.append('file', file)
 
-        const response = await fetch(
-          `${UPLOAD_SERVER_BASE}/${frameId}/upload`,
-          {
-            method: 'POST',
-            body: formData,
-          },
-        )
+        const response = await fetch(`${AppConfig.apiBase}/${frameId}/upload`, {
+          method: 'POST',
+          body: formData,
+        })
 
         if (!response.ok) {
           const error = await response.json()
@@ -119,7 +104,7 @@ export default function App() {
       const formData = new FormData()
       formData.append('text', JSON.stringify(textData))
 
-      const response = await fetch(`${UPLOAD_SERVER_BASE}/${frameId}/upload`, {
+      const response = await fetch(`${AppConfig.apiBase}/${frameId}/upload`, {
         method: 'POST',
         body: formData,
       })

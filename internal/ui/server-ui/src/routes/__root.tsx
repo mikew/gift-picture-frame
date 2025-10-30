@@ -7,7 +7,7 @@ import {
 import { Suspense } from 'solid-js'
 import { HydrationScript } from 'solid-js/web'
 
-import App from '../components/App'
+import App from '#src/components/App.tsx'
 
 export const Route = createRootRoute({
   notFoundComponent: () => <div>404 Not Found</div>,
@@ -27,12 +27,7 @@ export const Route = createRootRoute({
     scripts: [
       {
         children: `
-    window.PICTURE_FRAME_CONFIG = {
-      mode:
-        '__APP_IS_EMBEDDED__' === '_' + '_APP_IS_EMBEDDED__'
-          ? 'development'
-          : 'production',
-    }
+window.APP_IS_EMBEDDED = '__APP_IS_EMBEDDED__';
     `,
       },
     ],
