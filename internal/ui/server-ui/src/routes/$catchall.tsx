@@ -10,5 +10,5 @@ function Home() {
   })
   console.log('wut', wut())
 
-  return <></>
+  return <>THIS IS CATCHALL PAGE YES</>
 }
