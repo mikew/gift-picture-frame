@@ -1,11 +1,13 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"io"
 	"io/fs"
+
 	"net/http"
 	"os"
 	"path/filepath"
@@ -14,6 +16,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -52,7 +55,8 @@ func (s *Server) Start(port int) error {
 
 func (s *Server) setupRoutes() {
 	// Setup templates
-	tmpl := template.Must(template.New("").ParseFS(s.fs, "*.html"))
+	// tmpl := template.Must(template.New("").ParseFS(s.fs, "*.html"))
+	tmpl := template.Must(template.New("").ParseFiles("/home/mike/Work/gift-picture-frame/internal/ui/server-ui/build/client/index.html"))
 	s.router.SetHTMLTemplate(tmpl)
 
 	s.router.Use(cors.Default())
@@ -61,9 +65,6 @@ func (s *Server) setupRoutes() {
 		ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, 10<<20)
 		ctx.Next()
 	})
-
-	// Serve static files
-	s.router.StaticFS("/static", http.FS(s.fs))
 
 	// Upload UI route
 	s.router.GET("/:id", s.handleUploadUI)
@@ -74,15 +75,30 @@ func (s *Server) setupRoutes() {
 	// Media retrieval endpoint
 	s.router.GET("/:id/media", s.handleGetMedia)
 
+	// Serve static files
+	s.router.NoRoute(static.Serve("/", static.LocalFile("/home/mike/Work/gift-picture-frame/internal/ui/server-ui/build/client", false)))
+
 	// Serve uploaded files
 	s.router.Static("/files", s.dataDir)
 }
 
 func (s *Server) handleUploadUI(c *gin.Context) {
-	frameID := c.Param("id")
-	c.HTML(http.StatusOK, "index.html", gin.H{
-		"FrameID": frameID,
-	})
+	// frameID := c.Param("id")
+	// c.HTML(http.StatusOK, "index.html", gin.H{
+	// 	"FrameID": frameID,
+	// })
+
+	// c.File("/path/to/index.html") // sends file verbatim, comments preserved
+
+	b, err := os.ReadFile("/home/mike/Work/gift-picture-frame/internal/ui/server-ui/build/client/index.html")
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	// id := c.Param("id")
+	b = bytes.ReplaceAll(b, []byte("__APP_IS_EMBEDDED__"), []byte("true"))
+
+	c.Data(http.StatusOK, "text/html; charset=utf-8", b) // exact markup preserved
 }
 
 func (s *Server) handleUpload(c *gin.Context) {

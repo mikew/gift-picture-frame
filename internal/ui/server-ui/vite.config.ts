@@ -20,7 +20,6 @@ pluginOptions.splitVendorChunkPlugin = false
 pluginOptions.checker = false
 
 export default defineConfig(async (env) => {
-  console.log(env)
   const config = await viteConfig(env)
 
   config.plugins?.push(

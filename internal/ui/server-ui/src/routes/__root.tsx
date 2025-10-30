@@ -27,13 +27,13 @@ export const Route = createRootRoute({
     scripts: [
       {
         children: `
-window.PICTURE_FRAME_CONFIG = {
-  mode:
-    '{{ .FrameID }}' === '{' + '{ .FrameID }}'
-      ? 'development'
-      : 'production',
-}
-`,
+    window.PICTURE_FRAME_CONFIG = {
+      mode:
+        '__APP_IS_EMBEDDED__' === '_' + '_APP_IS_EMBEDDED__'
+          ? 'development'
+          : 'production',
+    }
+    `,
       },
     ],
   }),
