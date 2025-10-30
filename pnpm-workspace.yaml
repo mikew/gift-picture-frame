@@ -1,5 +1,6 @@
 publicHoistPattern:
   - eslint
+  - prettier
   - vite
   - vitest
   - workbox-window

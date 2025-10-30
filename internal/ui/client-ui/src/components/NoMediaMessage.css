@@ -1,0 +1,45 @@
+.no-media-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #fff;
+  padding: 2rem;
+  max-width: 600px;
+}
+
+.no-media-message h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 300;
+}
+
+.no-media-message p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  opacity: 0.8;
+}
+
+.upload-instructions {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.upload-instructions p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.upload-url {
+  display: inline-block;
+  background: #007acc;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 1rem;
+  word-break: break-all;
+}

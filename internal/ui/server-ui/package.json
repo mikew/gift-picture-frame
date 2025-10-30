@@ -7,13 +7,20 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "imports": {
+    "#src/*": "./src/*"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@promoboxx/eslint-config": "^4.0.3",
     "@promoboxx/react-scripts-vite": "^0.2.8",
+    "@tanstack/solid-router": "^1.133.31",
+    "@tanstack/solid-start": "^1.133.32",
     "shared": "workspace:*",
-    "typescript": "^5.9.3"
+    "solid-js": "^1.9.9",
+    "typescript": "^5.9.3",
+    "vite-plugin-solid": "^2.11.10"
   }
 }

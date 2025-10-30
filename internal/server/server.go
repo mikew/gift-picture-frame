@@ -1,11 +1,13 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"io"
 	"io/fs"
+
 	"net/http"
 	"os"
 	"path/filepath"
@@ -14,7 +16,10 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+
+	"picture-frame/internal/ui"
 )
 
 type Server struct {
@@ -62,9 +67,6 @@ func (s *Server) setupRoutes() {
 		ctx.Next()
 	})
 
-	// Serve static files
-	s.router.StaticFS("/static", http.FS(s.fs))
-
 	// Upload UI route
 	s.router.GET("/:id", s.handleUploadUI)
 
@@ -74,15 +76,23 @@ func (s *Server) setupRoutes() {
 	// Media retrieval endpoint
 	s.router.GET("/:id/media", s.handleGetMedia)
 
+	// Serve static files
+	s.router.NoRoute(static.Serve("/", ui.StaticLocalFS{http.FS(s.fs)}))
+
 	// Serve uploaded files
 	s.router.Static("/files", s.dataDir)
 }
 
 func (s *Server) handleUploadUI(c *gin.Context) {
-	frameID := c.Param("id")
-	c.HTML(http.StatusOK, "index.html", gin.H{
-		"FrameID": frameID,
-	})
+	b, err := fs.ReadFile(s.fs, "index.html")
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	// id := c.Param("id")
+	b = bytes.ReplaceAll(b, []byte("__APP_IS_EMBEDDED__"), []byte("true"))
+
+	c.Data(http.StatusOK, "text/html; charset=utf-8", b) // exact markup preserved
 }
 
 func (s *Server) handleUpload(c *gin.Context) {

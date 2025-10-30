@@ -9,16 +9,16 @@ import (
 var clientFiles embed.FS
 
 func ClientFiles() fs.FS {
-	prefixed, _ := fs.Sub(clientFiles, "client-ui/build")
+	prefixed, _ := fs.Sub(clientFiles, "client-ui/build/client")
 
 	return prefixed
 }
 
-//go:embed server-ui/build/*
+//go:embed all:server-ui/build/client/*
 var serverFiles embed.FS
 
 func ServerFiles() fs.FS {
-	prefixed, _ := fs.Sub(serverFiles, "server-ui/build")
+	prefixed, _ := fs.Sub(serverFiles, "server-ui/build/client")
 
 	return prefixed
 }

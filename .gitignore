@@ -47,3 +47,4 @@ node_modules/
 /internal/ui/server-ui/build
 /build
 .eslintcache
+routeTree.gen.ts
