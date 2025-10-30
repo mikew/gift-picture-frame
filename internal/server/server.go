@@ -18,6 +18,8 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+
+	"picture-frame/internal/ui"
 )
 
 type Server struct {
@@ -55,8 +57,7 @@ func (s *Server) Start(port int) error {
 
 func (s *Server) setupRoutes() {
 	// Setup templates
-	// tmpl := template.Must(template.New("").ParseFS(s.fs, "*.html"))
-	tmpl := template.Must(template.New("").ParseFiles("/home/mike/Work/gift-picture-frame/internal/ui/server-ui/build/client/index.html"))
+	tmpl := template.Must(template.New("").ParseFS(s.fs, "**/*.html"))
 	s.router.SetHTMLTemplate(tmpl)
 
 	s.router.Use(cors.Default())
@@ -76,21 +77,14 @@ func (s *Server) setupRoutes() {
 	s.router.GET("/:id/media", s.handleGetMedia)
 
 	// Serve static files
-	s.router.NoRoute(static.Serve("/", static.LocalFile("/home/mike/Work/gift-picture-frame/internal/ui/server-ui/build/client", false)))
+	s.router.NoRoute(static.Serve("/", ui.StaticLocalFS{http.FS(s.fs)}))
 
 	// Serve uploaded files
 	s.router.Static("/files", s.dataDir)
 }
 
 func (s *Server) handleUploadUI(c *gin.Context) {
-	// frameID := c.Param("id")
-	// c.HTML(http.StatusOK, "index.html", gin.H{
-	// 	"FrameID": frameID,
-	// })
-
-	// c.File("/path/to/index.html") // sends file verbatim, comments preserved
-
-	b, err := os.ReadFile("/home/mike/Work/gift-picture-frame/internal/ui/server-ui/build/client/index.html")
+	b, err := fs.ReadFile(s.fs, "_shell/index.html")
 	if err != nil {
 		c.Status(http.StatusInternalServerError)
 		return
