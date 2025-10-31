@@ -14,7 +14,7 @@ export default function MediaItemComponent(props: MediaItemProps) {
   const getMediaUrl = () => {
     const base =
       AppConfig.deployEnv === 'production' ? '' : 'http://localhost:8080'
-    console.log(base, props.item.filename)
+
     return `${base}/files/test/${props.item.filename}`
   }
 

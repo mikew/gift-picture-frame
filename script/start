@@ -5,5 +5,5 @@ set -ex
 
 exec pnpm exec concurrently \
   "nodemon --watch ./ --ext go --signal SIGHUP --exec ./script/start-backends" \
-  "cd ./internal/ui/client-ui && react-scripts-vite start" \
-  "cd ./internal/ui/server-ui && react-scripts-vite start"
+  "cd ./internal/ui/frame-ui && react-scripts-vite start" \
+  "cd ./internal/ui/uploader-ui && react-scripts-vite start"

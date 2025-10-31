@@ -5,9 +5,28 @@ import {
   Scripts,
 } from '@tanstack/solid-router'
 import { Suspense } from 'solid-js'
+import type * as Solid from 'solid-js'
 import { HydrationScript } from 'solid-js/web'
 
 import App from '#src/components/App.tsx'
+
+const RootComponent: Solid.Component = () => {
+  return (
+    <html>
+      <head>
+        <HydrationScript />
+      </head>
+      <body>
+        <HeadContent />
+        <Suspense>
+          <App />
+          <Outlet />
+        </Suspense>
+        <Scripts />
+      </body>
+    </html>
+  )
+}
 
 export const Route = createRootRoute({
   notFoundComponent: () => <div>404 Not Found</div>,
@@ -34,29 +53,3 @@ window.APP_IS_EMBEDDED = '__APP_IS_EMBEDDED__';
   }),
   component: RootComponent,
 })
-
-function RootComponent() {
-  return (
-    <RootDocument>
-      <Outlet />
-    </RootDocument>
-  )
-}
-
-function RootDocument({ children }: Readonly<{ children: Solid.JSX.Element }>) {
-  return (
-    <html>
-      <head>
-        <HydrationScript />
-      </head>
-      <body>
-        <HeadContent />
-        <Suspense>
-          <App />
-          {children}
-        </Suspense>
-        <Scripts />
-      </body>
-    </html>
-  )
-}
