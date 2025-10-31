@@ -5,20 +5,20 @@ import (
 	"io/fs"
 )
 
-//go:embed client-ui/build/*
-var clientFiles embed.FS
+//go:embed all:frame-ui/build/client/*
+var frameFiles embed.FS
 
-func ClientFiles() fs.FS {
-	prefixed, _ := fs.Sub(clientFiles, "client-ui/build/client")
+func FrameFiles() fs.FS {
+	prefixed, _ := fs.Sub(frameFiles, "frame-ui/build/client")
 
 	return prefixed
 }
 
-//go:embed all:server-ui/build/client/*
-var serverFiles embed.FS
+//go:embed all:uploader-ui/build/client/*
+var uploaderFiles embed.FS
 
-func ServerFiles() fs.FS {
-	prefixed, _ := fs.Sub(serverFiles, "server-ui/build/client")
+func UploaderFiles() fs.FS {
+	prefixed, _ := fs.Sub(uploaderFiles, "uploader-ui/build/client")
 
 	return prefixed
 }
