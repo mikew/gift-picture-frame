@@ -1,5 +1,7 @@
 import { createRouter } from '@tanstack/solid-router'
 
+import 'shared/reset.css'
+
 import { routeTree } from './routeTree.gen'
 
 export function getRouter() {
