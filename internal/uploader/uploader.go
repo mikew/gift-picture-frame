@@ -1,4 +1,4 @@
-package server
+package uploader
 
 import (
 	"bytes"
@@ -7,17 +7,16 @@ import (
 	"html/template"
 	"io"
 	"io/fs"
-
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 
 	"picture-frame/internal/ui"
 )
@@ -77,10 +76,14 @@ func (s *Server) setupRoutes() {
 	s.router.GET("/:id/media", s.handleGetMedia)
 
 	// Serve static files
-	s.router.NoRoute(static.Serve("/", ui.StaticLocalFS{http.FS(s.fs)}))
+	s.router.NoRoute(
+		static.Serve("/", ui.StaticLocalFS{http.FS(s.fs)}),
+		static.Serve("/files", static.LocalFile(s.dataDir, true)),
+	)
 
 	// Serve uploaded files
-	s.router.Static("/files", s.dataDir)
+	// s.router.Use(static.Serve("/files", static.LocalFile(s.dataDir, true)))
+	// s.router.Static("/files", s.dataDir)
 }
 
 func (s *Server) handleUploadUI(c *gin.Context) {
@@ -108,7 +111,7 @@ func (s *Server) handleUpload(c *gin.Context) {
 	// Handle text content
 	if textContent := c.PostForm("text"); textContent != "" {
 		media := MediaItem{
-			ID:        fmt.Sprintf("%d", time.Now().UnixNano()),
+			ID:        uuid.New().String(),
 			FrameID:   frameID,
 			Type:      "text",
 			Content:   textContent,
@@ -132,40 +135,82 @@ func (s *Server) handleUpload(c *gin.Context) {
 	}
 	defer file.Close()
 
-	// Determine media type
-	mediaType := "image"
-	ext := strings.ToLower(filepath.Ext(header.Filename))
-	if ext == ".mp4" || ext == ".avi" || ext == ".mov" || ext == ".webm" {
-		mediaType = "video"
+	// Get appropriate media processor
+	processor := GetMediaProcessor(header.Filename)
+	if processor == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Unsupported file type"})
+		return
 	}
 
-	// Generate unique filename
-	filename := fmt.Sprintf("%d_%s", time.Now().UnixNano(), header.Filename)
-	filePath := filepath.Join(frameDir, filename)
-
-	// Save file
-	dst, err := os.Create(filePath)
+	// Save uploaded file to system temp location
+	originalExt := filepath.Ext(header.Filename)
+	tempUploadFile, err := os.CreateTemp("", "upload-*"+originalExt)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create temp file"})
 		return
 	}
-	defer dst.Close()
+	tempUploadPath := tempUploadFile.Name()
+	defer os.Remove(tempUploadPath)
 
-	if _, err := io.Copy(dst, file); err != nil {
+	if _, err := io.Copy(tempUploadFile, file); err != nil {
+		tempUploadFile.Close()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
 		return
 	}
+	tempUploadFile.Close()
+
+	// Process the file
+	processedPath, err := processor.Process(tempUploadPath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to process file: %v", err)})
+		return
+	}
+	defer os.Remove(processedPath)
+
+	// Generate unique ID and final filename
+	mediaID := uuid.New().String()
+	processedExt := filepath.Ext(processedPath)
+	finalFilename := mediaID + processedExt
+	finalFilePath := filepath.Join(frameDir, finalFilename)
+
+	// Move processed file to final destination
+	if err := os.Rename(processedPath, finalFilePath); err != nil {
+		// If rename fails (e.g., cross-device), copy the file
+		srcFile, err := os.Open(processedPath)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save processed file"})
+			return
+		}
+		defer srcFile.Close()
+
+		dstFile, err := os.Create(finalFilePath)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save processed file"})
+			return
+		}
+		defer dstFile.Close()
+
+		if _, err := io.Copy(dstFile, srcFile); err != nil {
+			os.Remove(finalFilePath)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save processed file"})
+			return
+		}
+	}
+
+	// Determine media type
+	mediaType := DetermineMediaType(finalFilename)
 
 	// Save metadata
 	media := MediaItem{
-		ID:        fmt.Sprintf("%d", time.Now().UnixNano()),
+		ID:        mediaID,
 		FrameID:   frameID,
 		Type:      mediaType,
-		Filename:  filename,
+		Filename:  finalFilename,
 		CreatedAt: time.Now(),
 	}
 
 	if err := s.saveMediaMetadata(frameDir, media); err != nil {
+		os.Remove(finalFilePath)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save metadata"})
 		return
 	}

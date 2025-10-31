@@ -7,6 +7,6 @@ publicHoistPattern:
   - '@promoboxx/eslint-config'
 
 packages:
-  - ./internal/ui/client-ui/
-  - ./internal/ui/server-ui/
+  - ./internal/ui/frame-ui/
+  - ./internal/ui/uploader-ui/
   - ./internal/ui/shared/

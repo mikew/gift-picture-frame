@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 	"os"
-	"picture-frame/internal/client"
-	"picture-frame/internal/server"
+	"picture-frame/internal/frame"
 	"picture-frame/internal/ui"
+	"picture-frame/internal/uploader"
 
 	"github.com/urfave/cli/v2"
 )
@@ -13,15 +13,15 @@ import (
 func main() {
 	app := &cli.App{
 		Name:  "picture-frame",
-		Usage: "A picture frame application with server and client components",
+		Usage: "A picture frame application",
 		Commands: []*cli.Command{
 			{
-				Name:  "server",
-				Usage: "Server commands",
+				Name:  "uploader",
+				Usage: "Uploader commands",
 				Subcommands: []*cli.Command{
 					{
 						Name:  "start",
-						Usage: "Start the picture frame server",
+						Usage: "Start the uploader server",
 						Flags: []cli.Flag{
 							&cli.IntFlag{
 								Name:  "port",
@@ -31,19 +31,19 @@ func main() {
 						},
 						Action: func(ctx *cli.Context) error {
 							port := ctx.Int("port")
-							srv := server.NewServer(ui.ServerFiles())
+							srv := uploader.NewServer(ui.UploaderFiles())
 							return srv.Start(port)
 						},
 					},
 				},
 			},
 			{
-				Name:  "client",
-				Usage: "Client commands",
+				Name:  "frame",
+				Usage: "Frame commands",
 				Subcommands: []*cli.Command{
 					{
 						Name:  "start",
-						Usage: "Start the picture frame client",
+						Usage: "Start the frame client",
 						Flags: []cli.Flag{
 							&cli.StringFlag{
 								Name:     "id",
@@ -66,7 +66,7 @@ func main() {
 							serverURL := ctx.String("server")
 							port := ctx.Int("port")
 
-							c := client.NewClient(id, serverURL, port, ui.ClientFiles())
+							c := frame.NewClient(id, serverURL, port, ui.FrameFiles())
 							return c.Start()
 						},
 					},

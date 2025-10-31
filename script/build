@@ -5,22 +5,22 @@ if [ -z "$CI" ]; then
   ./script/prepare-env
 fi
 
-pushd ./internal/ui/client-ui
+pushd ./internal/ui/frame-ui
   pnpm exec react-scripts build
 popd
 
-pushd ./internal/ui/server-ui
+pushd ./internal/ui/uploader-ui
   pnpm exec react-scripts build
 popd
 
 ARCHS=(
   amd64
-  arm64
+  # arm64
 )
 OSES=(
   linux
-  darwin
-  windows
+  # darwin
+  # windows
 )
 
 for os in "${OSES[@]}"; do

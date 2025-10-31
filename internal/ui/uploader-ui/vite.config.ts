@@ -17,8 +17,6 @@ pluginOptions.pwa = false
 // Breaks tanstack start
 pluginOptions.splitVendorChunkPlugin = false
 
-pluginOptions.checker = false
-
 export default defineConfig(async (env) => {
   const config = await viteConfig(env)
 
