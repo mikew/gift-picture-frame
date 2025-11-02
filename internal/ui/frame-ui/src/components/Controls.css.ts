@@ -1,20 +1,12 @@
 import { style } from '@vanilla-extract/css'
-
-import { themeContract } from '#src/app/theme/contract.css.ts'
-import {
-  aspectRatioSquare,
-  flexCenterContent,
-  flexRow,
-  gapSm,
-  pointerCursor,
-  positionAbsolute,
-} from '#src/app/theme/util.css.ts'
+import { themeContract } from 'shared/theme/contract.css.ts'
+import * as util from 'shared/theme/util.css.ts'
 
 export const container = style([
-  positionAbsolute,
-  flexRow,
-  flexCenterContent,
-  gapSm,
+  util.positionAbsolute,
+  util.flexRow,
+  util.flexCenterContent,
+  util.gapx1,
   {
     color: themeContract.color.white,
     top: 0,
@@ -35,31 +27,28 @@ export const containerVisible = style({
 })
 
 export const controlButton = style([
-  pointerCursor,
-  flexRow,
-  flexCenterContent,
-  aspectRatioSquare,
+  util.pointerCursor,
+  util.flexRow,
+  util.flexCenterContent,
+  util.aspectRatioSquare,
   {
-    background: 'rgba(0, 0, 0, 0.6)',
-    border: 'none',
-    color: themeContract.color.white,
-    width: '60px',
-    // height: '60px',
+    'background': 'rgba(0, 0, 0, 0.6)',
+    'border': 'none',
+    'color': themeContract.color.white,
+    'width': '60px',
 
-    selectors: {
-      '&:hover': {
-        background: 'rgba(255, 255, 255, 0.2)',
-        transform: 'scale(1.1)',
-      },
-      '&:active': {
-        transform: 'scale(0.95)',
-      },
+    ':hover': {
+      background: 'rgba(255, 255, 255, 0.2)',
+      transform: 'scale(1.1)',
+    },
+    ':active': {
+      transform: 'scale(0.95)',
     },
 
     // TODO Vars or another util class for these
-    borderRadius: '50%',
-    backdropFilter: 'blur(10px)',
-    transition: 'var(--tr-scale)',
-    fontSize: '2rem',
+    'borderRadius': '50%',
+    'backdropFilter': 'blur(10px)',
+    'transition': 'var(--tr-scale)',
+    'fontSize': '2rem',
   },
 ])

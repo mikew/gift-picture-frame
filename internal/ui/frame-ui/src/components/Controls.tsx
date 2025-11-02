@@ -1,5 +1,4 @@
 import { createSignal, onCleanup } from 'solid-js'
-// import './Controls.css'
 
 import * as styles from './Controls.css.ts'
 
@@ -31,6 +30,10 @@ export default function Controls(props: ControlsProps) {
 
   return (
     <div
+      classList={{
+        [styles.container]: true,
+        [styles.containerVisible]: showUi(),
+      }}
       onpointermove={() => {
         bump()
       }}
@@ -40,7 +43,6 @@ export default function Controls(props: ControlsProps) {
       onmousedown={() => {
         bump()
       }}
-      class={`${styles.container} ${showUi() ? styles.containerVisible : ''}`}
     >
       <button
         class={styles.controlButton}
@@ -53,6 +55,7 @@ export default function Controls(props: ControlsProps) {
         class={styles.controlButton}
         title="Play / Pause"
         onClick={props.onTogglePlayPause}
+        style={{ width: '100px' }}
       >
         S
       </button>

@@ -1,4 +1,4 @@
-import type { MediaItem } from 'shared/types'
+import type { MediaItem } from 'shared/types.ts'
 import { createSignal, createEffect, onMount, onCleanup } from 'solid-js'
 
 import AppConfig from '#src/appConfig.ts'

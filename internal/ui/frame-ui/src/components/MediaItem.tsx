@@ -1,4 +1,4 @@
-import type { MediaItem, TextData } from 'shared/types'
+import type { MediaItem, TextData } from 'shared/types.ts'
 import { Show } from 'solid-js'
 
 import './MediaItem.css'

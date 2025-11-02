@@ -60,20 +60,20 @@ export const textEllipsis = style({
   textOverflow: 'ellipsis',
 })
 
-export const gapPx = style({
-  gap: themeContract.spacing.px,
+export const gapx1 = style({
+  gap: themeContract.spacing.x1,
 })
 
-export const gapSm = style({
-  gap: themeContract.spacing.sm,
+export const gapx2 = style({
+  gap: themeContract.spacing.x2,
 })
 
-export const gapMd = style({
-  gap: themeContract.spacing.md,
+export const gapx3 = style({
+  gap: themeContract.spacing.x3,
 })
 
-export const gapLg = style({
-  gap: themeContract.spacing.lg,
+export const gapx4 = style({
+  gap: themeContract.spacing.x4,
 })
 
 export const aspectRatioSquare = style({

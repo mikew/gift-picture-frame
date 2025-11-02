@@ -1,4 +1,4 @@
-import type { MediaItem } from 'shared/types'
+import type { MediaItem } from 'shared/types.ts'
 import { For, Show, createEffect } from 'solid-js'
 
 import MediaItemComponent from './MediaItem.tsx'
