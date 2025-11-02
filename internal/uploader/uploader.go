@@ -62,7 +62,7 @@ func (s *Server) setupRoutes() {
 	s.router.Use(cors.Default())
 	s.router.Use(gzip.Gzip(gzip.DefaultCompression))
 	s.router.Use(func(ctx *gin.Context) {
-		ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, 10<<20)
+		ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, 500<<20)
 		ctx.Next()
 	})
 
