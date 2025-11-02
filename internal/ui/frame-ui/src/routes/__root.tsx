@@ -8,13 +8,15 @@ import type * as Solid from 'solid-js'
 import { Suspense } from 'solid-js'
 import { HydrationScript } from 'solid-js/web'
 
+import { lightThemeClass } from '#src/app/theme/theme.css.ts'
+
 const RootComponent: Solid.Component = () => {
   return (
     <html>
       <head>
         <HydrationScript />
       </head>
-      <body>
+      <body class={lightThemeClass}>
         <HeadContent />
         <Suspense>
           <Outlet />

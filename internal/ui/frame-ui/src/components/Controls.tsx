@@ -1,4 +1,7 @@
-import './Controls.css'
+import { createSignal, onCleanup } from 'solid-js'
+// import './Controls.css'
+
+import * as styles from './Controls.css.ts'
 
 interface ControlsProps {
   onPrevious: () => void
@@ -8,31 +11,53 @@ interface ControlsProps {
 }
 
 export default function Controls(props: ControlsProps) {
+  const [showUi, setShowUi] = createSignal(false)
+  let hideTimer: number | undefined
+
+  const bump = () => {
+    if (hideTimer) {
+      clearTimeout(hideTimer)
+    }
+
+    setShowUi(true)
+    hideTimer = window.setTimeout(() => setShowUi(false), 2_000)
+  }
+
+  onCleanup(() => {
+    if (hideTimer) {
+      clearTimeout(hideTimer)
+    }
+  })
+
   return (
-    <div class="controls" id="controls">
-      <button 
-        class="control-btn" 
-        id="prev-btn" 
+    <div
+      onpointermove={() => {
+        bump()
+      }}
+      ontouchstart={() => {
+        bump()
+      }}
+      onmousedown={() => {
+        bump()
+      }}
+      class={`${styles.container} ${showUi() ? styles.containerVisible : ''}`}
+    >
+      <button
+        class={styles.controlButton}
         title="Previous"
         onClick={props.onPrevious}
       >
-        ‹
+        P
       </button>
-      <button 
-        class="control-btn" 
-        id="play-pause-btn" 
-        title={props.isPlaying ? 'Pause' : 'Play'}
+      <button
+        class={styles.controlButton}
+        title="Play / Pause"
         onClick={props.onTogglePlayPause}
       >
-        {props.isPlaying ? '⏸' : '▶'}
+        S
       </button>
-      <button 
-        class="control-btn" 
-        id="next-btn" 
-        title="Next"
-        onClick={props.onNext}
-      >
-        ›
+      <button class={styles.controlButton} title="Next" onClick={props.onNext}>
+        N
       </button>
     </div>
   )

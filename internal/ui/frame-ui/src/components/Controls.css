@@ -1,4 +1,50 @@
 .controls {
+  color: #fff;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: var(--tr-fade-out);
+
+  &.controls-visible {
+    transition: var(--tr-fade-in);
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.control-button {
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: #fff;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--tr-scale);
+  backdrop-filter: blur(10px);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+/*
+.controls {
   position: absolute;
   bottom: 2rem;
   left: 50%;
@@ -38,3 +84,4 @@
 .control-btn:active {
   transform: scale(0.95);
 }
+*/

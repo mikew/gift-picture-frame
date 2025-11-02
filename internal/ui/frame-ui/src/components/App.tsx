@@ -17,7 +17,7 @@ export default function App() {
   const [slideInterval, setSlideInterval] = createSignal<ReturnType<
     typeof setInterval
   > | null>(null)
-  const slideDuration = 3000
+  const slideDuration = 30_000
 
   let cursorTimeout: ReturnType<typeof setTimeout>
 
