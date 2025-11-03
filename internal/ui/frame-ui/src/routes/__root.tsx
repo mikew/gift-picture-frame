@@ -30,7 +30,7 @@ const RootComponent: Solid.Component = () => {
 export const Route = createRootRoute({
   notFoundComponent: () => <div>404 Not Found</div>,
   errorComponent: (props) => {
-    console.log(props)
+    console.error(props.error)
 
     return <>whoops</>
   },

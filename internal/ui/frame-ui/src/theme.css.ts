@@ -36,8 +36,8 @@ export const lightThemeClass = createTheme(themeContract, {
       dark: '#1976d2',
     },
 
-    background: '#ffffff',
-    surface: '#f5f5f5',
+    background: '#000',
+    surface: '#333',
 
     textPrimary: '#0f1720',
     textSecondary: '#475569',

@@ -1,0 +1,28 @@
+import { style } from '@vanilla-extract/css'
+import { themeContract } from 'shared/theme/contract.css.js'
+import * as util from 'shared/theme/util.css.ts'
+
+// export const container = style([])
+export const container = style([
+  util.positionAbsolute,
+  // util.flexRow,
+  // util.flexCenterContent,
+  // util.gapx1,
+  {
+    color: themeContract.color.white,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+
+    opacity: 0,
+
+    transition: 'var(--tr-fade-out)',
+  },
+])
+
+export const containerVisible = style({
+  transition: 'var(--tr-fade-in)',
+  opacity: 1,
+  pointerEvents: 'auto',
+})

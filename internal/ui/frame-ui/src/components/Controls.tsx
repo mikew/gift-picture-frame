@@ -1,5 +1,3 @@
-import { createSignal, onCleanup } from 'solid-js'
-
 import * as styles from './Controls.css.ts'
 
 interface ControlsProps {
@@ -10,40 +8,8 @@ interface ControlsProps {
 }
 
 export default function Controls(props: ControlsProps) {
-  const [showUi, setShowUi] = createSignal(false)
-  let hideTimer: number | undefined
-
-  const bump = () => {
-    if (hideTimer) {
-      clearTimeout(hideTimer)
-    }
-
-    setShowUi(true)
-    hideTimer = window.setTimeout(() => setShowUi(false), 2_000)
-  }
-
-  onCleanup(() => {
-    if (hideTimer) {
-      clearTimeout(hideTimer)
-    }
-  })
-
   return (
-    <div
-      classList={{
-        [styles.container]: true,
-        [styles.containerVisible]: showUi(),
-      }}
-      onpointermove={() => {
-        bump()
-      }}
-      ontouchstart={() => {
-        bump()
-      }}
-      onmousedown={() => {
-        bump()
-      }}
-    >
+    <div class={styles.container}>
       <button
         class={styles.controlButton}
         title="Previous"

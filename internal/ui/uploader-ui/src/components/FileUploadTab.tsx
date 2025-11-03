@@ -11,18 +11,7 @@ export default function FileUploadTab(props: FileUploadTabProps) {
   const [isDragOver, setIsDragOver] = createSignal(false)
   let fileInputRef: HTMLInputElement | undefined
 
-  const validTypes = [
-    'image/jpeg',
-    'image/png',
-    'image/gif',
-    'image/webp',
-    'video/mp4',
-    'video/avi',
-    'video/mov',
-    'video/webm',
-  ]
-
-  const isValidFile = (file: File) => validTypes.includes(file.type)
+  const isValidFile = () => true
 
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault()

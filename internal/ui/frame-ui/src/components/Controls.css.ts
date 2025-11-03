@@ -6,25 +6,13 @@ export const container = style([
   util.positionAbsolute,
   util.flexRow,
   util.flexCenterContent,
-  util.gapx1,
+  util.gapx3,
   {
-    color: themeContract.color.white,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-
-    opacity: 0,
-
-    transition: 'var(--tr-fade-out)',
+    bottom: themeContract.spacing.x4,
+    left: '50%',
+    transform: 'translateX(-50%)',
   },
 ])
-
-export const containerVisible = style({
-  transition: 'var(--tr-fade-in)',
-  opacity: 1,
-  pointerEvents: 'auto',
-})
 
 export const controlButton = style([
   util.pointerCursor,
