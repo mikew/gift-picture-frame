@@ -1,14 +1,13 @@
-import type { MediaItem } from 'shared/types'
+import type { MediaItem } from 'shared/types.ts'
 import { createSignal, createEffect, onMount, onCleanup } from 'solid-js'
 
 import AppConfig from '#src/appConfig.ts'
 
+import * as styles from './App.css.ts'
 import Controls from './Controls.tsx'
 import FrameInfo from './FrameInfo.tsx'
+import InterfaceCntainer from './InterfaceContainer.tsx'
 import MediaDisplay from './MediaDisplay.tsx'
-import ProgressBar from './ProgressBar.tsx'
-
-import './App.css'
 
 export default function App() {
   const [media, setMedia] = createSignal<MediaItem[]>([])
@@ -17,7 +16,7 @@ export default function App() {
   const [slideInterval, setSlideInterval] = createSignal<ReturnType<
     typeof setInterval
   > | null>(null)
-  const slideDuration = 3000
+  const slideDuration = 30_000
 
   let cursorTimeout: ReturnType<typeof setTimeout>
 
@@ -186,7 +185,7 @@ export default function App() {
     setupTouchControls()
 
     // Refresh media every 30 seconds
-    const refreshInterval = setInterval(loadMedia, 30000)
+    const refreshInterval = setInterval(loadMedia, 30_000)
 
     onCleanup(() => {
       clearInterval(refreshInterval)
@@ -196,23 +195,19 @@ export default function App() {
   })
 
   return (
-    <div class="frame-container">
+    <div class={styles.container}>
       <MediaDisplay media={media()} currentIndex={currentIndex()} />
 
-      <FrameInfo media={media()} currentIndex={currentIndex()} />
+      <InterfaceCntainer>
+        <FrameInfo media={media()} currentIndex={currentIndex()} />
 
-      <Controls
-        onPrevious={previousSlide}
-        onNext={nextSlide}
-        onTogglePlayPause={togglePlayPause}
-        isPlaying={isPlaying()}
-      />
-
-      <ProgressBar
-        isPlaying={isPlaying()}
-        mediaLength={media().length}
-        slideDuration={slideDuration}
-      />
+        <Controls
+          onPrevious={previousSlide}
+          onNext={nextSlide}
+          onTogglePlayPause={togglePlayPause}
+          isPlaying={isPlaying()}
+        />
+      </InterfaceCntainer>
     </div>
   )
 }

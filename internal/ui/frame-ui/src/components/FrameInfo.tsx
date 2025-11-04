@@ -1,6 +1,6 @@
-import type { MediaItem } from 'shared/types'
+import type { MediaItem } from 'shared/types.ts'
 
-import './FrameInfo.css'
+import * as styles from './FrameInfo.css.ts'
 
 interface FrameInfoProps {
   media: MediaItem[]
@@ -15,11 +15,5 @@ export default function FrameInfo(props: FrameInfoProps) {
     return `${props.currentIndex + 1} / ${props.media.length}`
   }
 
-  return (
-    <div class="frame-info" id="frame-info">
-      <div class="media-counter" id="media-counter">
-        {getCounterText()}
-      </div>
-    </div>
-  )
+  return <div class={styles.container}>{getCounterText()}</div>
 }

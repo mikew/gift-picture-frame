@@ -1,10 +1,9 @@
-import type { MediaItem } from 'shared/types'
+import type { MediaItem } from 'shared/types.ts'
 import { createSignal, onMount } from 'solid-js'
 
 import AppConfig from '#src/appConfig.ts'
 
 import FileUploadTab from './FileUploadTab.tsx'
-import Header from './Header.tsx'
 import RecentUploads from './RecentUploads.tsx'
 import TextUploadTab from './TextUploadTab.tsx'
 import UploadStatus from './UploadStatus.tsx'
@@ -130,7 +129,6 @@ export default function App() {
 
   return (
     <div class="container">
-      <Header frameId={frameId} />
       <div class="upload-section">
         <UploadTabs activeTab={activeTab()} onTabChange={setActiveTab} />
 

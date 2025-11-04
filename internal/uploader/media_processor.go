@@ -36,6 +36,7 @@ func (p *ImageProcessor) Process(inputPath string) (string, error) {
 
 	cmd := exec.Command("convert",
 		inputPath,
+		"-auto-orient",
 		"-resize", resizeArg,
 		"-quality", "85",
 		"-define", "webp:method=6",
@@ -67,6 +68,8 @@ func (p *VideoProcessor) Process(inputPath string) (string, error) {
 
 	cmd := exec.Command("ffmpeg",
 		"-i", inputPath,
+		// "-vf", "scale='min(1280,iw)':'min(1280,ih)':force_original_aspect_ratio=decrease",
+		"-vf", "scale='min(1280,iw)':'min(1280,ih)':force_original_aspect_ratio=decrease,scale=trunc(iw/2)*2:trunc(ih/2)*2",
 		"-c:v", "libx264",
 		"-preset", "medium",
 		"-crf", "23",
@@ -104,7 +107,7 @@ func (p *GIFProcessor) Process(inputPath string) (string, error) {
 		"-i", inputPath,
 		"-movflags", "faststart",
 		"-pix_fmt", "yuv420p",
-		"-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2",
+		"-vf", "scale='min(1280,iw)':'min(1280,ih)':force_original_aspect_ratio=decrease,scale=trunc(iw/2)*2:trunc(ih/2)*2",
 		"-c:v", "libx264",
 		"-preset", "medium",
 		"-crf", "23",
@@ -122,15 +125,15 @@ func (p *GIFProcessor) Process(inputPath string) (string, error) {
 }
 
 func GetMediaProcessor(filename string) MediaProcessor {
-	ext := strings.ToLower(filepath.Ext(filename))
+	mediaType := DetermineMediaType(filename)
 
-	switch ext {
-	case ".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".webp":
+	switch mediaType {
+	case "image":
 		return NewImageProcessor()
-	case ".gif":
-		return NewGIFProcessor()
-	case ".mp4", ".avi", ".mov", ".webm", ".mkv", ".flv":
+	case "video":
 		return NewVideoProcessor()
+	// case ".mp4", ".avi", ".mov", ".webm", ".mkv", ".flv", ".wmv", ".mpeg", ".mpg", ".3gp", ".m4v":
+	// 	return NewVideoProcessor()
 	default:
 		return nil
 	}
@@ -140,11 +143,11 @@ func DetermineMediaType(filename string) string {
 	ext := strings.ToLower(filepath.Ext(filename))
 
 	switch ext {
-	case ".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".webp":
+	case ".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif", ".webp", ".heic", ".heif", ".avif", ".jfif", ".svg", ".raw":
 		return "image"
 	case ".gif":
 		return "video"
-	case ".mp4", ".avi", ".mov", ".webm", ".mkv", ".flv":
+	case ".mp4", ".avi", ".mov", ".webm", ".mkv", ".flv", ".wmv", ".mpeg", ".mpg", ".3gp", ".m4v":
 		return "video"
 	default:
 		return "unknown"

@@ -8,13 +8,15 @@ import type * as Solid from 'solid-js'
 import { Suspense } from 'solid-js'
 import { HydrationScript } from 'solid-js/web'
 
+import { lightThemeClass } from '#src/theme.css.ts'
+
 const RootComponent: Solid.Component = () => {
   return (
     <html>
       <head>
         <HydrationScript />
       </head>
-      <body>
+      <body class={lightThemeClass}>
         <HeadContent />
         <Suspense>
           <Outlet />
@@ -27,6 +29,11 @@ const RootComponent: Solid.Component = () => {
 
 export const Route = createRootRoute({
   notFoundComponent: () => <div>404 Not Found</div>,
+  errorComponent: (props) => {
+    console.error(props.error)
+
+    return <>whoops</>
+  },
   head: () => ({
     meta: [
       {

@@ -1,19 +1,19 @@
-import type { MediaItem, TextData } from 'shared/types'
+import type { MediaItem, TextData } from 'shared/types.ts'
 import { Show } from 'solid-js'
 
-import './MediaItem.css'
-import AppConfig from '#src/appConfig.ts'
+// import AppConfig from '#src/appConfig.ts'
+
+import * as styles from './MediaItem.css.ts'
 
 interface MediaItemProps {
   item: MediaItem
-  index: number
-  isActive: boolean
 }
 
 export default function MediaItemComponent(props: MediaItemProps) {
   const getMediaUrl = () => {
-    const base =
-      AppConfig.deployEnv === 'production' ? '' : 'http://localhost:8080'
+    // const base =
+    //   AppConfig.deployEnv === 'production' ? '' : 'http://localhost:8080'
+    const base = 'http://localhost:8080'
 
     return `${base}/files/test/${props.item.filename}`
   }
@@ -32,10 +32,7 @@ export default function MediaItemComponent(props: MediaItemProps) {
   }
 
   return (
-    <div
-      class={`media-item ${props.isActive ? 'active' : ''}`}
-      data-index={props.index}
-    >
+    <div class={styles.container}>
       <Show when={props.item.type === 'image'}>
         <img
           src={getMediaUrl()}
@@ -52,8 +49,12 @@ export default function MediaItemComponent(props: MediaItemProps) {
           src={getMediaUrl()}
           muted
           loop
+          autoplay
           controls={false}
-          onError={(e) => {
+          onloadedmetadata={(event) => {
+            event.currentTarget.play()
+          }}
+          onerror={(e) => {
             console.error('Failed to load video:', props.item.filename)
             e.currentTarget.style.display = 'none'
           }}

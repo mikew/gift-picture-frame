@@ -1,0 +1,42 @@
+/* Motion tokens */
+:root {
+  /* Easing */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1); /* default */
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-sharp: cubic-bezier(0.4, 0, 0.6, 1);
+
+  /* Durations */
+  --dur-shortest: 150ms;
+  --dur-shorter: 200ms;
+  --dur-short: 250ms;
+  --dur-standard: 300ms; /* default */
+  --dur-complex: 375ms;
+  --dur-entering: 225ms;
+  --dur-leaving: 195ms;
+
+  /* Convenience shorthands */
+  /* --tr-fast: transform var(--dur-shortest) var(--ease-out); */
+  --tr-base: all var(--dur-standard) var(--ease-in-out);
+  /* --tr-fade: opacity var(--dur-entering) var(--ease-in-out); */
+  --tr-fade-in: opacity var(--dur-entering) var(--ease-in-out);
+  --tr-fade-out: opacity var(--dur-leaving) var(--ease-in-out);
+  --tr-scale: transform var(--dur-short) var(--ease-sharp);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-shortest: 0ms;
+    --dur-shorter: 0ms;
+    --dur-short: 0ms;
+    --dur-standard: 0ms;
+    --dur-complex: 0ms;
+    --dur-entering: 0ms;
+    --dur-leaving: 0ms;
+  }
+  * {
+    animation-duration: 0s !important;
+    transition-duration: 0s !important;
+  }
+}
