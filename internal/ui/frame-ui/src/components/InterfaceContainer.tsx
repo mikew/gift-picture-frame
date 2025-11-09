@@ -27,7 +27,7 @@ const InterfaceCntainer: Solid.ParentComponent = (props) => {
       class={styles.container}
       classList={{
         [styles.container]: true,
-        [styles.containerVisible]: showUi(),
+        visible: showUi(),
       }}
       onpointermove={() => {
         bump()

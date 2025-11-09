@@ -3,13 +3,12 @@ import { createSignal, onMount } from 'solid-js'
 
 import AppConfig from '#src/appConfig.ts'
 
+import * as styles from './App.css.ts'
 import FileUploadTab from './FileUploadTab.tsx'
 import RecentUploads from './RecentUploads.tsx'
 import TextUploadTab from './TextUploadTab.tsx'
 import UploadStatus from './UploadStatus.tsx'
 import UploadTabs from './UploadTabs.tsx'
-
-import './App.css'
 
 export default function App() {
   const [activeTab, setActiveTab] = createSignal<'file' | 'text'>('file')
@@ -128,8 +127,8 @@ export default function App() {
   })
 
   return (
-    <div class="container">
-      <div class="upload-section">
+    <div class={styles.container}>
+      <div class={styles.uploadSection}>
         <UploadTabs activeTab={activeTab()} onTabChange={setActiveTab} />
 
         {activeTab() === 'file' && (

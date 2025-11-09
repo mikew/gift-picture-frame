@@ -1,5 +1,8 @@
+import { clsx } from 'shared/clsx.ts'
 import { createSignal, For } from 'solid-js'
-import './FileUploadTab.css'
+
+// import './FileUploadTab.css'
+import * as styles from './FileUploadTab.css.ts'
 
 interface FileUploadTabProps {
   selectedFiles: File[]
@@ -70,7 +73,7 @@ export default function FileUploadTab(props: FileUploadTabProps) {
   return (
     <div class="tab-content active">
       <div
-        class={`upload-area ${isDragOver() ? 'dragover' : ''}`}
+        class={clsx(styles.container, isDragOver() && 'dragover')}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}

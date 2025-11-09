@@ -99,3 +99,11 @@ export const aspectRatio21by9 = style({
 export const aspectRatio9by16 = style({
   aspectRatio: '9 / 16',
 })
+
+export const colorTextPrimary = style({
+  color: themeContract.color.textPrimary,
+})
+
+export const colorTextSecondary = style({
+  color: themeContract.color.textSecondary,
+})

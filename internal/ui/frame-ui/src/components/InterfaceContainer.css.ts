@@ -18,11 +18,13 @@ export const container = style([
     opacity: 0,
 
     transition: 'var(--tr-fade-out)',
+
+    selectors: {
+      '&.visible': {
+        transition: 'var(--tr-fade-in)',
+        opacity: 1,
+        pointerEvents: 'auto',
+      },
+    },
   },
 ])
-
-export const containerVisible = style({
-  transition: 'var(--tr-fade-in)',
-  opacity: 1,
-  pointerEvents: 'auto',
-})

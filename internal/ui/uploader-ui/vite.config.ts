@@ -1,5 +1,6 @@
 import { pluginOptions, viteConfig } from '@promoboxx/react-scripts-vite'
 import { tanstackStart } from '@tanstack/solid-start/plugin/vite'
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
 
@@ -19,6 +20,8 @@ pluginOptions.splitVendorChunkPlugin = false
 
 export default defineConfig(async (env) => {
   const config = await viteConfig(env)
+
+  config.plugins?.unshift(vanillaExtractPlugin())
 
   config.plugins?.push(
     tanstackStart({
@@ -45,6 +48,7 @@ export default defineConfig(async (env) => {
   config.build = {
     ...config.build,
     sourcemap: false,
+    cssMinify: 'lightningcss',
     rollupOptions: {
       output: {
         entryFileNames: 'static/assets/[name]-[hash].js',
@@ -52,6 +56,11 @@ export default defineConfig(async (env) => {
         assetFileNames: 'static/assets/[name]-[hash][extname]',
       },
     },
+  }
+
+  config.css = {
+    ...config.css,
+    transformer: 'lightningcss',
   }
 
   return config
