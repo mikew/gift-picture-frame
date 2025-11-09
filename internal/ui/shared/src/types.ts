@@ -1,7 +1,10 @@
 export interface MediaItem {
+  id: string
+  frame_id: string
   type: 'image' | 'video' | 'text'
   filename: string
   content: string
+  created_at: string
 }
 
 export interface PictureFrameConfig {

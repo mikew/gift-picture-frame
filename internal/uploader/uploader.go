@@ -238,6 +238,24 @@ func (s *Server) handleGetMedia(c *gin.Context) {
 		return
 	}
 
+	// Filter by 'since' timestamp if provided
+	if sinceStr := c.Query("since"); sinceStr != "" {
+		since, err := time.Parse(time.RFC3339, sinceStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid 'since' timestamp format. Use RFC3339 format."})
+			return
+		}
+
+		// Filter media items to only include those created after 'since'
+		filteredMedia := make([]MediaItem, 0)
+		for _, item := range media {
+			if item.CreatedAt.After(since) {
+				filteredMedia = append(filteredMedia, item)
+			}
+		}
+		media = filteredMedia
+	}
+
 	c.JSON(http.StatusOK, media)
 }
 

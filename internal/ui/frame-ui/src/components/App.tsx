@@ -184,8 +184,9 @@ export default function App() {
     setupKeyboardControls()
     setupTouchControls()
 
-    // Refresh media every 30 seconds
-    const refreshInterval = setInterval(loadMedia, 30_000)
+    // Check for media updates every 5 seconds
+    // (Frame backend handles syncing with uploader server)
+    const refreshInterval = setInterval(loadMedia, 5_000)
 
     onCleanup(() => {
       clearInterval(refreshInterval)
