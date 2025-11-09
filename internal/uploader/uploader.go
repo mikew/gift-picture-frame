@@ -142,80 +142,90 @@ func (s *Server) handleUpload(c *gin.Context) {
 		return
 	}
 
-	// Save uploaded file to system temp location
-	originalExt := filepath.Ext(header.Filename)
-	tempUploadFile, err := os.CreateTemp("", "upload-*"+originalExt)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create temp file"})
-		return
-	}
-	tempUploadPath := tempUploadFile.Name()
-	defer os.Remove(tempUploadPath)
+	mediaId := uuid.New().String()
 
-	if _, err := io.Copy(tempUploadFile, file); err != nil {
+	go func() {
+		// Save uploaded file to system temp location
+		originalExt := filepath.Ext(header.Filename)
+		tempUploadFile, err := os.CreateTemp("", "upload-*"+originalExt)
+		if err != nil {
+			fmt.Printf("Failed to create temp file: %v", err)
+			// c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create temp file"})
+			return
+		}
+		tempUploadPath := tempUploadFile.Name()
+		defer os.Remove(tempUploadPath)
+
+		if _, err := io.Copy(tempUploadFile, file); err != nil {
+			tempUploadFile.Close()
+			// c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+			fmt.Printf("Failed to save file: %v", err)
+			return
+		}
 		tempUploadFile.Close()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
-		return
-	}
-	tempUploadFile.Close()
 
-	// Process the file
-	processedPath, err := processor.Process(tempUploadPath)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to process file: %v", err)})
-		return
-	}
-	defer os.Remove(processedPath)
-
-	// Generate unique ID and final filename
-	mediaID := uuid.New().String()
-	processedExt := filepath.Ext(processedPath)
-	finalFilename := mediaID + processedExt
-	finalFilePath := filepath.Join(frameDir, finalFilename)
-
-	// Move processed file to final destination
-	if err := os.Rename(processedPath, finalFilePath); err != nil {
-		// If rename fails (e.g., cross-device), copy the file
-		srcFile, err := os.Open(processedPath)
+		// Process the file
+		processedPath, err := processor.Process(tempUploadPath)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save processed file"})
+			// c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to process file: %v", err)})
+			fmt.Printf("Failed to process file: %v", err)
 			return
 		}
-		defer srcFile.Close()
+		defer os.Remove(processedPath)
 
-		dstFile, err := os.Create(finalFilePath)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save processed file"})
-			return
+		// Generate unique ID and final filename
+		processedExt := filepath.Ext(processedPath)
+		finalFilename := mediaId + processedExt
+		finalFilePath := filepath.Join(frameDir, finalFilename)
+
+		// Move processed file to final destination
+		if err := os.Rename(processedPath, finalFilePath); err != nil {
+			// If rename fails (e.g., cross-device), copy the file
+			srcFile, err := os.Open(processedPath)
+			if err != nil {
+				// c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save processed file"})
+				fmt.Printf("Failed to save processed file: %v", err)
+				return
+			}
+			defer srcFile.Close()
+
+			dstFile, err := os.Create(finalFilePath)
+			if err != nil {
+				// c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save processed file"})
+				fmt.Printf("Failed to save processed file: %v", err)
+				return
+			}
+			defer dstFile.Close()
+
+			if _, err := io.Copy(dstFile, srcFile); err != nil {
+				os.Remove(finalFilePath)
+				// c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save processed file"})
+				fmt.Printf("Failed to save processed file: %v", err)
+				return
+			}
 		}
-		defer dstFile.Close()
 
-		if _, err := io.Copy(dstFile, srcFile); err != nil {
+		// Determine media type
+		mediaType := DetermineMediaType(finalFilename)
+
+		// Save metadata
+		media := MediaItem{
+			ID:        mediaId,
+			FrameID:   frameID,
+			Type:      mediaType,
+			Filename:  finalFilename,
+			CreatedAt: time.Now(),
+		}
+
+		if err := s.saveMediaMetadata(frameDir, media); err != nil {
 			os.Remove(finalFilePath)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save processed file"})
+			// c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save metadata"})
+			fmt.Printf("Failed to save metadata: %v", err)
 			return
 		}
-	}
+	}()
 
-	// Determine media type
-	mediaType := DetermineMediaType(finalFilename)
-
-	// Save metadata
-	media := MediaItem{
-		ID:        mediaID,
-		FrameID:   frameID,
-		Type:      mediaType,
-		Filename:  finalFilename,
-		CreatedAt: time.Now(),
-	}
-
-	if err := s.saveMediaMetadata(frameDir, media); err != nil {
-		os.Remove(finalFilePath)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save metadata"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully", "id": media.ID})
+	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully", "id": mediaId})
 }
 
 func (s *Server) handleGetMedia(c *gin.Context) {
