@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 
 import { themeContract } from './contract.css.ts'
 
@@ -98,4 +98,24 @@ export const aspectRatio21by9 = style({
 
 export const aspectRatio9by16 = style({
   aspectRatio: '9 / 16',
+})
+
+export const colorTextPrimary = style({
+  color: themeContract.color.textPrimary,
+})
+
+export const colorTextSecondary = style({
+  color: themeContract.color.textSecondary,
+})
+
+export const colorError = style({
+  color: themeContract.color.error.main,
+})
+
+export const iconContainer = style({})
+
+globalStyle(`${iconContainer} svg`, {
+  width: '1em',
+  height: '1em',
+  fontSize: '1.5em',
 })

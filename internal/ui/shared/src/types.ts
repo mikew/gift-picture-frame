@@ -1,7 +1,9 @@
 export interface MediaItem {
+  id: string
   type: 'image' | 'video' | 'text'
   filename: string
   content: string
+  created_at: string
 }
 
 export interface PictureFrameConfig {
@@ -10,7 +12,5 @@ export interface PictureFrameConfig {
 
 export interface TextData {
   content: string
-  color: string
-  background: string
-  fontSize: number
+  textStyle: string
 }

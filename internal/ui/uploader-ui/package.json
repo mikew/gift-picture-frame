@@ -18,9 +18,13 @@
     "@promoboxx/react-scripts-vite": "^0.2.8",
     "@tanstack/solid-router": "^1.133.31",
     "@tanstack/solid-start": "^1.133.32",
+    "@vanilla-extract/css": "^1.17.4",
+    "@vanilla-extract/vite-plugin": "^5.1.1",
+    "lightningcss": "^1.30.2",
     "shared": "workspace:*",
     "solid-js": "^1.9.9",
     "typescript": "^5.9.3",
-    "vite-plugin-solid": "^2.11.10"
+    "vite-plugin-solid": "^2.11.10",
+    "vite-plugin-solid-svg": "^0.8.1"
   }
 }

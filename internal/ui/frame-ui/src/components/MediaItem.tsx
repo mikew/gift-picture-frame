@@ -1,7 +1,11 @@
+import { clsx } from 'shared/clsx.ts'
+import { normalizeStyleName } from 'shared/textStyles/normalizeStyleName.ts'
+import { themeClass, messageStyles } from 'shared/textStyles/theme.css.ts'
+import * as util from 'shared/theme/util.css.ts'
 import type { MediaItem, TextData } from 'shared/types.ts'
 import { Show } from 'solid-js'
 
-// import AppConfig from '#src/appConfig.ts'
+import AppConfig from '#src/appConfig.ts'
 
 import * as styles from './MediaItem.css.ts'
 
@@ -11,11 +15,10 @@ interface MediaItemProps {
 
 export default function MediaItemComponent(props: MediaItemProps) {
   const getMediaUrl = () => {
-    // const base =
-    //   AppConfig.deployEnv === 'production' ? '' : 'http://localhost:8080'
-    const base = 'http://localhost:8080'
+    // Frame backend handles frame_id internally, UI just requests by filename
+    const base = AppConfig.apiBase
 
-    return `${base}/files/test/${props.item.filename}`
+    return `${base}/files/${props.item.filename}`
   }
 
   const parseTextData = (): TextData => {
@@ -24,9 +27,7 @@ export default function MediaItemComponent(props: MediaItemProps) {
     } catch {
       return {
         content: props.item.content,
-        color: '#ffffff',
-        background: '#000000',
-        fontSize: 36,
+        textStyle: 'normal',
       }
     }
   }
@@ -66,14 +67,14 @@ export default function MediaItemComponent(props: MediaItemProps) {
           const textData = parseTextData()
           return (
             <div
-              class="text-message"
-              style={{
-                'color': textData.color,
-                'background': textData.background,
-                'font-size': `${textData.fontSize}px`,
-              }}
+              class={clsx(themeClass, util.flexColumn)}
+              style={{ width: '100%', height: '100%' }}
             >
-              {textData.content}
+              <div
+                class={messageStyles[normalizeStyleName(textData.textStyle)]}
+              >
+                {textData.content}
+              </div>
             </div>
           )
         })()}

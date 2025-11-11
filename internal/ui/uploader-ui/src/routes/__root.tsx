@@ -8,7 +8,9 @@ import { Suspense } from 'solid-js'
 import type * as Solid from 'solid-js'
 import { HydrationScript } from 'solid-js/web'
 
-import App from '#src/components/App.tsx'
+import { lightThemeClass } from '#src/theme.css.ts'
+
+// import '#src/components/_transitions.css'
 
 const RootComponent: Solid.Component = () => {
   return (
@@ -16,10 +18,9 @@ const RootComponent: Solid.Component = () => {
       <head>
         <HydrationScript />
       </head>
-      <body>
+      <body class={lightThemeClass}>
         <HeadContent />
         <Suspense>
-          <App />
           <Outlet />
         </Suspense>
         <Scripts />

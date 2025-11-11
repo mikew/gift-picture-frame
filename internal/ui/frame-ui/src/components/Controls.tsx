@@ -1,3 +1,8 @@
+import Pause from 'shared/svgs/pause.svg?component-solid'
+import Play from 'shared/svgs/play.svg?component-solid'
+import SkipNext from 'shared/svgs/skip_next.svg?component-solid'
+import SkipPrevious from 'shared/svgs/skip_previous.svg?component-solid'
+
 import * as styles from './Controls.css.ts'
 
 interface ControlsProps {
@@ -15,18 +20,17 @@ export default function Controls(props: ControlsProps) {
         title="Previous"
         onClick={props.onPrevious}
       >
-        P
+        <SkipPrevious />
       </button>
       <button
-        class={styles.controlButton}
+        class={styles.controlButtonLarge}
         title="Play / Pause"
         onClick={props.onTogglePlayPause}
-        style={{ width: '100px' }}
       >
-        S
+        {props.isPlaying ? <Pause /> : <Play />}
       </button>
       <button class={styles.controlButton} title="Next" onClick={props.onNext}>
-        N
+        <SkipNext />
       </button>
     </div>
   )

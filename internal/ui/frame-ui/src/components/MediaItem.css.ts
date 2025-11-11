@@ -3,6 +3,8 @@ import * as util from 'shared/theme/util.css.ts'
 
 export const container = style([
   util.positionAbsolute,
+  util.flexColumn,
+  util.flexCenterContent,
   {
     top: 0,
     left: 0,

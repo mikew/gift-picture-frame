@@ -2,14 +2,21 @@ package frame
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"io/fs"
 	"net/http"
+	"net/url"
+	"os"
+	"path/filepath"
 	"picture-frame/internal/ui"
+	"slices"
+	"sync"
+	"time"
 
 	// "os/exec"
-	// "path/filepath"
 	// "runtime"
 
 	"github.com/gin-contrib/cors"
@@ -17,26 +24,51 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type MediaItem struct {
+	ID        string    `json:"id"`
+	Type      string    `json:"type"`
+	Filename  string    `json:"filename,omitempty"`
+	Content   string    `json:"content,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
 type Client struct {
-	frameID   string
-	serverURL string
-	port      int
-	router    *gin.Engine
-	fs        fs.FS
+	frameID         string
+	serverURL       string
+	port            int
+	router          *gin.Engine
+	fs              fs.FS
+	cacheDir        string
+	metadataFile    string
+	lastFetchedFile string
+	cacheMutex      sync.RWMutex
 }
 
 func NewClient(frameID string, serverURL string, port int, fs fs.FS) *Client {
+	cacheDir := filepath.Join("cache", frameID)
+
 	return &Client{
-		frameID:   frameID,
-		serverURL: serverURL,
-		port:      port,
-		router:    gin.Default(),
-		fs:        fs,
+		frameID:         frameID,
+		serverURL:       serverURL,
+		port:            port,
+		router:          gin.Default(),
+		fs:              fs,
+		cacheDir:        cacheDir,
+		metadataFile:    filepath.Join(cacheDir, "metadata.json"),
+		lastFetchedFile: filepath.Join(cacheDir, "lastFetched.txt"),
 	}
 }
 
 func (c *Client) Start() error {
+	// Ensure cache directory exists
+	if err := os.MkdirAll(c.cacheDir, 0755); err != nil {
+		return fmt.Errorf("failed to create cache directory: %v", err)
+	}
+
 	c.setupRoutes()
+
+	// Start background media sync
+	go c.syncMediaPeriodically()
 
 	// Launch Chromium in kiosk mode
 	go func() {
@@ -59,6 +91,9 @@ func (c *Client) setupRoutes() {
 	// API endpoint to get media from the main server
 	c.router.GET("/api/media", c.handleGetMedia)
 
+	// Serve cached media files (frame backend handles frame_id internally)
+	c.router.GET("/files/:filename", c.handleServeMediaFile)
+
 	// Serve static files
 	c.router.NoRoute(static.Serve("/", ui.StaticLocalFS{http.FS(c.fs)}))
 }
@@ -76,16 +111,216 @@ func (c *Client) handleFrameDisplay(ctx *gin.Context) {
 }
 
 func (c *Client) handleGetMedia(ctx *gin.Context) {
-	// Proxy request to the main server
-	resp, err := http.Get(fmt.Sprintf("%s/%s/media", c.serverURL, c.frameID))
+	c.cacheMutex.RLock()
+	defer c.cacheMutex.RUnlock()
+
+	// Simply read and return the local metadata file
+	media, err := c.loadMediaMetadata()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch media"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load media"})
 		return
+	}
+
+	ctx.JSON(http.StatusOK, media)
+}
+
+func (c *Client) handleServeMediaFile(ctx *gin.Context) {
+	filename := ctx.Param("filename")
+
+	filePath := filepath.Join(c.cacheDir, filename)
+
+	// Serve the file
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
+		return
+	}
+
+	ctx.File(filePath)
+}
+
+func (c *Client) downloadMediaFile(item MediaItem) error {
+	// Build URL to uploader server's file endpoint
+	fileURL := fmt.Sprintf("%s/files/%s/%s", c.serverURL, c.frameID, item.Filename)
+
+	// Fetch the file from uploader server
+	resp, err := http.Get(fileURL)
+	if err != nil {
+		return fmt.Errorf("failed to fetch file from uploader: %v", err)
 	}
 	defer resp.Body.Close()
 
-	// Forward the response
-	ctx.DataFromReader(resp.StatusCode, resp.ContentLength, resp.Header.Get("Content-Type"), resp.Body, nil)
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("uploader returned status %d for file %s", resp.StatusCode, item.Filename)
+	}
+
+	// Create destination file
+	destPath := filepath.Join(c.cacheDir, item.Filename)
+
+	// Check if file already exists
+	if _, err := os.Stat(destPath); err == nil {
+		// File already exists, skip download
+		return nil
+	}
+
+	destFile, err := os.Create(destPath)
+	if err != nil {
+		return fmt.Errorf("failed to create cache file: %v", err)
+	}
+	defer destFile.Close()
+
+	// Copy the file content
+	if _, err := io.Copy(destFile, resp.Body); err != nil {
+		os.Remove(destPath) // Clean up partial file
+		return fmt.Errorf("failed to write file to cache: %v", err)
+	}
+
+	return nil
+}
+
+func (c *Client) syncMediaPeriodically() {
+	// Sync immediately on startup
+	if err := c.syncMedia(); err != nil {
+		fmt.Printf("Initial media sync failed: %v\n", err)
+	}
+
+	// Then sync every 30 seconds
+	ticker := time.NewTicker(30 * time.Second)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		if err := c.syncMedia(); err != nil {
+			fmt.Printf("Media sync failed: %v\n", err)
+		}
+	}
+}
+
+func (c *Client) syncMedia() error {
+	c.cacheMutex.Lock()
+	defer c.cacheMutex.Unlock()
+
+	// Load last fetched time
+	lastFetched := c.loadLastFetched()
+
+	// Build URL with 'since' parameter if we have a last fetched time
+	mediaURL := fmt.Sprintf("%s/%s/media", c.serverURL, c.frameID)
+	if !lastFetched.IsZero() {
+		params := url.Values{}
+		params.Add("since", lastFetched.UTC().Format(time.RFC3339))
+		mediaURL = fmt.Sprintf("%s?%s", mediaURL, params.Encode())
+	}
+
+	// Fetch new/updated media from uploader server
+	resp, err := http.Get(mediaURL)
+	if err != nil {
+		return fmt.Errorf("failed to fetch media from uploader: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("uploader returned status %d", resp.StatusCode)
+	}
+
+	// Parse the response
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response: %v", err)
+	}
+
+	var newMedia []MediaItem
+	if err := json.Unmarshal(body, &newMedia); err != nil {
+		return fmt.Errorf("failed to parse media data: %v", err)
+	}
+
+	// Load existing media
+	existingMedia, err := c.loadMediaMetadata()
+	if err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("failed to load existing metadata: %v", err)
+	}
+
+	// Create map of existing media by ID
+	mediaMap := make(map[string]MediaItem)
+	for _, item := range existingMedia {
+		mediaMap[item.ID] = item
+	}
+
+	// Download and add new media items
+	for _, item := range newMedia {
+		// Download media file if it has a filename (images/videos)
+		if item.Filename != "" {
+			if err := c.downloadMediaFile(item); err != nil {
+				fmt.Printf("Warning: Failed to download media file %s: %v\n", item.Filename, err)
+				continue
+			}
+		}
+		mediaMap[item.ID] = item
+	}
+
+	// Convert map back to slice
+	updatedMedia := make([]MediaItem, 0, len(mediaMap))
+	for _, item := range mediaMap {
+		updatedMedia = append(updatedMedia, item)
+	}
+
+	// Sort by CreatedAt (optional)
+	slices.SortFunc(updatedMedia, func(a, b MediaItem) int {
+		return a.CreatedAt.Compare(b.CreatedAt)
+	})
+
+	// Save updated metadata
+	if err := c.saveMediaMetadata(updatedMedia); err != nil {
+		return fmt.Errorf("failed to save metadata: %v", err)
+	}
+
+	// Update last fetched timestamp
+	if err := c.saveLastFetched(time.Now()); err != nil {
+		return fmt.Errorf("failed to save last fetched time: %v", err)
+	}
+
+	return nil
+}
+
+func (c *Client) loadMediaMetadata() ([]MediaItem, error) {
+	data, err := os.ReadFile(c.metadataFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return []MediaItem{}, nil
+		}
+		return nil, err
+	}
+
+	var media []MediaItem
+	if err := json.Unmarshal(data, &media); err != nil {
+		return nil, err
+	}
+
+	return media, nil
+}
+
+func (c *Client) saveMediaMetadata(media []MediaItem) error {
+	data, err := json.MarshalIndent(media, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(c.metadataFile, data, 0644)
+}
+
+func (c *Client) loadLastFetched() time.Time {
+	data, err := os.ReadFile(c.lastFetchedFile)
+	if err != nil {
+		return time.Time{} // Return zero time if file doesn't exist
+	}
+
+	timestamp, err := time.Parse(time.RFC3339, string(data))
+	if err != nil {
+		return time.Time{}
+	}
+
+	return timestamp
+}
+
+func (c *Client) saveLastFetched(t time.Time) error {
+	return os.WriteFile(c.lastFetchedFile, []byte(t.UTC().Format(time.RFC3339)), 0644)
 }
 
 func (c *Client) launchKioskMode() error {
