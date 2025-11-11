@@ -127,8 +127,7 @@ func (c *Client) handleGetMedia(ctx *gin.Context) {
 func (c *Client) handleServeMediaFile(ctx *gin.Context) {
 	filename := ctx.Param("filename")
 
-	// Build path to cached file (frame backend knows its own frame_id)
-	filePath := filepath.Join(c.cacheDir, c.frameID, filename)
+	filePath := filepath.Join(c.cacheDir, filename)
 
 	// Serve the file
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
@@ -154,14 +153,8 @@ func (c *Client) downloadMediaFile(item MediaItem) error {
 		return fmt.Errorf("uploader returned status %d for file %s", resp.StatusCode, item.Filename)
 	}
 
-	// Create subdirectory for frame if needed
-	frameDir := filepath.Join(c.cacheDir, c.frameID)
-	if err := os.MkdirAll(frameDir, 0755); err != nil {
-		return fmt.Errorf("failed to create frame cache directory: %v", err)
-	}
-
 	// Create destination file
-	destPath := filepath.Join(frameDir, item.Filename)
+	destPath := filepath.Join(c.cacheDir, item.Filename)
 
 	// Check if file already exists
 	if _, err := os.Stat(destPath); err == nil {

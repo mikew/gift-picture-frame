@@ -14,7 +14,7 @@ export const container = style([
 ])
 
 globalStyle(`${container} > img, ${container} > video`, {
-  width: '99%',
-  height: '99%',
+  width: '100%',
+  height: '100%',
   objectFit: 'contain',
 })

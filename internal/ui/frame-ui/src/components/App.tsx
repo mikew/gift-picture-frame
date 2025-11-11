@@ -25,6 +25,10 @@ export default function App() {
 
       if (JSON.stringify(newMedia) !== JSON.stringify(media())) {
         setMedia(newMedia)
+
+        if (media().length > 0 && currentIndex() >= media().length) {
+          setCurrentIndex(Math.max(0, media().length - 1))
+        }
       }
     } catch (error) {
       console.error('Failed to load media:', error)
@@ -32,10 +36,12 @@ export default function App() {
   }
 
   const nextSlide = () => {
+    if (media().length === 0) return
     setCurrentIndex((prev) => (prev + 1) % media().length)
   }
 
   const previousSlide = () => {
+    if (media().length === 0) return
     setCurrentIndex((prev) => (prev === 0 ? media().length - 1 : prev - 1))
   }
 
@@ -57,6 +63,12 @@ export default function App() {
         nextSlide()
       }, slideDuration)
     }
+
+    onCleanup(() => {
+      if (slideTimeout) {
+        clearTimeout(slideTimeout)
+      }
+    })
   })
 
   onMount(() => {
