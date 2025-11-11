@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 import { themeContract } from 'shared/theme/contract.css.js'
 import * as util from 'shared/theme/util.css.ts'
 
@@ -12,3 +12,9 @@ export const container = style([
     backgroundColor: themeContract.color.background,
   },
 ])
+
+globalStyle('body', {
+  backgroundColor: themeContract.color.background,
+  color: themeContract.color.textPrimary,
+  fontFamily: 'system-ui, sans-serif',
+})

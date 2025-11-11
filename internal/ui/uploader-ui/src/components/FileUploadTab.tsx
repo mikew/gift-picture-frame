@@ -1,4 +1,7 @@
 import { clsx } from 'shared/clsx.ts'
+import RemoveCircle from 'shared/svgs/remove_circle.svg?component-solid'
+import VideoFile from 'shared/svgs/video_file.svg?component-solid'
+import * as util from 'shared/theme/util.css.ts'
 import { createSignal, For } from 'solid-js'
 
 // import './FileUploadTab.css'
@@ -66,7 +69,11 @@ export default function FileUploadTab(props: FileUploadTabProps) {
     if (file.type.startsWith('image/')) {
       return <img src={URL.createObjectURL(file)} alt={file.name} />
     } else {
-      return <div class="video-icon">🎬</div>
+      return (
+        <div class={util.iconContainer} style={{ 'font-size': '1.5em' }}>
+          <VideoFile />
+        </div>
+      )
     }
   }
 
@@ -92,17 +99,26 @@ export default function FileUploadTab(props: FileUploadTabProps) {
         />
       </div>
 
-      <div class="file-list">
+      <div class={styles.fileListRoot}>
         <For each={props.selectedFiles}>
           {(file, index) => (
-            <div class="file-item">
-              <div class="file-preview">{createFilePreview(file)}</div>
-              <div class="file-info">
+            <div class={styles.fileListItemRoot}>
+              <div class={styles.filePreview}>{createFilePreview(file)}</div>
+              <div class={styles.fileInfo}>
                 <div class="file-name">{file.name}</div>
-                <div class="file-size">{formatFileSize(file.size)}</div>
+                <div class={util.colorTextSecondary}>
+                  {formatFileSize(file.size)}
+                </div>
               </div>
-              <button class="remove-file" onClick={() => removeFile(index())}>
-                Remove
+              <button
+                class={clsx(
+                  util.pointerCursor,
+                  util.iconContainer,
+                  util.colorError,
+                )}
+                onClick={() => removeFile(index())}
+              >
+                <RemoveCircle />
               </button>
             </div>
           )}

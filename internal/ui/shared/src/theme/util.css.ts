@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 
 import { themeContract } from './contract.css.ts'
 
@@ -106,4 +106,16 @@ export const colorTextPrimary = style({
 
 export const colorTextSecondary = style({
   color: themeContract.color.textSecondary,
+})
+
+export const colorError = style({
+  color: themeContract.color.error.main,
+})
+
+export const iconContainer = style({})
+
+globalStyle(`${iconContainer} svg`, {
+  width: '1em',
+  height: '1em',
+  fontSize: '1.5em',
 })

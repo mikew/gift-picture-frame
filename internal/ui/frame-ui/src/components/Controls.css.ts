@@ -19,14 +19,15 @@ export const controlButton = style([
   util.flexRow,
   util.flexCenterContent,
   util.aspectRatioSquare,
+  util.iconContainer,
   {
-    'background': 'rgba(0, 0, 0, 0.6)',
+    'background': 'rgba(50, 50, 50, 0.4)',
     'border': 'none',
     'color': themeContract.color.white,
     'width': '60px',
 
     ':hover': {
-      background: 'rgba(255, 255, 255, 0.2)',
+      background: 'rgba(50, 50, 50, 0.6)',
       transform: 'scale(1.1)',
     },
     ':active': {
@@ -38,5 +39,13 @@ export const controlButton = style([
     'backdropFilter': 'blur(10px)',
     'transition': 'var(--tr-scale)',
     'fontSize': '2rem',
+  },
+])
+
+export const controlButtonLarge = style([
+  controlButton,
+  {
+    width: '100px',
+    fontSize: '3rem',
   },
 ])

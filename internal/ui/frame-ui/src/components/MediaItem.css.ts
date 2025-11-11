@@ -3,6 +3,8 @@ import * as util from 'shared/theme/util.css.ts'
 
 export const container = style([
   util.positionAbsolute,
+  util.flexColumn,
+  util.flexCenterContent,
   {
     top: 0,
     left: 0,
@@ -12,7 +14,7 @@ export const container = style([
 ])
 
 globalStyle(`${container} > img, ${container} > video`, {
-  width: '100%',
-  height: '100%',
+  width: '99%',
+  height: '99%',
   objectFit: 'contain',
 })

@@ -3,6 +3,13 @@ import { tanstackStart } from '@tanstack/solid-start/plugin/vite'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
+import type { SolidSVGPluginOptions } from 'vite-plugin-solid-svg'
+import solidSvg from 'vite-plugin-solid-svg'
+
+let svgoConfig: NonNullable<SolidSVGPluginOptions['svgo']>['svgoConfig']
+if (pluginOptions.svgr && typeof pluginOptions.svgr === 'object') {
+  svgoConfig = { ...pluginOptions.svgr.svgrOptions?.svgoConfig }
+}
 
 // It's solid ...
 pluginOptions.react = false
@@ -38,6 +45,17 @@ export default defineConfig(async (env) => {
     }),
 
     solid({ ssr: true }),
+  )
+
+  config.plugins?.push(
+    solidSvg({
+      svgo: {
+        enabled: true,
+        svgoConfig: {
+          ...svgoConfig,
+        },
+      },
+    }),
   )
 
   config.server = {

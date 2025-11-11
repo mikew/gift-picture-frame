@@ -10,7 +10,11 @@ import TextUploadTab from './TextUploadTab.tsx'
 import UploadStatus from './UploadStatus.tsx'
 import UploadTabs from './UploadTabs.tsx'
 
-export default function App() {
+interface AppProps {
+  frameId: string
+}
+
+export default function App(props: AppProps) {
   const [activeTab, setActiveTab] = createSignal<'file' | 'text'>('file')
   const [selectedFiles, setSelectedFiles] = createSignal<File[]>([])
   const [recentUploads, setRecentUploads] = createSignal<MediaItem[]>([])
@@ -19,11 +23,6 @@ export default function App() {
     'success' | 'error' | 'info'
   >('info')
   const [showStatus, setShowStatus] = createSignal(false)
-
-  const frameId =
-    typeof window !== 'undefined'
-      ? window.location.pathname.split('/')[1] || ''
-      : ''
 
   const showStatusMessage = (
     message: string,
@@ -37,7 +36,9 @@ export default function App() {
 
   const loadRecentUploads = async () => {
     try {
-      const response = await fetch(`${AppConfig.apiBase}/${frameId}/media`)
+      const response = await fetch(
+        `${AppConfig.apiBase}/${props.frameId}/media`,
+      )
       if (!response.ok) throw new Error('Failed to load recent uploads')
 
       const media = await response.json()
@@ -60,10 +61,13 @@ export default function App() {
         const formData = new FormData()
         formData.append('file', file)
 
-        const response = await fetch(`${AppConfig.apiBase}/${frameId}/upload`, {
-          method: 'POST',
-          body: formData,
-        })
+        const response = await fetch(
+          `${AppConfig.apiBase}/${props.frameId}/upload`,
+          {
+            method: 'POST',
+            body: formData,
+          },
+        )
 
         if (!response.ok) {
           const error = await response.json()
@@ -89,9 +93,7 @@ export default function App() {
 
   const uploadText = async (textData: {
     content: string
-    color: string
-    background: string
-    fontSize: string
+    textStyle: string
   }) => {
     if (!textData.content.trim()) {
       showStatusMessage('Please enter some text', 'error')
@@ -102,10 +104,13 @@ export default function App() {
       const formData = new FormData()
       formData.append('text', JSON.stringify(textData))
 
-      const response = await fetch(`${AppConfig.apiBase}/${frameId}/upload`, {
-        method: 'POST',
-        body: formData,
-      })
+      const response = await fetch(
+        `${AppConfig.apiBase}/${props.frameId}/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        },
+      )
 
       if (!response.ok) {
         const error = await response.json()
@@ -146,7 +151,7 @@ export default function App() {
         type={statusType()}
         show={showStatus()}
       />
-      <RecentUploads frameId={frameId} uploads={recentUploads()} />
+      <RecentUploads frameId={props.frameId} uploads={recentUploads()} />
     </div>
   )
 }

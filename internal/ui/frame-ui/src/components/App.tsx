@@ -13,12 +13,8 @@ export default function App() {
   const [media, setMedia] = createSignal<MediaItem[]>([])
   const [currentIndex, setCurrentIndex] = createSignal(0)
   const [isPlaying, setIsPlaying] = createSignal(true)
-  const [slideInterval, setSlideInterval] = createSignal<ReturnType<
-    typeof setInterval
-  > | null>(null)
-  const slideDuration = 30_000
-
-  let cursorTimeout: ReturnType<typeof setTimeout>
+  const slideDuration = 60_000
+  let slideTimeout: ReturnType<typeof setTimeout> | undefined
 
   const loadMedia = async () => {
     try {
@@ -29,114 +25,120 @@ export default function App() {
 
       if (JSON.stringify(newMedia) !== JSON.stringify(media())) {
         setMedia(newMedia)
-        setCurrentIndex(Math.min(currentIndex(), newMedia.length - 1))
       }
     } catch (error) {
       console.error('Failed to load media:', error)
-      setMedia([])
     }
   }
 
   const nextSlide = () => {
-    if (media().length === 0) return
-
     setCurrentIndex((prev) => (prev + 1) % media().length)
-
-    if (isPlaying()) {
-      resetSlideshow()
-    }
   }
 
   const previousSlide = () => {
-    if (media().length === 0) return
-
     setCurrentIndex((prev) => (prev === 0 ? media().length - 1 : prev - 1))
-
-    if (isPlaying()) {
-      resetSlideshow()
-    }
   }
 
   const togglePlayPause = () => {
-    setIsPlaying(!isPlaying())
+    setIsPlaying((prev) => !prev)
   }
 
-  const startSlideshow = () => {
-    if (media().length <= 1) return
+  createEffect(() => {
+    // HACK need to run this effect when either isPlaying or currentIndex
+    // changes, but nothing actually uses currentIndex in the effect.
+    currentIndex()
 
-    setIsPlaying(true)
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % media().length)
-    }, slideDuration)
-    setSlideInterval(interval)
-  }
-
-  const pauseSlideshow = () => {
-    setIsPlaying(false)
-    const interval = slideInterval()
-    if (interval) {
-      clearInterval(interval)
-      setSlideInterval(null)
-    }
-  }
-
-  const resetSlideshow = () => {
-    const interval = slideInterval()
-    if (interval) {
-      clearInterval(interval)
-    }
-    startSlideshow()
-  }
-
-  const setupCursorHiding = () => {
-    const showCursor = () => {
-      document.body.style.cursor = 'default'
-      clearTimeout(cursorTimeout)
-      cursorTimeout = setTimeout(() => {
-        document.body.style.cursor = 'none'
-      }, 3000)
+    if (slideTimeout) {
+      clearTimeout(slideTimeout)
     }
 
-    document.addEventListener('mousemove', showCursor)
-    document.addEventListener('click', showCursor)
+    if (isPlaying()) {
+      slideTimeout = setTimeout(() => {
+        nextSlide()
+      }, slideDuration)
+    }
+  })
 
-    cursorTimeout = setTimeout(() => {
-      document.body.style.cursor = 'none'
-    }, 3000)
+  onMount(() => {
+    loadMedia()
+  })
+
+  onMount(() => {
+    const refreshInterval = setInterval(loadMedia, 5_000)
 
     onCleanup(() => {
-      document.removeEventListener('mousemove', showCursor)
-      document.removeEventListener('click', showCursor)
-      clearTimeout(cursorTimeout)
+      clearInterval(refreshInterval)
     })
-  }
+  })
 
-  const setupKeyboardControls = () => {
+  return (
+    <div class={styles.container}>
+      <KeyboardHandler
+        onNext={nextSlide}
+        onPrevious={previousSlide}
+        onTogglePlayPause={togglePlayPause}
+        onReload={loadMedia}
+      />
+      <SwipeHandler onNext={nextSlide} onPrevious={previousSlide} />
+      <MediaDisplay media={media()} currentIndex={currentIndex()} />
+
+      <InterfaceCntainer>
+        <FrameInfo media={media()} currentIndex={currentIndex()} />
+
+        <Controls
+          onPrevious={previousSlide}
+          onNext={nextSlide}
+          onTogglePlayPause={togglePlayPause}
+          isPlaying={isPlaying()}
+        />
+      </InterfaceCntainer>
+    </div>
+  )
+}
+
+interface KeyboardHandlerProps {
+  onNext: () => void
+  onPrevious: () => void
+  onTogglePlayPause: () => void
+  onReload: () => void
+}
+
+function KeyboardHandler(props: KeyboardHandlerProps) {
+  onMount(() => {
     const handleKeydown = (e: KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowLeft':
-          previousSlide()
+          props.onPrevious()
           break
         case 'ArrowRight':
         case ' ':
-          nextSlide()
+          props.onNext()
           break
         case 'p':
         case 'P':
-          togglePlayPause()
+          props.onTogglePlayPause()
           break
         case 'r':
         case 'R':
-          loadMedia()
+          props.onReload()
           break
       }
     }
 
     document.addEventListener('keydown', handleKeydown)
     onCleanup(() => document.removeEventListener('keydown', handleKeydown))
-  }
+  })
 
-  const setupTouchControls = () => {
+  return null
+}
+
+interface SwipeHandlerProps {
+  onNext: () => void
+  onPrevious: () => void
+}
+
+function SwipeHandler(props: SwipeHandlerProps) {
+  onMount(() => {
     let startX = 0
     let startY = 0
 
@@ -153,9 +155,9 @@ export default function App() {
 
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
         if (diffX > 0) {
-          nextSlide()
+          props.onNext()
         } else {
-          previousSlide()
+          props.onPrevious()
         }
       }
     }
@@ -167,48 +169,7 @@ export default function App() {
       document.removeEventListener('touchstart', handleTouchStart)
       document.removeEventListener('touchend', handleTouchEnd)
     })
-  }
-
-  // Effects
-  createEffect(() => {
-    if (isPlaying()) {
-      startSlideshow()
-    } else {
-      pauseSlideshow()
-    }
   })
 
-  onMount(() => {
-    loadMedia()
-    setupCursorHiding()
-    setupKeyboardControls()
-    setupTouchControls()
-
-    // Check for media updates every 5 seconds
-    // (Frame backend handles syncing with uploader server)
-    const refreshInterval = setInterval(loadMedia, 5_000)
-
-    onCleanup(() => {
-      clearInterval(refreshInterval)
-      const interval = slideInterval()
-      if (interval) clearInterval(interval)
-    })
-  })
-
-  return (
-    <div class={styles.container}>
-      <MediaDisplay media={media()} currentIndex={currentIndex()} />
-
-      <InterfaceCntainer>
-        <FrameInfo media={media()} currentIndex={currentIndex()} />
-
-        <Controls
-          onPrevious={previousSlide}
-          onNext={nextSlide}
-          onTogglePlayPause={togglePlayPause}
-          isPlaying={isPlaying()}
-        />
-      </InterfaceCntainer>
-    </div>
-  )
+  return null
 }

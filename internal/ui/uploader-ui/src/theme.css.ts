@@ -40,7 +40,7 @@ export const lightThemeClass = createTheme(themeContract, {
     surface: '#333',
 
     textPrimary: '#fff',
-    textSecondary: '#eee',
+    textSecondary: 'rgba(255, 255, 255, 0.4)',
 
     white: '#ffffff',
     black: '#000000',

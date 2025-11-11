@@ -17,4 +17,5 @@ export const uploadSection = style({
 globalStyle('body', {
   backgroundColor: themeContract.color.background,
   color: themeContract.color.textPrimary,
+  fontFamily: 'system-ui, sans-serif',
 })

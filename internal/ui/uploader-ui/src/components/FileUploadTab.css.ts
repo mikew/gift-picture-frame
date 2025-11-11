@@ -22,3 +22,25 @@ export const container = style([
     },
   },
 ])
+
+export const fileListRoot = style({})
+
+export const fileInfo = style({
+  flexGrow: '1',
+})
+
+export const fileListItemRoot = style([
+  util.flexRow,
+  util.gapx1,
+  {
+    alignItems: 'center',
+    padding: themeContract.spacing.x1,
+  },
+])
+
+export const filePreview = style([
+  // util.aspectRatioSquare,
+  {
+    width: '50px',
+  },
+])

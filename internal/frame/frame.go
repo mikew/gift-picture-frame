@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"picture-frame/internal/ui"
+	"slices"
 	"sync"
 	"time"
 
@@ -211,7 +212,7 @@ func (c *Client) syncMedia() error {
 	mediaURL := fmt.Sprintf("%s/%s/media", c.serverURL, c.frameID)
 	if !lastFetched.IsZero() {
 		params := url.Values{}
-		params.Add("since", lastFetched.Format(time.RFC3339))
+		params.Add("since", lastFetched.UTC().Format(time.RFC3339))
 		mediaURL = fmt.Sprintf("%s?%s", mediaURL, params.Encode())
 	}
 
@@ -267,6 +268,11 @@ func (c *Client) syncMedia() error {
 		updatedMedia = append(updatedMedia, item)
 	}
 
+	// Sort by CreatedAt (optional)
+	slices.SortFunc(updatedMedia, func(a, b MediaItem) int {
+		return a.CreatedAt.Compare(b.CreatedAt)
+	})
+
 	// Save updated metadata
 	if err := c.saveMediaMetadata(updatedMedia); err != nil {
 		return fmt.Errorf("failed to save metadata: %v", err)
@@ -321,7 +327,7 @@ func (c *Client) loadLastFetched() time.Time {
 }
 
 func (c *Client) saveLastFetched(t time.Time) error {
-	return os.WriteFile(c.lastFetchedFile, []byte(t.Format(time.RFC3339)), 0644)
+	return os.WriteFile(c.lastFetchedFile, []byte(t.UTC().Format(time.RFC3339)), 0644)
 }
 
 func (c *Client) launchKioskMode() error {

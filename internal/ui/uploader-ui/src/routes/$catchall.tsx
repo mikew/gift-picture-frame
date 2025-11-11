@@ -7,9 +7,11 @@ export const Route = createFileRoute('/$catchall')({
 })
 
 function Home() {
+  const params = Route.useParams()
+
   return (
     <>
-      <App />
+      <App frameId={params().catchall} />
     </>
   )
 }

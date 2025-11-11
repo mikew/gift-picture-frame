@@ -1,3 +1,7 @@
+import { clsx } from 'shared/clsx.ts'
+import { normalizeStyleName } from 'shared/textStyles/normalizeStyleName.ts'
+import { themeClass, messageStyles } from 'shared/textStyles/theme.css.ts'
+import * as util from 'shared/theme/util.css.ts'
 import type { MediaItem, TextData } from 'shared/types.ts'
 import { Show } from 'solid-js'
 
@@ -23,9 +27,7 @@ export default function MediaItemComponent(props: MediaItemProps) {
     } catch {
       return {
         content: props.item.content,
-        color: '#ffffff',
-        background: '#000000',
-        fontSize: 36,
+        textStyle: 'normal',
       }
     }
   }
@@ -65,14 +67,14 @@ export default function MediaItemComponent(props: MediaItemProps) {
           const textData = parseTextData()
           return (
             <div
-              class="text-message"
-              style={{
-                'color': textData.color,
-                'background': textData.background,
-                'font-size': `${textData.fontSize}px`,
-              }}
+              class={clsx(themeClass, util.flexColumn)}
+              style={{ width: '100%', height: '100%' }}
             >
-              {textData.content}
+              <div
+                class={messageStyles[normalizeStyleName(textData.textStyle)]}
+              >
+                {textData.content}
+              </div>
             </div>
           )
         })()}

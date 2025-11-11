@@ -12,7 +12,5 @@ export interface PictureFrameConfig {
 
 export interface TextData {
   content: string
-  color: string
-  background: string
-  fontSize: number
+  textStyle: string
 }
