@@ -29,7 +29,6 @@ type Server struct {
 
 type MediaItem struct {
 	ID        string    `json:"id"`
-	FrameID   string    `json:"frame_id"`
 	Type      string    `json:"type"` // "image", "video", "text"
 	Filename  string    `json:"filename,omitempty"`
 	Content   string    `json:"content,omitempty"` // for text content
@@ -112,7 +111,6 @@ func (s *Server) handleUpload(c *gin.Context) {
 	if textContent := c.PostForm("text"); textContent != "" {
 		media := MediaItem{
 			ID:        uuid.New().String(),
-			FrameID:   frameID,
 			Type:      "text",
 			Content:   textContent,
 			CreatedAt: time.Now(),
@@ -211,7 +209,6 @@ func (s *Server) handleUpload(c *gin.Context) {
 		// Save metadata
 		media := MediaItem{
 			ID:        mediaId,
-			FrameID:   frameID,
 			Type:      mediaType,
 			Filename:  finalFilename,
 			CreatedAt: time.Now(),

@@ -25,7 +25,6 @@ import (
 
 type MediaItem struct {
 	ID        string    `json:"id"`
-	FrameID   string    `json:"frame_id"`
 	Type      string    `json:"type"`
 	Filename  string    `json:"filename,omitempty"`
 	Content   string    `json:"content,omitempty"`
@@ -141,7 +140,7 @@ func (c *Client) handleServeMediaFile(ctx *gin.Context) {
 
 func (c *Client) downloadMediaFile(item MediaItem) error {
 	// Build URL to uploader server's file endpoint
-	fileURL := fmt.Sprintf("%s/files/%s/%s", c.serverURL, item.FrameID, item.Filename)
+	fileURL := fmt.Sprintf("%s/files/%s/%s", c.serverURL, c.frameID, item.Filename)
 
 	// Fetch the file from uploader server
 	resp, err := http.Get(fileURL)
@@ -155,7 +154,7 @@ func (c *Client) downloadMediaFile(item MediaItem) error {
 	}
 
 	// Create subdirectory for frame if needed
-	frameDir := filepath.Join(c.cacheDir, item.FrameID)
+	frameDir := filepath.Join(c.cacheDir, c.frameID)
 	if err := os.MkdirAll(frameDir, 0755); err != nil {
 		return fmt.Errorf("failed to create frame cache directory: %v", err)
 	}
