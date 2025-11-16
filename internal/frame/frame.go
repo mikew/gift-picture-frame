@@ -11,13 +11,12 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"picture-frame/internal/brightness"
+	"picture-frame/internal/rotation"
 	"picture-frame/internal/ui"
 	"slices"
 	"sync"
 	"time"
-
-	// "os/exec"
-	// "runtime"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
@@ -33,29 +32,36 @@ type MediaItem struct {
 }
 
 type Client struct {
-	frameID         string
-	serverURL       string
-	port            int
-	router          *gin.Engine
-	fs              fs.FS
-	cacheDir        string
-	metadataFile    string
-	lastFetchedFile string
-	cacheMutex      sync.RWMutex
+	frameID              string
+	serverURL            string
+	port                 int
+	router               *gin.Engine
+	fs                   fs.FS
+	cacheDir             string
+	metadataFile         string
+	lastFetchedFile      string
+	settingsFile         string
+	settings             *Settings
+	cacheMutex           sync.RWMutex
+	brightnessController brightness.BrightnessController
+	outputRotator        rotation.OutputRotator
 }
 
-func NewClient(frameID string, serverURL string, port int, fs fs.FS) *Client {
+func NewClient(frameID string, serverURL string, port int, fs fs.FS, brightnessController brightness.BrightnessController, outputRotator rotation.OutputRotator) *Client {
 	cacheDir := filepath.Join("cache", frameID)
 
 	return &Client{
-		frameID:         frameID,
-		serverURL:       serverURL,
-		port:            port,
-		router:          gin.Default(),
-		fs:              fs,
-		cacheDir:        cacheDir,
-		metadataFile:    filepath.Join(cacheDir, "metadata.json"),
-		lastFetchedFile: filepath.Join(cacheDir, "lastFetched.txt"),
+		frameID:              frameID,
+		serverURL:            serverURL,
+		port:                 port,
+		router:               gin.Default(),
+		fs:                   fs,
+		cacheDir:             cacheDir,
+		metadataFile:         filepath.Join(cacheDir, "metadata.json"),
+		lastFetchedFile:      filepath.Join(cacheDir, "lastFetched.txt"),
+		settingsFile:         filepath.Join(cacheDir, "settings.json"),
+		brightnessController: brightnessController,
+		outputRotator:        outputRotator,
 	}
 }
 
@@ -64,6 +70,13 @@ func (c *Client) Start() error {
 	if err := os.MkdirAll(c.cacheDir, 0755); err != nil {
 		return fmt.Errorf("failed to create cache directory: %v", err)
 	}
+
+	// Load settings
+	settings, err := loadSettings(c.settingsFile)
+	if err != nil {
+		return fmt.Errorf("failed to load settings: %v", err)
+	}
+	c.settings = settings
 
 	c.setupRoutes()
 
@@ -93,6 +106,16 @@ func (c *Client) setupRoutes() {
 
 	// Serve cached media files (frame backend handles frame_id internally)
 	c.router.GET("/files/:filename", c.handleServeMediaFile)
+
+	// Brightness control endpoints
+	c.router.POST("/api/brightness/increase", c.handleIncreaseBrightness)
+	c.router.POST("/api/brightness/decrease", c.handleDecreaseBrightness)
+
+	// Rotation control endpoint
+	c.router.POST("/api/rotate", c.handleRotateOutput)
+
+	// Settings restore endpoint
+	c.router.GET("/api/settings/restore", c.handleRestoreSettings)
 
 	// Serve static files
 	c.router.NoRoute(static.Serve("/", ui.StaticLocalFS{http.FS(c.fs)}))
@@ -321,6 +344,128 @@ func (c *Client) loadLastFetched() time.Time {
 
 func (c *Client) saveLastFetched(t time.Time) error {
 	return os.WriteFile(c.lastFetchedFile, []byte(t.UTC().Format(time.RFC3339)), 0644)
+}
+
+func (c *Client) modifyBrightness(direction int) error {
+	if c.brightnessController == nil {
+		return fmt.Errorf("brightness control not available")
+	}
+
+	current, err := c.brightnessController.GetBrightness()
+	if err != nil {
+		return fmt.Errorf("failed to get current brightness: %v", err)
+	}
+
+	max, err := c.brightnessController.GetMaxBrightness()
+	if err != nil {
+		return fmt.Errorf("failed to get max brightness: %v", err)
+	}
+
+	// Modify by percentage of max brightness
+	step := max / 5
+	if step < 1 {
+		step = 1
+	}
+	newLevel := current + (direction * step)
+
+	if err := c.brightnessController.SetBrightness(newLevel); err != nil {
+		return err
+	}
+
+	c.settings.Brightness = newLevel
+	if err := saveSettings(c.settings, c.settingsFile); err != nil {
+		return fmt.Errorf("failed to save settings: %v", err)
+	}
+
+	return nil
+}
+
+func (c *Client) handleIncreaseBrightness(ctx *gin.Context) {
+	if err := c.modifyBrightness(1); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to increase brightness: %v", err)})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{})
+}
+
+func (c *Client) handleDecreaseBrightness(ctx *gin.Context) {
+	if err := c.modifyBrightness(-1); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to decrease brightness: %v", err)})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{})
+}
+
+func (c *Client) handleRotateOutput(ctx *gin.Context) {
+	if c.outputRotator == nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Rotation control not available"})
+		return
+	}
+
+	var req struct {
+		Direction string `json:"direction"`
+	}
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	if req.Direction != "clockwise" && req.Direction != "counterclockwise" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Direction must be 'clockwise' or 'counterclockwise'"})
+		return
+	}
+
+	// Convert direction to degrees
+	degrees := 90
+	if req.Direction == "counterclockwise" {
+		degrees = -90
+	}
+
+	newRotation := (c.settings.Rotation + degrees + 360) % 360
+	if err := c.outputRotator.SetRotation(newRotation); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to rotate output: %v", err)})
+		return
+	}
+
+	// Calculate and save new rotation
+	c.settings.Rotation = newRotation
+
+	if err := saveSettings(c.settings, c.settingsFile); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to save settings: %v", err)})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{})
+}
+
+func (c *Client) restoreSettings() error {
+	// Restore brightness
+	if c.brightnessController != nil {
+		if err := c.brightnessController.SetBrightness(c.settings.Brightness); err != nil {
+			return fmt.Errorf("failed to restore brightness: %v", err)
+		}
+	}
+
+	// Restore rotation
+	if c.outputRotator != nil {
+		if err := c.outputRotator.SetRotation(c.settings.Rotation); err != nil {
+			return fmt.Errorf("failed to restore rotation: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func (c *Client) handleRestoreSettings(ctx *gin.Context) {
+	if err := c.restoreSettings(); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to restore settings: %v", err)})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"settings": c.settings})
 }
 
 func (c *Client) launchKioskMode() error {
