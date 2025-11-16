@@ -3,9 +3,7 @@ package main
 import (
 	"log"
 	"os"
-	"picture-frame/internal/brightness"
 	"picture-frame/internal/frame"
-	"picture-frame/internal/rotation"
 	"picture-frame/internal/ui"
 	"picture-frame/internal/uploader"
 
@@ -68,11 +66,11 @@ func main() {
 							serverURL := ctx.String("server")
 							port := ctx.Int("port")
 
-							brightnessController := brightness.NewRPiBrightnessController()
-							outputRotator := rotation.NewWlrRandrRotator()
+							brightnessController := frame.NewRPiBrightnessController()
+							outputRotator := frame.NewWlrRandrRotator()
 
-							c := frame.NewClient(id, serverURL, port, ui.FrameFiles(), brightnessController, outputRotator)
-							return c.Start()
+							s := frame.NewServer(id, serverURL, port, ui.FrameFiles(), brightnessController, outputRotator)
+							return s.Start()
 						},
 					},
 				},

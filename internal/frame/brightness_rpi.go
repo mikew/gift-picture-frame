@@ -1,4 +1,4 @@
-package brightness
+package frame
 
 import (
 	"fmt"

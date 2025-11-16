@@ -1,4 +1,4 @@
-package brightness
+package frame
 
 type BrightnessController interface {
 	GetBrightness() (int, error)

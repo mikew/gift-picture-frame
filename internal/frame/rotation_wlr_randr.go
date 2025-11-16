@@ -1,4 +1,4 @@
-package rotation
+package frame
 
 import (
 	"encoding/json"
