@@ -44,7 +44,13 @@ func (s *Server) syncMedia() error {
 	}
 
 	// Fetch new/updated media from uploader server
-	resp, err := http.Get(mediaURL)
+	req, err := http.NewRequest("GET", mediaURL, nil)
+	if err != nil {
+		return fmt.Errorf("failed to create request: %v", err)
+	}
+	req.Header.Set("Authorization", s.accessKey)
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to fetch media from uploader: %v", err)
 	}

@@ -60,16 +60,22 @@ func main() {
 								Value: 6376,
 								Usage: "Local port for the client server",
 							},
+							&cli.StringFlag{
+								Name:     "access-key",
+								Usage:    "Access key for authenticating with the uploader server",
+								Required: true,
+							},
 						},
 						Action: func(ctx *cli.Context) error {
 							id := ctx.String("id")
 							serverURL := ctx.String("server")
 							port := ctx.Int("port")
+							accessKey := ctx.String("access-key")
 
 							brightnessController := frame.NewRPiBrightnessController()
 							outputRotator := frame.NewWlrRandrRotator()
 
-							s := frame.NewServer(id, serverURL, port, ui.FrameFiles(), brightnessController, outputRotator)
+							s := frame.NewServer(id, serverURL, port, accessKey, ui.FrameFiles(), brightnessController, outputRotator)
 							return s.Start()
 						},
 					},

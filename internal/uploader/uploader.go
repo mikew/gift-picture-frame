@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -22,9 +23,10 @@ import (
 )
 
 type Server struct {
-	dataDir string
-	router  *gin.Engine
-	fs      fs.FS
+	dataDir     string
+	router      *gin.Engine
+	fs          fs.FS
+	allowedKeys map[string][]string
 }
 
 type MediaItem struct {
@@ -34,6 +36,12 @@ type MediaItem struct {
 	Content   string    `json:"content,omitempty"` // for text content
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type FrameAccessConfig struct {
+	AllowedKeys []string `json:"allowed_keys"`
+}
+
+type AllowedKeysConfig map[string]FrameAccessConfig
 
 func NewServer(fs fs.FS) *Server {
 	return &Server{
@@ -47,6 +55,10 @@ func (s *Server) Start(port int) error {
 	// Ensure data directory exists
 	if err := os.MkdirAll(s.dataDir, 0755); err != nil {
 		return fmt.Errorf("failed to create data directory: %v", err)
+	}
+
+	if err := s.loadAllowedKeys(); err != nil {
+		return fmt.Errorf("failed to load allowed keys: %v", err)
 	}
 
 	s.setupRoutes()
@@ -227,6 +239,18 @@ func (s *Server) handleUpload(c *gin.Context) {
 
 func (s *Server) handleGetMedia(c *gin.Context) {
 	frameID := c.Param("id")
+
+	accessKey := c.GetHeader("Authorization")
+	if accessKey == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
+		return
+	}
+
+	if !s.validateAccessKey(frameID, accessKey) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Invalid access key for this frame"})
+		return
+	}
+
 	frameDir := filepath.Join(s.dataDir, frameID)
 
 	media, err := s.loadMediaMetadata(frameDir)
@@ -294,4 +318,38 @@ func (s *Server) loadMediaMetadata(frameDir string) ([]MediaItem, error) {
 	}
 
 	return media, nil
+}
+
+func (s *Server) loadAllowedKeys() error {
+	allowedKeysFile := filepath.Join(s.dataDir, "allowed_keys.json")
+
+	data, err := os.ReadFile(allowedKeysFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			s.allowedKeys = make(map[string][]string)
+			return nil
+		}
+		return fmt.Errorf("failed to read allowed_keys.json: %v", err)
+	}
+
+	var config AllowedKeysConfig
+	if err := json.Unmarshal(data, &config); err != nil {
+		return fmt.Errorf("failed to parse allowed_keys.json: %v", err)
+	}
+
+	s.allowedKeys = make(map[string][]string)
+	for frameID, frameConfig := range config {
+		s.allowedKeys[frameID] = frameConfig.AllowedKeys
+	}
+
+	return nil
+}
+
+func (s *Server) validateAccessKey(frameID, accessKey string) bool {
+	allowedKeys, exists := s.allowedKeys[frameID]
+	if !exists {
+		return false
+	}
+
+	return slices.Contains(allowedKeys, comparable)
 }

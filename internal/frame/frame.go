@@ -28,6 +28,7 @@ type MediaItem struct {
 type Server struct {
 	frameID              string
 	serverURL            string
+	accessKey            string
 	port                 int
 	router               *gin.Engine
 	fs                   fs.FS
@@ -41,12 +42,13 @@ type Server struct {
 	outputRotator        OutputRotator
 }
 
-func NewServer(frameID string, serverURL string, port int, fs fs.FS, brightnessController BrightnessController, outputRotator OutputRotator) *Server {
+func NewServer(frameID string, serverURL string, port int, accessKey string, fs fs.FS, brightnessController BrightnessController, outputRotator OutputRotator) *Server {
 	cacheDir := filepath.Join("cache", frameID)
 
 	return &Server{
 		frameID:              frameID,
 		serverURL:            serverURL,
+		accessKey:            accessKey,
 		port:                 port,
 		router:               gin.Default(),
 		fs:                   fs,
