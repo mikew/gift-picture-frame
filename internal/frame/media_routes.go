@@ -10,7 +10,6 @@ import (
 
 func (s *Server) setupMediaRoutes() {
 	s.router.GET("/api/media", s.handleGetMedia)
-	s.router.GET("/files/:filename", s.handleServeMediaFile)
 }
 
 func (s *Server) handleGetMedia(ctx *gin.Context) {
@@ -25,18 +24,4 @@ func (s *Server) handleGetMedia(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, media)
-}
-
-func (s *Server) handleServeMediaFile(ctx *gin.Context) {
-	filename := ctx.Param("filename")
-
-	filePath := filepath.Join(s.cacheDir, filename)
-
-	// Serve the file
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
-		return
-	}
-
-	ctx.File(filePath)
 }

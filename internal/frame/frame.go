@@ -91,7 +91,10 @@ func (s *Server) setupRoutes() {
 
 	s.router.GET("/", s.handleFrameDisplay)
 
-	s.router.NoRoute(static.Serve("/", ui.StaticLocalFS{http.FS(s.fs)}))
+	s.router.NoRoute(
+		static.Serve("/", ui.StaticLocalFS{http.FS(s.fs)}),
+		static.Serve("/files", static.LocalFile(s.cacheDir, true)),
+	)
 }
 
 func (s *Server) handleFrameDisplay(ctx *gin.Context) {
