@@ -42,14 +42,12 @@ func saveSettings(settings *Settings, settingsFile string) error {
 }
 
 func (s *Server) restoreSettings() error {
-	// Restore brightness
 	if s.brightnessController != nil {
 		if err := s.brightnessController.SetBrightness(s.settings.Brightness); err != nil {
 			return fmt.Errorf("failed to restore brightness: %v", err)
 		}
 	}
 
-	// Restore rotation
 	if s.outputRotator != nil {
 		if err := s.outputRotator.SetRotation(s.settings.Rotation); err != nil {
 			return fmt.Errorf("failed to restore rotation: %v", err)

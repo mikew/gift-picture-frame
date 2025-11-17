@@ -31,7 +31,6 @@ func (s *Server) handleRotateOutput(ctx *gin.Context) {
 		return
 	}
 
-	// Convert direction to degrees
 	degrees := 90
 	if req.Direction == "counterclockwise" {
 		degrees = -90
@@ -43,7 +42,6 @@ func (s *Server) handleRotateOutput(ctx *gin.Context) {
 		return
 	}
 
-	// Calculate and save new rotation
 	s.settings.Rotation = newRotation
 
 	if err := saveSettings(s.settings, s.settingsFile); err != nil {

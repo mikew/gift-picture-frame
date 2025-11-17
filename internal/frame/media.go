@@ -39,7 +39,7 @@ func (s *Server) saveMediaMetadata(media []MediaItem) error {
 func (s *Server) loadLastFetched() time.Time {
 	data, err := os.ReadFile(s.lastFetchedFile)
 	if err != nil {
-		return time.Time{} // Return zero time if file doesn't exist
+		return time.Time{}
 	}
 
 	timestamp, err := time.Parse(time.RFC3339, string(data))
@@ -55,10 +55,8 @@ func (s *Server) saveLastFetched(t time.Time) error {
 }
 
 func (s *Server) downloadMediaFile(item MediaItem) error {
-	// Build URL to uploader server's file endpoint
 	fileURL := fmt.Sprintf("%s/files/%s/%s", s.serverURL, s.frameID, item.Filename)
 
-	// Fetch the file from uploader server
 	resp, err := http.Get(fileURL)
 	if err != nil {
 		return fmt.Errorf("failed to fetch file from uploader: %v", err)
@@ -69,12 +67,9 @@ func (s *Server) downloadMediaFile(item MediaItem) error {
 		return fmt.Errorf("uploader returned status %d for file %s", resp.StatusCode, item.Filename)
 	}
 
-	// Create destination file
 	destPath := filepath.Join(s.cacheDir, item.Filename)
 
-	// Check if file already exists
 	if _, err := os.Stat(destPath); err == nil {
-		// File already exists, skip download
 		return nil
 	}
 
@@ -84,9 +79,8 @@ func (s *Server) downloadMediaFile(item MediaItem) error {
 	}
 	defer destFile.Close()
 
-	// Copy the file content
 	if _, err := io.Copy(destFile, resp.Body); err != nil {
-		os.Remove(destPath) // Clean up partial file
+		os.Remove(destPath)
 		return fmt.Errorf("failed to write file to cache: %v", err)
 	}
 

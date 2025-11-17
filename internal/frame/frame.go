@@ -105,10 +105,10 @@ func (s *Server) handleFrameDisplay(ctx *gin.Context) {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
-	// id := c.Param("id")
+
 	b = bytes.ReplaceAll(b, []byte("__APP_IS_EMBEDDED__"), []byte("true"))
 
-	ctx.Data(http.StatusOK, "text/html; charset=utf-8", b) // exact markup preserved
+	ctx.Data(http.StatusOK, "text/html; charset=utf-8", b)
 }
 
 func (s *Server) launchKioskMode() error {
