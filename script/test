@@ -10,4 +10,4 @@ PLATFORM_BIN="./build/gift-picture-frame-linux-amd64"
 
 exec pnpm exec concurrently \
   "$PLATFORM_BIN uploader start" \
-  "$PLATFORM_BIN frame start --id test --server http://localhost:8080"
+  "$PLATFORM_BIN frame start --id test --access-key test-key --server http://localhost:8080"

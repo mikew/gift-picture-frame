@@ -154,14 +154,14 @@ function SwipeHandler(props: SwipeHandlerProps) {
     let startX = 0
     let startY = 0
 
-    const handleTouchStart = (e: TouchEvent) => {
-      startX = e.touches[0]?.clientX || 0
-      startY = e.touches[0]?.clientY || 0
+    const handleTouchStart = (e: PointerEvent) => {
+      startX = e.clientX
+      startY = e.clientY
     }
 
-    const handleTouchEnd = (e: TouchEvent) => {
-      const endX = e.changedTouches[0]?.clientX || 0
-      const endY = e.changedTouches[0]?.clientY || 0
+    const handleTouchEnd = (e: PointerEvent) => {
+      const endX = e.clientX
+      const endY = e.clientY
       const diffX = startX - endX
       const diffY = startY - endY
 
@@ -174,12 +174,12 @@ function SwipeHandler(props: SwipeHandlerProps) {
       }
     }
 
-    document.addEventListener('touchstart', handleTouchStart)
-    document.addEventListener('touchend', handleTouchEnd)
+    document.addEventListener('pointerdown', handleTouchStart)
+    document.addEventListener('pointerup', handleTouchEnd)
 
     onCleanup(() => {
-      document.removeEventListener('touchstart', handleTouchStart)
-      document.removeEventListener('touchend', handleTouchEnd)
+      document.removeEventListener('pointerdown', handleTouchStart)
+      document.removeEventListener('pointerup', handleTouchStart)
     })
   })
 

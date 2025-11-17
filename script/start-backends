@@ -3,4 +3,4 @@ set -ex
 
 exec pnpm exec concurrently \
   "go run ./main.go uploader start" \
-  "go run ./main.go frame start --id test --server http://localhost:8080"
+  "go run ./main.go frame start --id test --access-key test-key --server http://localhost:8080"

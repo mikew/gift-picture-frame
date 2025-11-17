@@ -290,7 +290,7 @@ func (s *Server) loadMediaMetadata(frameDir string) ([]MediaItem, error) {
 }
 
 func (s *Server) loadAllowedKeys() error {
-	allowedKeysFile := filepath.Join(s.dataDir, "allowed_keys.json")
+	allowedKeysFile := "allowed_keys.json"
 
 	data, err := os.ReadFile(allowedKeysFile)
 	if err != nil {
@@ -320,5 +320,5 @@ func (s *Server) validateAccessKey(frameID, accessKey string) bool {
 		return false
 	}
 
-	return slices.Contains(allowedKeys, comparable)
+	return slices.Contains(allowedKeys, accessKey)
 }
