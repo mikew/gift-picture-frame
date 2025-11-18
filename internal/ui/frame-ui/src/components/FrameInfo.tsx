@@ -1,10 +1,14 @@
 import { clsx } from 'shared/clsx.js'
+import { isomorphicWindow } from 'shared/isomorphicWindow.ts'
 import BrightnessHigh from 'shared/svgs/brightness_high.svg?component-solid'
 import Menu from 'shared/svgs/menu.svg?component-solid'
 import RotateLeft from 'shared/svgs/rotate_left.svg?component-solid'
 import RotateRight from 'shared/svgs/rotate_right.svg?component-solid'
+import { sprinkles } from 'shared/theme/sprinkles.css.js'
 import * as util from 'shared/theme/util.css.js'
 import type { MediaItem } from 'shared/types.ts'
+import type { Component } from 'solid-js'
+import { createSignal } from 'solid-js'
 
 import AppConfig from '#src/appConfig.ts'
 
@@ -13,6 +17,28 @@ import * as styles from './FrameInfo.css.ts'
 interface FrameInfoProps {
   media: MediaItem[]
   currentIndex: number
+}
+
+const OnlineStatusIndicator: Component<{ size: string }> = (props) => {
+  const [isOnline, setIsOnline] = createSignal(navigator.onLine)
+
+  isomorphicWindow()?.addEventListener('online', () => setIsOnline(true))
+  isomorphicWindow()?.addEventListener('offline', () => setIsOnline(false))
+
+  return (
+    <div
+      class={clsx(
+        sprinkles({
+          borderRadius: 'circle',
+          aspectRatio: 'square',
+          backgroundColor: isOnline() ? 'success' : 'error',
+        }),
+      )}
+      style={{
+        width: props.size,
+      }}
+    />
+  )
 }
 
 export default function FrameInfo(props: FrameInfoProps) {
@@ -44,6 +70,8 @@ export default function FrameInfo(props: FrameInfoProps) {
         }}
       >
         <div class={clsx(styles.menu)}>
+          <OnlineStatusIndicator size="1em" />
+
           <div>Rotate Display</div>
           <button
             class={clsx(util.iconContainer)}

@@ -1,17 +1,18 @@
 import { style } from '@vanilla-extract/css'
-import { themeContract } from 'shared/theme/contract.css.js'
-import * as util from 'shared/theme/util.css.ts'
+import { sprinkles } from 'shared/theme/sprinkles.css.js'
 
 export const textarea = style([
+  sprinkles({
+    padding: 'x1',
+    borderRadius: 'default',
+    marginBottom: 'x1',
+  }),
   {
     width: '100%',
-    padding: themeContract.spacing.x1,
     border: '1px solid #dee2e6',
-    borderRadius: themeContract.radii.default,
     // fontSize: '1rem',
     fontFamily: 'inherit',
     resize: 'vertical',
-    marginBottom: themeContract.spacing.x1,
   },
 ])
 
@@ -27,12 +28,14 @@ export const textPreview = style([
   //   margin-bottom: 2rem;
   //   border: 1px solid #dee2e6;
   // }
-  util.flexColumn,
+  sprinkles({
+    display: 'flexColumn',
+    borderRadius: 'default',
+    marginBottom: 'x2',
+    overflow: 'hidden',
+  }),
   {
     minHeight: '150px',
-    borderRadius: themeContract.radii.default,
-    marginBottom: themeContract.spacing.x2,
     border: '1px solid #dee2e6',
-    overflow: 'hidden',
   },
 ])

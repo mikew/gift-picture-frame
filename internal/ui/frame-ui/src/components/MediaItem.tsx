@@ -1,7 +1,7 @@
 import { clsx } from 'shared/clsx.ts'
 import { normalizeStyleName } from 'shared/textStyles/normalizeStyleName.ts'
 import { themeClass, messageStyles } from 'shared/textStyles/theme.css.ts'
-import * as util from 'shared/theme/util.css.ts'
+import { sprinkles } from 'shared/theme/sprinkles.css.js'
 import type { MediaItem, TextData } from 'shared/types.ts'
 import { Show } from 'solid-js'
 
@@ -67,7 +67,7 @@ export default function MediaItemComponent(props: MediaItemProps) {
           const textData = parseTextData()
           return (
             <div
-              class={clsx(themeClass, util.flexColumn)}
+              class={clsx(themeClass, sprinkles({ display: 'flexColumn' }))}
               style={{ width: '100%', height: '100%' }}
             >
               <div

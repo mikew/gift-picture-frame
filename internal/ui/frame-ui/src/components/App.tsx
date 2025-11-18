@@ -4,10 +4,13 @@ import { createSignal, createEffect, onMount, onCleanup } from 'solid-js'
 import AppConfig from '#src/appConfig.ts'
 
 import * as styles from './App.css.ts'
+import { ColorTemperatureProvider } from './colorTemperatureContext.tsx'
+import ColorTemperatureOverlay from './ColorTemperatureOverlay.tsx'
 import Controls from './Controls.tsx'
 import FrameInfo from './FrameInfo.tsx'
 import InterfaceCntainer from './InterfaceContainer.tsx'
 import MediaDisplay from './MediaDisplay.tsx'
+import NetworkDialog from './NetworkDialog.tsx'
 
 export default function App() {
   const [media, setMedia] = createSignal<MediaItem[]>([])
@@ -84,27 +87,37 @@ export default function App() {
   })
 
   return (
-    <div class={styles.container}>
-      <KeyboardHandler
-        onNext={nextSlide}
-        onPrevious={previousSlide}
-        onTogglePlayPause={togglePlayPause}
-        onReload={loadMedia}
-      />
-      <SwipeHandler onNext={nextSlide} onPrevious={previousSlide} />
-      <MediaDisplay media={media()} currentIndex={currentIndex()} />
-
-      <InterfaceCntainer>
-        <FrameInfo media={media()} currentIndex={currentIndex()} />
-
-        <Controls
-          onPrevious={previousSlide}
+    <ColorTemperatureProvider>
+      <div class={styles.container}>
+        <KeyboardHandler
           onNext={nextSlide}
+          onPrevious={previousSlide}
           onTogglePlayPause={togglePlayPause}
-          isPlaying={isPlaying()}
+          onReload={loadMedia}
         />
-      </InterfaceCntainer>
-    </div>
+        <SwipeHandler onNext={nextSlide} onPrevious={previousSlide} />
+        <MediaDisplay media={media()} currentIndex={currentIndex()} />
+
+        <InterfaceCntainer>
+          <FrameInfo media={media()} currentIndex={currentIndex()} />
+
+          <Controls
+            onPrevious={previousSlide}
+            onNext={nextSlide}
+            onTogglePlayPause={togglePlayPause}
+            isPlaying={isPlaying()}
+          />
+        </InterfaceCntainer>
+
+        <ColorTemperatureOverlay />
+        <NetworkDialog
+          open
+          onClose={() => {
+            console.log('close requested')
+          }}
+        />
+      </div>
+    </ColorTemperatureProvider>
   )
 }
 

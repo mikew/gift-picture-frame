@@ -25,7 +25,7 @@ importers:
         version: 4.0.3(@types/node@24.9.1)(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(graphql@16.11.0)(typescript@5.9.3)(vitest@4.0.3(@types/node@24.9.1)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6))
       '@promoboxx/react-scripts-vite':
         specifier: ^0.2.8
-        version: 0.2.8(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(optionator@0.9.4)(postcss@8.5.6)(rollup@4.52.5)(terser@5.44.0)(tsx@4.20.6)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
+        version: 0.2.8(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(optionator@0.9.4)(postcss@8.5.6)(rollup@2.79.2)(terser@5.44.0)(tsx@4.20.6)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
       '@tanstack/solid-router':
         specifier: ^1.133.31
         version: 1.133.31(solid-js@1.9.9)
@@ -62,6 +62,9 @@ importers:
       '@vanilla-extract/css':
         specifier: ^1.17.4
         version: 1.17.4
+      '@vanilla-extract/sprinkles':
+        specifier: ^1.6.5
+        version: 1.6.5(@vanilla-extract/css@1.17.4)
       solid-js:
         specifier: ^1.9.10
         version: 1.9.10
@@ -73,7 +76,7 @@ importers:
         version: 4.0.3(@types/node@24.9.1)(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(graphql@16.11.0)(typescript@5.9.3)(vitest@4.0.3(@types/node@24.9.1)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6))
       '@promoboxx/react-scripts-vite':
         specifier: ^0.2.8
-        version: 0.2.8(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(optionator@0.9.4)(postcss@8.5.6)(rollup@2.79.2)(terser@5.44.0)(tsx@4.20.6)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
+        version: 0.2.8(@babel/preset-env@7.28.5(@babel/core@7.28.5))(@svgr/core@8.1.0(typescript@5.9.3))(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(optionator@0.9.4)(postcss@8.5.6)(rollup@4.52.5)(terser@5.44.0)(tsx@4.20.6)(typescript@5.9.3)(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
       '@tanstack/solid-router':
         specifier: ^1.133.31
         version: 1.133.31(solid-js@1.9.9)
@@ -1772,6 +1775,11 @@ packages:
 
   '@vanilla-extract/private@1.0.9':
     resolution: {integrity: sha512-gT2jbfZuaaCLrAxwXbRgIhGhcXbRZCG3v4TTUnjw0EJ7ArdBRxkq4msNJkbuRkCgfIK5ATmprB5t9ljvLeFDEA==}
+
+  '@vanilla-extract/sprinkles@1.6.5':
+    resolution: {integrity: sha512-HOYidLONR/SeGk8NBAeI64I4gYdsMX9vJmniL13ZcLVwawyK0s2GUENEAcGA+GYLIoeyQB61UqmhqPodJry7zA==}
+    peerDependencies:
+      '@vanilla-extract/css': ^1.0.0
 
   '@vanilla-extract/vite-plugin@5.1.1':
     resolution: {integrity: sha512-Nd1worqkHrd8XED4ZAA7Wmkd3pCqCwpmzCBVF8v6T1BSLHGXQE5HYflVgygw0CsIAbFRMS6zQBIk4F4/r/YKIw==}
@@ -6743,6 +6751,10 @@ snapshots:
       - supports-color
 
   '@vanilla-extract/private@1.0.9': {}
+
+  '@vanilla-extract/sprinkles@1.6.5(@vanilla-extract/css@1.17.4)':
+    dependencies:
+      '@vanilla-extract/css': 1.17.4
 
   '@vanilla-extract/vite-plugin@5.1.1(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(vite@7.1.12(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6))':
     dependencies:

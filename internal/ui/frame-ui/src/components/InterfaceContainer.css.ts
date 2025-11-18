@@ -1,10 +1,12 @@
 import { style } from '@vanilla-extract/css'
 import { themeContract } from 'shared/theme/contract.css.js'
-import * as util from 'shared/theme/util.css.ts'
+import { sprinkles } from 'shared/theme/sprinkles.css.js'
 
 // export const container = style([])
 export const container = style([
-  util.positionAbsolute,
+  sprinkles({
+    position: 'absolute',
+  }),
   // util.flexRow,
   // util.flexCenterContent,
   // util.gapx1,

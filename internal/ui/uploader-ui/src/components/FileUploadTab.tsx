@@ -1,6 +1,7 @@
 import { clsx } from 'shared/clsx.ts'
 import RemoveCircle from 'shared/svgs/remove_circle.svg?component-solid'
 import VideoFile from 'shared/svgs/video_file.svg?component-solid'
+import { sprinkles } from 'shared/theme/sprinkles.css.js'
 import * as util from 'shared/theme/util.css.ts'
 import { createSignal, For } from 'solid-js'
 
@@ -106,15 +107,17 @@ export default function FileUploadTab(props: FileUploadTabProps) {
               <div class={styles.filePreview}>{createFilePreview(file)}</div>
               <div class={styles.fileInfo}>
                 <div class="file-name">{file.name}</div>
-                <div class={util.colorTextSecondary}>
+                <div class={sprinkles({ color: 'textSecondary' })}>
                   {formatFileSize(file.size)}
                 </div>
               </div>
               <button
                 class={clsx(
-                  util.pointerCursor,
+                  sprinkles({
+                    cursor: 'pointer',
+                    color: 'error',
+                  }),
                   util.iconContainer,
-                  util.colorError,
                 )}
                 onClick={() => removeFile(index())}
               >
