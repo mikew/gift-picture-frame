@@ -31,9 +31,9 @@ func (s *Server) handleRotateOutput(ctx *gin.Context) {
 		return
 	}
 
-	degrees := 90
+	degrees := -90
 	if req.Direction == "counterclockwise" {
-		degrees = -90
+		degrees = 90
 	}
 
 	newRotation := (s.settings.Rotation + degrees + 360) % 360
