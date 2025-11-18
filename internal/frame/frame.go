@@ -40,9 +40,10 @@ type Server struct {
 	cacheMutex           sync.RWMutex
 	brightnessController BrightnessController
 	outputRotator        OutputRotator
+	wifiManager          WifiManager
 }
 
-func NewServer(frameID string, serverURL string, port int, accessKey string, fs fs.FS, brightnessController BrightnessController, outputRotator OutputRotator) *Server {
+func NewServer(frameID string, serverURL string, port int, accessKey string, fs fs.FS, brightnessController BrightnessController, outputRotator OutputRotator, wifiManager WifiManager) *Server {
 	cacheDir := filepath.Join("cache", frameID)
 
 	return &Server{
@@ -58,6 +59,7 @@ func NewServer(frameID string, serverURL string, port int, accessKey string, fs 
 		settingsFile:         filepath.Join(cacheDir, "settings.json"),
 		brightnessController: brightnessController,
 		outputRotator:        outputRotator,
+		wifiManager:          wifiManager,
 	}
 }
 
@@ -90,6 +92,7 @@ func (s *Server) setupRoutes() {
 	s.setupMediaRoutes()
 	s.setupBrightnessRoutes()
 	s.setupSettingsRoutes()
+	s.setupWifiRoutes()
 
 	s.router.GET("/", s.handleFrameDisplay)
 
