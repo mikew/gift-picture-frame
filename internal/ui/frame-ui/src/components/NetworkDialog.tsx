@@ -51,12 +51,16 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
 
   return (
     <dialog
-      open={props.open}
-      class="network-dialog"
+      // popover
+      // open
       ref={(el) => {
         dialogRef = el
       }}
       style={{ 'z-index': 1 }}
+      id="network-dialog"
+      onclose={() => {
+        props.onClose()
+      }}
     >
       <div
         style={{

@@ -26,6 +26,7 @@ const colors = {
   white: themeContract.color.white,
   black: themeContract.color.black,
   transparent: 'transparent',
+  inherit: 'inherit',
 }
 
 const properties = defineProperties({
@@ -75,12 +76,12 @@ const properties = defineProperties({
     marginRight: spacing,
 
     aspectRatio: {
-      'square': '1 / 1',
-      '16by9': '16 / 9',
-      '4by3': '4 / 3',
-      '3by2': '3 / 2',
-      '21by9': '21 / 9',
-      '9by16': '9 / 16',
+      square: '1 / 1',
+      r16by9: '16 / 9',
+      r4by3: '4 / 3',
+      r3by2: '3 / 2',
+      r21by9: '21 / 9',
+      r9by16: '9 / 16',
     },
 
     backgroundColor: colors,

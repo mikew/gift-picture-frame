@@ -125,3 +125,10 @@ meter {
   -webkit-touch-callout: none;
   touch-action: manipulation;
 }
+
+:where(dialog:modal) {
+  color: unset;
+  padding: unset;
+  border: unset;
+  outline: unset;
+}

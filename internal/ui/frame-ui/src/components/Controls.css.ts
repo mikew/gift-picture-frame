@@ -1,7 +1,7 @@
 import { style } from '@vanilla-extract/css'
+import { iconClassess } from 'shared/Icon.css.js'
 import { themeContract } from 'shared/theme/contract.css.ts'
 import { sprinkles } from 'shared/theme/sprinkles.css.ts'
-import * as util from 'shared/theme/util.css.ts'
 
 export const container = style([
   sprinkles({
@@ -26,7 +26,7 @@ export const controlButton = style([
     color: 'white',
     borderRadius: 'circle',
   }),
-  util.iconContainer,
+  iconClassess.root,
   {
     'background': 'rgba(50, 50, 50, 0.4)',
     'border': 'none',

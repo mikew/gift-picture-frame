@@ -10,7 +10,6 @@ import Controls from './Controls.tsx'
 import FrameInfo from './FrameInfo.tsx'
 import InterfaceCntainer from './InterfaceContainer.tsx'
 import MediaDisplay from './MediaDisplay.tsx'
-import NetworkDialog from './NetworkDialog.tsx'
 
 export default function App() {
   const [media, setMedia] = createSignal<MediaItem[]>([])
@@ -110,12 +109,6 @@ export default function App() {
         </InterfaceCntainer>
 
         <ColorTemperatureOverlay />
-        <NetworkDialog
-          open
-          onClose={() => {
-            console.log('close requested')
-          }}
-        />
       </div>
     </ColorTemperatureProvider>
   )

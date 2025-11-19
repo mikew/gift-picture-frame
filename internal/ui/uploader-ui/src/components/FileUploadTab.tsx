@@ -1,8 +1,9 @@
 import { clsx } from 'shared/clsx.ts'
+import Icon from 'shared/Icon.jsx'
+import IconButton from 'shared/IconButton.tsx'
 import RemoveCircle from 'shared/svgs/remove_circle.svg?component-solid'
 import VideoFile from 'shared/svgs/video_file.svg?component-solid'
 import { sprinkles } from 'shared/theme/sprinkles.css.js'
-import * as util from 'shared/theme/util.css.ts'
 import { createSignal, For } from 'solid-js'
 
 // import './FileUploadTab.css'
@@ -71,9 +72,9 @@ export default function FileUploadTab(props: FileUploadTabProps) {
       return <img src={URL.createObjectURL(file)} alt={file.name} />
     } else {
       return (
-        <div class={util.iconContainer} style={{ 'font-size': '1.5em' }}>
+        <Icon style={{ 'font-size': '1.5em' }}>
           <VideoFile />
-        </div>
+        </Icon>
       )
     }
   }
@@ -111,18 +112,15 @@ export default function FileUploadTab(props: FileUploadTabProps) {
                   {formatFileSize(file.size)}
                 </div>
               </div>
-              <button
-                class={clsx(
-                  sprinkles({
-                    cursor: 'pointer',
-                    color: 'error',
-                  }),
-                  util.iconContainer,
-                )}
+              <IconButton
+                class={sprinkles({
+                  cursor: 'pointer',
+                  color: 'error',
+                })}
                 onClick={() => removeFile(index())}
               >
                 <RemoveCircle />
-              </button>
+              </IconButton>
             </div>
           )}
         </For>
