@@ -9,24 +9,41 @@ const spacing = {
 }
 
 const colors = {
-  primary: themeContract.color.primary.main,
-  secondary: themeContract.color.secondary.main,
+  'primary.main': themeContract.color.primary.main,
+  'primary.light': themeContract.color.primary.light,
+  'primary.dark': themeContract.color.primary.dark,
 
-  info: themeContract.color.info.main,
-  success: themeContract.color.success.main,
-  warning: themeContract.color.warning.main,
-  error: themeContract.color.error.main,
+  'secondary.main': themeContract.color.secondary.main,
+  'secondary.light': themeContract.color.secondary.light,
+  'secondary.dark': themeContract.color.secondary.dark,
 
-  background: themeContract.color.background,
-  surface: themeContract.color.surface,
+  'info.main': themeContract.color.info.main,
+  'info.light': themeContract.color.info.light,
+  'info.dark': themeContract.color.info.dark,
 
-  textPrimary: themeContract.color.textPrimary,
-  textSecondary: themeContract.color.textSecondary,
+  'success.main': themeContract.color.success.main,
+  'success.light': themeContract.color.success.light,
+  'success.dark': themeContract.color.success.dark,
 
-  white: themeContract.color.white,
-  black: themeContract.color.black,
-  transparent: 'transparent',
-  inherit: 'inherit',
+  'warning.main': themeContract.color.warning.main,
+  'warning.light': themeContract.color.warning.light,
+  'warning.dark': themeContract.color.warning.dark,
+
+  'error.main': themeContract.color.error.main,
+  'error.light': themeContract.color.error.light,
+  'error.dark': themeContract.color.error.dark,
+
+  'background': themeContract.color.background,
+  'surface': themeContract.color.surface,
+
+  'text.primary': themeContract.color.textPrimary,
+  'text.secondary': themeContract.color.textSecondary,
+
+  'white': themeContract.color.white,
+  'black': themeContract.color.black,
+
+  'transparent': 'transparent',
+  'inherit': 'inherit',
 }
 
 const properties = defineProperties({

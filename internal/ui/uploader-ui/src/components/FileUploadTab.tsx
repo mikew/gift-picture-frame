@@ -108,14 +108,14 @@ export default function FileUploadTab(props: FileUploadTabProps) {
               <div class={styles.filePreview}>{createFilePreview(file)}</div>
               <div class={styles.fileInfo}>
                 <div class="file-name">{file.name}</div>
-                <div class={sprinkles({ color: 'textSecondary' })}>
+                <div class={sprinkles({ color: 'text.secondary' })}>
                   {formatFileSize(file.size)}
                 </div>
               </div>
               <IconButton
                 class={sprinkles({
                   cursor: 'pointer',
-                  color: 'error',
+                  color: 'error.main',
                 })}
                 onClick={() => removeFile(index())}
               >

@@ -43,7 +43,7 @@ const OnlineStatusIndicator: Component<{ size: string }> = (props) => {
       class={sprinkles({
         borderRadius: 'circle',
         aspectRatio: 'square',
-        backgroundColor: isOnline() ? 'success' : 'error',
+        backgroundColor: isOnline() ? 'success.main' : 'error.main',
       })}
       style={{
         width: props.size,
