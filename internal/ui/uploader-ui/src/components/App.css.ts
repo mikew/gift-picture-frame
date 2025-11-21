@@ -1,18 +1,25 @@
 import { globalStyle, style } from '@vanilla-extract/css'
 import { themeContract } from 'shared/theme/contract.css.js'
+import { sprinkles } from 'shared/theme/sprinkles.css.js'
 
-export const container = style({
-  maxWidth: '600px',
-  margin: '0 auto',
-  padding: themeContract.spacing.x2,
-})
+export const container = style([
+  sprinkles({
+    padding: 'x2',
+  }),
+  {
+    maxWidth: '600px',
+    margin: '0 auto',
+  },
+])
 
-export const uploadSection = style({
-  background: themeContract.color.surface,
-  borderRadius: themeContract.radii.default,
-  padding: themeContract.spacing.x2,
-  margin: `${themeContract.spacing.x2} 0`,
-})
+export const uploadSection = style([
+  sprinkles({
+    backgroundColor: 'surface',
+    borderRadius: 'default',
+    padding: 'x2',
+    marginY: 'x2',
+  }),
+])
 
 globalStyle('body', {
   backgroundColor: themeContract.color.background,

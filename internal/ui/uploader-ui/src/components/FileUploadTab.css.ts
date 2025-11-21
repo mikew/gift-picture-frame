@@ -1,16 +1,17 @@
 import { style } from '@vanilla-extract/css'
-import { themeContract } from 'shared/theme/contract.css.js'
-import * as util from 'shared/theme/util.css.ts'
+import { sprinkles } from 'shared/theme/sprinkles.css.js'
 
 export const container = style([
-  util.pointerCursor,
+  sprinkles({
+    cursor: 'pointer',
+    borderRadius: 'default',
+    padding: 'x3',
+  }),
   {
     // TODO border color should be in theme as separator color or divider color
     // or something.
     // TODO Some of these exist as utils.
     border: `2px dashed #dee2e6`,
-    borderRadius: themeContract.radii.default,
-    padding: themeContract.spacing.x3,
     textAlign: 'center',
     // cursor: 'pointer',
     transition: `var(--tr-base)`,
@@ -30,12 +31,11 @@ export const fileInfo = style({
 })
 
 export const fileListItemRoot = style([
-  util.flexRow,
-  util.gapx1,
-  {
-    alignItems: 'center',
-    padding: themeContract.spacing.x1,
-  },
+  sprinkles({
+    display: 'flexRow',
+    gap: 'x1',
+    flexAlign: 'centerY',
+  }),
 ])
 
 export const filePreview = style([

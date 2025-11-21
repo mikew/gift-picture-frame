@@ -1,15 +1,17 @@
 import { globalStyle, style } from '@vanilla-extract/css'
 import { themeContract } from 'shared/theme/contract.css.js'
-import * as util from 'shared/theme/util.css.ts'
+import { sprinkles } from 'shared/theme/sprinkles.css.js'
 
 export const container = style([
-  util.overflowHidden,
-  util.flexColumn,
-  util.flexCenterContent,
+  sprinkles({
+    overflow: 'hidden',
+    display: 'flexColumn',
+    flexAlign: 'centerAll',
+    backgroundColor: 'background',
+  }),
   {
     width: '100vw',
     height: '100vh',
-    backgroundColor: themeContract.color.background,
   },
 ])
 

@@ -64,7 +64,7 @@ export const lightThemeClass = createTheme(themeContract, {
   },
 
   radii: {
-    default: '8px',
+    default: '16px',
     round: '50%',
     infinite: '9999px',
   },

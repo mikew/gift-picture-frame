@@ -1,12 +1,15 @@
 import { style } from '@vanilla-extract/css'
+import { iconClasses } from 'shared/Icon.css.js'
 import { themeContract } from 'shared/theme/contract.css.ts'
-import * as util from 'shared/theme/util.css.ts'
+import { sprinkles } from 'shared/theme/sprinkles.css.ts'
 
 export const container = style([
-  util.positionAbsolute,
-  util.flexRow,
-  util.flexCenterContent,
-  util.gapx3,
+  sprinkles({
+    position: 'absolute',
+    display: 'flexRow',
+    flexAlign: 'centerAll',
+    gap: 'x3',
+  }),
   {
     bottom: themeContract.spacing.x4,
     left: '50%',
@@ -15,15 +18,18 @@ export const container = style([
 ])
 
 export const controlButton = style([
-  util.pointerCursor,
-  util.flexRow,
-  util.flexCenterContent,
-  util.aspectRatioSquare,
-  util.iconContainer,
+  sprinkles({
+    cursor: 'pointer',
+    display: 'flexRow',
+    flexAlign: 'centerAll',
+    aspectRatio: 'square',
+    color: 'white',
+    borderRadius: 'circle',
+  }),
+  iconClasses.root,
   {
     'background': 'rgba(50, 50, 50, 0.4)',
     'border': 'none',
-    'color': themeContract.color.white,
     'width': '60px',
 
     ':hover': {
@@ -35,7 +41,6 @@ export const controlButton = style([
     },
 
     // TODO Vars or another util class for these
-    'borderRadius': '50%',
     'backdropFilter': 'blur(10px)',
     'transition': 'var(--tr-scale)',
     'fontSize': '2rem',

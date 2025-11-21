@@ -1,15 +1,14 @@
 import { globalStyle, style } from '@vanilla-extract/css'
-import * as util from 'shared/theme/util.css.ts'
+import { sprinkles } from 'shared/theme/sprinkles.css.js'
 
 export const container = style([
-  util.positionAbsolute,
-  util.flexColumn,
-  util.flexCenterContent,
+  sprinkles({
+    position: 'absolute',
+    display: 'flexColumn',
+    flexAlign: 'centerAll',
+  }),
   {
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    inset: 0,
   },
 ])
 

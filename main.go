@@ -60,14 +60,25 @@ func main() {
 								Value: 6376,
 								Usage: "Local port for the client server",
 							},
+							&cli.StringFlag{
+								Name:     "access-key",
+								Usage:    "Access key for authenticating with the uploader server",
+								Required: true,
+							},
 						},
 						Action: func(ctx *cli.Context) error {
 							id := ctx.String("id")
 							serverURL := ctx.String("server")
 							port := ctx.Int("port")
+							accessKey := ctx.String("access-key")
 
-							c := frame.NewClient(id, serverURL, port, ui.FrameFiles())
-							return c.Start()
+							brightnessController := frame.NewRPiBrightnessController()
+							outputRotator := frame.NewWlrRandrRotator()
+							wifiManager := frame.NewNmcliWifiManager()
+							// wifiManager := frame.NewMockWifiManager()
+
+							s := frame.NewServer(id, serverURL, port, accessKey, ui.FrameFiles(), brightnessController, outputRotator, wifiManager)
+							return s.Start()
 						},
 					},
 				},

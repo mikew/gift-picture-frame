@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -22,18 +23,25 @@ import (
 )
 
 type Server struct {
-	dataDir string
-	router  *gin.Engine
-	fs      fs.FS
+	dataDir     string
+	router      *gin.Engine
+	fs          fs.FS
+	allowedKeys map[string][]string
 }
 
 type MediaItem struct {
 	ID        string    `json:"id"`
-	Type      string    `json:"type"` // "image", "video", "text"
+	Type      string    `json:"type"`
 	Filename  string    `json:"filename,omitempty"`
-	Content   string    `json:"content,omitempty"` // for text content
+	Content   string    `json:"content,omitempty"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type FrameAccessConfig struct {
+	AllowedKeys []string `json:"allowed_keys"`
+}
+
+type AllowedKeysConfig map[string]FrameAccessConfig
 
 func NewServer(fs fs.FS) *Server {
 	return &Server{
@@ -44,9 +52,12 @@ func NewServer(fs fs.FS) *Server {
 }
 
 func (s *Server) Start(port int) error {
-	// Ensure data directory exists
 	if err := os.MkdirAll(s.dataDir, 0755); err != nil {
 		return fmt.Errorf("failed to create data directory: %v", err)
+	}
+
+	if err := s.loadAllowedKeys(); err != nil {
+		return fmt.Errorf("failed to load allowed keys: %v", err)
 	}
 
 	s.setupRoutes()
@@ -54,7 +65,6 @@ func (s *Server) Start(port int) error {
 }
 
 func (s *Server) setupRoutes() {
-	// Setup templates
 	tmpl := template.Must(template.New("").ParseFS(s.fs, "*.html"))
 	s.router.SetHTMLTemplate(tmpl)
 
@@ -65,24 +75,16 @@ func (s *Server) setupRoutes() {
 		ctx.Next()
 	})
 
-	// Upload UI route
 	s.router.GET("/:id", s.handleUploadUI)
 
-	// Upload endpoint
 	s.router.POST("/:id/upload", s.handleUpload)
 
-	// Media retrieval endpoint
 	s.router.GET("/:id/media", s.handleGetMedia)
 
-	// Serve static files
 	s.router.NoRoute(
 		static.Serve("/", ui.StaticLocalFS{http.FS(s.fs)}),
 		static.Serve("/files", static.LocalFile(s.dataDir, true)),
 	)
-
-	// Serve uploaded files
-	// s.router.Use(static.Serve("/files", static.LocalFile(s.dataDir, true)))
-	// s.router.Static("/files", s.dataDir)
 }
 
 func (s *Server) handleUploadUI(c *gin.Context) {
@@ -94,13 +96,12 @@ func (s *Server) handleUploadUI(c *gin.Context) {
 	// id := c.Param("id")
 	b = bytes.ReplaceAll(b, []byte("__APP_IS_EMBEDDED__"), []byte("true"))
 
-	c.Data(http.StatusOK, "text/html; charset=utf-8", b) // exact markup preserved
+	c.Data(http.StatusOK, "text/html; charset=utf-8", b)
 }
 
 func (s *Server) handleUpload(c *gin.Context) {
 	frameID := c.Param("id")
 
-	// Create frame directory if it doesn't exist
 	frameDir := filepath.Join(s.dataDir, frameID)
 	if err := os.MkdirAll(frameDir, 0755); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create frame directory"})
@@ -133,7 +134,6 @@ func (s *Server) handleUpload(c *gin.Context) {
 	}
 	defer file.Close()
 
-	// Get appropriate media processor
 	processor := GetMediaProcessor(header.Filename)
 	if processor == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unsupported file type"})
@@ -143,12 +143,10 @@ func (s *Server) handleUpload(c *gin.Context) {
 	mediaId := uuid.New().String()
 
 	go func() {
-		// Save uploaded file to system temp location
 		originalExt := filepath.Ext(header.Filename)
 		tempUploadFile, err := os.CreateTemp("", "upload-*"+originalExt)
 		if err != nil {
 			fmt.Printf("Failed to create temp file: %v", err)
-			// c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create temp file"})
 			return
 		}
 		tempUploadPath := tempUploadFile.Name()
@@ -156,32 +154,25 @@ func (s *Server) handleUpload(c *gin.Context) {
 
 		if _, err := io.Copy(tempUploadFile, file); err != nil {
 			tempUploadFile.Close()
-			// c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
 			fmt.Printf("Failed to save file: %v", err)
 			return
 		}
 		tempUploadFile.Close()
 
-		// Process the file
 		processedPath, err := processor.Process(tempUploadPath)
 		if err != nil {
-			// c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to process file: %v", err)})
 			fmt.Printf("Failed to process file: %v", err)
 			return
 		}
 		defer os.Remove(processedPath)
 
-		// Generate unique ID and final filename
 		processedExt := filepath.Ext(processedPath)
 		finalFilename := mediaId + processedExt
 		finalFilePath := filepath.Join(frameDir, finalFilename)
 
-		// Move processed file to final destination
 		if err := os.Rename(processedPath, finalFilePath); err != nil {
-			// If rename fails (e.g., cross-device), copy the file
 			srcFile, err := os.Open(processedPath)
 			if err != nil {
-				// c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save processed file"})
 				fmt.Printf("Failed to save processed file: %v", err)
 				return
 			}
@@ -189,7 +180,6 @@ func (s *Server) handleUpload(c *gin.Context) {
 
 			dstFile, err := os.Create(finalFilePath)
 			if err != nil {
-				// c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save processed file"})
 				fmt.Printf("Failed to save processed file: %v", err)
 				return
 			}
@@ -197,16 +187,13 @@ func (s *Server) handleUpload(c *gin.Context) {
 
 			if _, err := io.Copy(dstFile, srcFile); err != nil {
 				os.Remove(finalFilePath)
-				// c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save processed file"})
 				fmt.Printf("Failed to save processed file: %v", err)
 				return
 			}
 		}
 
-		// Determine media type
 		mediaType := DetermineMediaType(finalFilename)
 
-		// Save metadata
 		media := MediaItem{
 			ID:        mediaId,
 			Type:      mediaType,
@@ -216,7 +203,6 @@ func (s *Server) handleUpload(c *gin.Context) {
 
 		if err := s.saveMediaMetadata(frameDir, media); err != nil {
 			os.Remove(finalFilePath)
-			// c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save metadata"})
 			fmt.Printf("Failed to save metadata: %v", err)
 			return
 		}
@@ -227,6 +213,18 @@ func (s *Server) handleUpload(c *gin.Context) {
 
 func (s *Server) handleGetMedia(c *gin.Context) {
 	frameID := c.Param("id")
+
+	accessKey := c.GetHeader("Authorization")
+	if accessKey == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
+		return
+	}
+
+	if !s.validateAccessKey(frameID, accessKey) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Invalid access key for this frame"})
+		return
+	}
+
 	frameDir := filepath.Join(s.dataDir, frameID)
 
 	media, err := s.loadMediaMetadata(frameDir)
@@ -235,7 +233,6 @@ func (s *Server) handleGetMedia(c *gin.Context) {
 		return
 	}
 
-	// Filter by 'since' timestamp if provided
 	if sinceStr := c.Query("since"); sinceStr != "" {
 		since, err := time.Parse(time.RFC3339, sinceStr)
 		if err != nil {
@@ -243,7 +240,6 @@ func (s *Server) handleGetMedia(c *gin.Context) {
 			return
 		}
 
-		// Filter media items to only include those created after 'since'
 		filteredMedia := make([]MediaItem, 0)
 		for _, item := range media {
 			if item.CreatedAt.After(since) {
@@ -259,16 +255,13 @@ func (s *Server) handleGetMedia(c *gin.Context) {
 func (s *Server) saveMediaMetadata(frameDir string, media MediaItem) error {
 	metadataFile := filepath.Join(frameDir, "metadata.json")
 
-	// Load existing metadata
 	var mediaList []MediaItem
 	if data, err := os.ReadFile(metadataFile); err == nil {
 		json.Unmarshal(data, &mediaList)
 	}
 
-	// Add new media item
 	mediaList = append(mediaList, media)
 
-	// Save updated metadata
 	data, err := json.MarshalIndent(mediaList, "", "  ")
 	if err != nil {
 		return err
@@ -283,7 +276,7 @@ func (s *Server) loadMediaMetadata(frameDir string) ([]MediaItem, error) {
 	data, err := os.ReadFile(metadataFile)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return []MediaItem{}, nil // Return empty slice if no metadata file exists
+			return []MediaItem{}, nil
 		}
 		return nil, err
 	}
@@ -294,4 +287,38 @@ func (s *Server) loadMediaMetadata(frameDir string) ([]MediaItem, error) {
 	}
 
 	return media, nil
+}
+
+func (s *Server) loadAllowedKeys() error {
+	allowedKeysFile := "allowed_keys.json"
+
+	data, err := os.ReadFile(allowedKeysFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			s.allowedKeys = make(map[string][]string)
+			return nil
+		}
+		return fmt.Errorf("failed to read allowed_keys.json: %v", err)
+	}
+
+	var config AllowedKeysConfig
+	if err := json.Unmarshal(data, &config); err != nil {
+		return fmt.Errorf("failed to parse allowed_keys.json: %v", err)
+	}
+
+	s.allowedKeys = make(map[string][]string)
+	for frameID, frameConfig := range config {
+		s.allowedKeys[frameID] = frameConfig.AllowedKeys
+	}
+
+	return nil
+}
+
+func (s *Server) validateAccessKey(frameID, accessKey string) bool {
+	allowedKeys, exists := s.allowedKeys[frameID]
+	if !exists {
+		return false
+	}
+
+	return slices.Contains(allowedKeys, accessKey)
 }

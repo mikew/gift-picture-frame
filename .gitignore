@@ -51,3 +51,5 @@ node_modules/
 /build
 .eslintcache
 routeTree.gen.ts
+allowed_keys.json
+picture-frame

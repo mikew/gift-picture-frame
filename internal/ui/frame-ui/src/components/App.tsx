@@ -4,6 +4,8 @@ import { createSignal, createEffect, onMount, onCleanup } from 'solid-js'
 import AppConfig from '#src/appConfig.ts'
 
 import * as styles from './App.css.ts'
+import { ColorTemperatureProvider } from './colorTemperatureContext.tsx'
+import ColorTemperatureOverlay from './ColorTemperatureOverlay.tsx'
 import Controls from './Controls.tsx'
 import FrameInfo from './FrameInfo.tsx'
 import InterfaceCntainer from './InterfaceContainer.tsx'
@@ -84,27 +86,31 @@ export default function App() {
   })
 
   return (
-    <div class={styles.container}>
-      <KeyboardHandler
-        onNext={nextSlide}
-        onPrevious={previousSlide}
-        onTogglePlayPause={togglePlayPause}
-        onReload={loadMedia}
-      />
-      <SwipeHandler onNext={nextSlide} onPrevious={previousSlide} />
-      <MediaDisplay media={media()} currentIndex={currentIndex()} />
-
-      <InterfaceCntainer>
-        <FrameInfo media={media()} currentIndex={currentIndex()} />
-
-        <Controls
-          onPrevious={previousSlide}
+    <ColorTemperatureProvider>
+      <div class={styles.container}>
+        <KeyboardHandler
           onNext={nextSlide}
+          onPrevious={previousSlide}
           onTogglePlayPause={togglePlayPause}
-          isPlaying={isPlaying()}
+          onReload={loadMedia}
         />
-      </InterfaceCntainer>
-    </div>
+        <SwipeHandler onNext={nextSlide} onPrevious={previousSlide} />
+        <MediaDisplay media={media()} currentIndex={currentIndex()} />
+
+        <InterfaceCntainer>
+          <FrameInfo media={media()} currentIndex={currentIndex()} />
+
+          <Controls
+            onPrevious={previousSlide}
+            onNext={nextSlide}
+            onTogglePlayPause={togglePlayPause}
+            isPlaying={isPlaying()}
+          />
+        </InterfaceCntainer>
+
+        <ColorTemperatureOverlay />
+      </div>
+    </ColorTemperatureProvider>
   )
 }
 
@@ -154,14 +160,14 @@ function SwipeHandler(props: SwipeHandlerProps) {
     let startX = 0
     let startY = 0
 
-    const handleTouchStart = (e: TouchEvent) => {
-      startX = e.touches[0]?.clientX || 0
-      startY = e.touches[0]?.clientY || 0
+    const handleTouchStart = (e: PointerEvent) => {
+      startX = e.clientX
+      startY = e.clientY
     }
 
-    const handleTouchEnd = (e: TouchEvent) => {
-      const endX = e.changedTouches[0]?.clientX || 0
-      const endY = e.changedTouches[0]?.clientY || 0
+    const handleTouchEnd = (e: PointerEvent) => {
+      const endX = e.clientX
+      const endY = e.clientY
       const diffX = startX - endX
       const diffY = startY - endY
 
@@ -174,12 +180,12 @@ function SwipeHandler(props: SwipeHandlerProps) {
       }
     }
 
-    document.addEventListener('touchstart', handleTouchStart)
-    document.addEventListener('touchend', handleTouchEnd)
+    document.addEventListener('pointerdown', handleTouchStart)
+    document.addEventListener('pointerup', handleTouchEnd)
 
     onCleanup(() => {
-      document.removeEventListener('touchstart', handleTouchStart)
-      document.removeEventListener('touchend', handleTouchEnd)
+      document.removeEventListener('pointerdown', handleTouchStart)
+      document.removeEventListener('pointerup', handleTouchEnd)
     })
   })
 
