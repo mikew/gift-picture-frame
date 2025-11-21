@@ -7,7 +7,7 @@ import RotateRight from 'shared/svgs/rotate_right.svg?component-solid'
 import { sprinkles } from 'shared/theme/sprinkles.css.js'
 import type { MediaItem } from 'shared/types.ts'
 import type { Component } from 'solid-js'
-import { createSignal } from 'solid-js'
+import { createSignal, onCleanup, onMount } from 'solid-js'
 
 import AppConfig from '#src/appConfig.ts'
 
@@ -27,8 +27,23 @@ const OnlineStatusIndicator: Component<{ size: string }> = (props) => {
     typeof window === 'undefined' ? true : navigator.onLine,
   )
 
-  isomorphicWindow()?.addEventListener('online', () => setIsOnline(true))
-  isomorphicWindow()?.addEventListener('offline', () => setIsOnline(false))
+  function handleOnline() {
+    setIsOnline(true)
+  }
+
+  function handleOffline() {
+    setIsOnline(false)
+  }
+
+  onMount(() => {
+    isomorphicWindow()?.addEventListener('online', () => setIsOnline(true))
+    isomorphicWindow()?.addEventListener('offline', () => setIsOnline(false))
+
+    onCleanup(() => {
+      isomorphicWindow()?.removeEventListener('online', handleOnline)
+      isomorphicWindow()?.removeEventListener('offline', handleOffline)
+    })
+  })
 
   // const intervalId = setInterval(() => {
   //   console.log(navigator.onLine)

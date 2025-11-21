@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css'
-import { iconClassess } from 'shared/Icon.css.js'
+import { iconClasses } from 'shared/Icon.css.js'
 import { themeContract } from 'shared/theme/contract.css.ts'
 import { sprinkles } from 'shared/theme/sprinkles.css.ts'
 
@@ -26,7 +26,7 @@ export const controlButton = style([
     color: 'white',
     borderRadius: 'circle',
   }),
-  iconClassess.root,
+  iconClasses.root,
   {
     'background': 'rgba(50, 50, 50, 0.4)',
     'border': 'none',

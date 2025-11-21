@@ -21,7 +21,12 @@ func (w *NmcliWifiManager) Connect(ssid string, password string) error {
 	deleteCmd := exec.Command("nmcli", "connection", "delete", ssid)
 	_ = deleteCmd.Run()
 
-	cmd := exec.Command("nmcli", "device", "wifi", "connect", ssid, "password", password)
+	var cmd *exec.Cmd
+	if password != "" {
+		cmd = exec.Command("nmcli", "device", "wifi", "connect", ssid, "password", password)
+	} else {
+		cmd = exec.Command("nmcli", "device", "wifi", "connect", ssid)
+	}
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("failed to connect to WiFi network %s: %v, output: %s", ssid, err, string(output))

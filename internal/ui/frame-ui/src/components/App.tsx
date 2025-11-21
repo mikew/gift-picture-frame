@@ -185,7 +185,7 @@ function SwipeHandler(props: SwipeHandlerProps) {
 
     onCleanup(() => {
       document.removeEventListener('pointerdown', handleTouchStart)
-      document.removeEventListener('pointerup', handleTouchStart)
+      document.removeEventListener('pointerup', handleTouchEnd)
     })
   })
 
