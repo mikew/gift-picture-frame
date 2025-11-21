@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/mikew/gift-picture-frame/compare/v1.1.0...v1.2.0) (2025-11-21)
+
+
+### Features
+
+* Brightness controls, screen rotation controls, move things around for better organization, some kinda access control over media listings ([#18](https://github.com/mikew/gift-picture-frame/issues/18)) ([9a9eeab](https://github.com/mikew/gift-picture-frame/commit/9a9eeab0f81d8919e56d0c3e29e34800f27d5a13)), closes [#15](https://github.com/mikew/gift-picture-frame/issues/15)
+
 ## [1.1.0](https://github.com/mikew/gift-picture-frame/compare/v1.0.1...v1.1.0) (2025-11-11)
 
 
