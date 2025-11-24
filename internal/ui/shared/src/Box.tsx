@@ -1,11 +1,17 @@
-import { ParentComponent } from 'solid-js'
+import { Component, JSX, splitProps } from 'solid-js'
 import { sprinkles, Sprinkles } from './theme/sprinkles.css.ts'
+import { clsx } from './clsx.ts'
 
-export interface BoxProps extends Sprinkles {}
+export type BoxProps = JSX.HTMLElementTags['div'] & Sprinkles
 
-export const Box: ParentComponent<BoxProps> = ({
-  children,
-  ...sprinklesProps
-}) => {
-  return <div class={sprinkles(sprinklesProps)}>{children}</div>
+const Box: Component<BoxProps> = (props) => {
+  const [styleProps, sxProps, rest] = splitProps(
+    props,
+    ['class'],
+    Array.from(sprinkles.properties),
+  )
+
+  return <div {...rest} class={clsx(sprinkles(sxProps), styleProps.class)} />
 }
+
+export default Box

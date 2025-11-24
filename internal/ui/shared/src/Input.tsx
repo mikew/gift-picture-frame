@@ -1,21 +1,20 @@
 import { Component, JSX, splitProps } from 'solid-js'
-
-import { clsx } from './clsx.ts'
-import { iconClasses } from './Icon.css.ts'
 import { sprinkles, Sprinkles } from './theme/sprinkles.css.ts'
+import { clsx } from './clsx.ts'
+import { inputClasses } from './Input.css.ts'
 
-export type IconProps = JSX.HTMLElementTags['span'] & {
+export type InputProps = JSX.HTMLElementTags['input'] & {
   sx?: Sprinkles
 }
 
-const Icon: Component<IconProps> = (props) => {
+const Input: Component<InputProps> = (props) => {
   const [styleProps, rest] = splitProps(props, ['sx', 'class'])
 
   return (
-    <span
+    <input
       {...rest}
       class={clsx(
-        iconClasses.root,
+        inputClasses.root,
         styleProps.sx ? sprinkles(styleProps.sx) : undefined,
         styleProps.class,
       )}
@@ -23,4 +22,4 @@ const Icon: Component<IconProps> = (props) => {
   )
 }
 
-export default Icon
+export default Input

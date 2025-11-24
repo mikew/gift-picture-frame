@@ -1,3 +1,8 @@
+import Box from 'shared/Box.jsx'
+import Button from 'shared/Button.tsx'
+import { clsx } from 'shared/clsx.js'
+import Input from 'shared/Input.tsx'
+import { sprinkles } from 'shared/theme/sprinkles.css.js'
 import {
   createEffect,
   createSignal,
@@ -7,6 +12,8 @@ import {
 } from 'solid-js'
 
 import AppConfig from '#src/appConfig.ts'
+
+import { fancyPaperClasses } from './FancyPaper.css'
 
 async function fetchNetworks() {
   const response = await fetch(`${AppConfig.apiBase}/api/wifi/scan`)
@@ -18,6 +25,8 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
   props,
 ) => {
   let dialogRef: HTMLDialogElement | undefined = undefined
+  let passwordElementRef: HTMLInputElement | undefined = undefined
+
   const [data, setData] = createSignal<{ networks: { ssid: string }[] }>({
     networks: [],
   })
@@ -44,6 +53,8 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
           console.error('Failed to open dialog:', e)
         }
       } else {
+        setSsid('')
+        setPassword('')
         dialogRef.close()
       }
     }
@@ -62,44 +73,47 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
         props.onClose()
       }}
     >
-      <div
-        style={{
-          'padding': '8px',
-          'background-color': '#111',
-        }}
-      >
-        Network Name (SSID):
-        <br />
-        <input
-          type="text"
-          value={ssid()}
-          onInput={(e) => {
-            setSsid(e.currentTarget.value)
-          }}
-          style={{ width: '100%' }}
-        />
-        <br />
-        Password:
-        <br />
-        <input
-          type={isPasswordVisible() ? 'text' : 'password'}
-          value={password()}
-          onInput={(e) => {
-            setPassword(e.currentTarget.value)
-          }}
-          style={{ width: '100%' }}
-        />
-        <br />
-        <label>
-          <input
-            type="checkbox"
-            checked={isPasswordVisible()}
-            onChange={(e) => setIsPasswordVisible(e.currentTarget.checked)}
+      <div class={clsx(fancyPaperClasses.root, sprinkles({ padding: 'x2' }))}>
+        <Box marginY="x1">
+          Network Name (SSID):
+          <br />
+          <Input
+            type="text"
+            value={ssid()}
+            onInput={(e) => {
+              setSsid(e.currentTarget.value)
+            }}
+            style={{ width: '100%' }}
           />
-          Show Password
-        </label>
-        <br />
-        <button
+        </Box>
+        <Box marginY="x1">
+          Password:
+          <Input
+            ref={(el) => {
+              passwordElementRef = el
+            }}
+            type={isPasswordVisible() ? 'text' : 'password'}
+            value={password()}
+            onInput={(e) => {
+              setPassword(e.currentTarget.value)
+            }}
+            style={{ width: '100%' }}
+          />
+        </Box>
+        <Box marginY="x1">
+          <label>
+            <input
+              type="checkbox"
+              checked={isPasswordVisible()}
+              onChange={(e) => setIsPasswordVisible(e.currentTarget.checked)}
+            />
+            Show Password
+          </label>
+        </Box>
+        <Button
+          color="primary"
+          size="medium"
+          sx={{ width: 'full', marginY: 'x2' }}
           onClick={async () => {
             await fetch(`${AppConfig.apiBase}/api/wifi/connect`, {
               method: 'POST',
@@ -115,7 +129,7 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
           }}
         >
           Connect
-        </button>
+        </Button>
         <hr />
         Available Networks:
         <div>
@@ -126,6 +140,7 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
                   onclick={() => {
                     setSsid(network.ssid)
                     setPassword('')
+                    passwordElementRef?.focus()
                   }}
                 >
                   {network.ssid}

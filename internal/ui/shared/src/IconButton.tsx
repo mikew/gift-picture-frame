@@ -1,15 +1,30 @@
-import { JSX, ParentComponent } from 'solid-js'
+import { Component, JSX, splitProps } from 'solid-js'
 import Icon from './Icon.tsx'
 import { iconButtonClasses } from './IconButton.css.ts'
 import { clsx } from './clsx.ts'
+import { sprinkles, Sprinkles } from './theme/sprinkles.css.ts'
 
-const IconButton: ParentComponent<JSX.HTMLElementTags['button']> = ({
-  children,
-  ...props
-}) => {
+export type IconButtonProps = JSX.HTMLElementTags['button'] & {
+  sx?: Sprinkles
+}
+
+const IconButton: Component<IconButtonProps> = (props) => {
+  const [styleProps, children, rest] = splitProps(
+    props,
+    ['sx', 'class'],
+    ['children'],
+  )
+
   return (
-    <button {...props} class={clsx(iconButtonClasses.root, props.class)}>
-      <Icon>{children}</Icon>
+    <button
+      {...rest}
+      class={clsx(
+        iconButtonClasses.root,
+        styleProps.sx ? sprinkles(styleProps.sx) : undefined,
+        styleProps.class,
+      )}
+    >
+      <Icon>{children.children}</Icon>
     </button>
   )
 }

@@ -13,8 +13,9 @@ export const iconButtonClasses = {
       padding: 'x1',
     }),
     {
-      width: '40px',
+      width: '48px',
       display: 'inline-flex',
+      borderTop: '1px solid color-mix(in srgb, #fff 40%, transparent)',
     },
   ]),
 }

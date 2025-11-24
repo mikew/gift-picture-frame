@@ -1,3 +1,4 @@
+import { isomorphicWindow } from 'shared/isomorphicWindow.js'
 import type { MediaItem } from 'shared/types.ts'
 import { createSignal, createEffect, onMount, onCleanup } from 'solid-js'
 
@@ -156,36 +157,57 @@ interface SwipeHandlerProps {
 }
 
 function SwipeHandler(props: SwipeHandlerProps) {
-  onMount(() => {
-    let startX = 0
-    let startY = 0
+  let startX = 0
+  let startY = 0
 
-    const handleTouchStart = (e: PointerEvent) => {
-      startX = e.clientX
-      startY = e.clientY
+  const handleTouchStart = (e: TouchEvent) => {
+    if (e.touches[0]) {
+      startX = e.touches[0].clientX
+      startY = e.touches[0].clientY
     }
+  }
 
-    const handleTouchEnd = (e: PointerEvent) => {
-      const endX = e.clientX
-      const endY = e.clientY
-      const diffX = startX - endX
-      const diffY = startY - endY
+  const handleTouchEnd = (e: TouchEvent) => {
+    if (e.changedTouches[0]) {
+      const endX = e.changedTouches[0].clientX
+      const endY = e.changedTouches[0].clientY
+      processSwipe(endX, endY)
+    }
+  }
 
-      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-        if (diffX > 0) {
-          props.onNext()
-        } else {
-          props.onPrevious()
-        }
+  const handleMouseDown = (e: MouseEvent) => {
+    startX = e.clientX
+    startY = e.clientY
+  }
+
+  const handleMouseUp = (e: MouseEvent) => {
+    processSwipe(e.clientX, e.clientY)
+  }
+
+  const processSwipe = (endX: number, endY: number) => {
+    const diffX = startX - endX
+    const diffY = startY - endY
+
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+      if (diffX > 0) {
+        props.onNext()
+      } else {
+        props.onPrevious()
       }
     }
+  }
 
-    document.addEventListener('pointerdown', handleTouchStart)
-    document.addEventListener('pointerup', handleTouchEnd)
+  onMount(() => {
+    isomorphicWindow()?.addEventListener('touchstart', handleTouchStart)
+    isomorphicWindow()?.addEventListener('touchend', handleTouchEnd)
+    isomorphicWindow()?.addEventListener('mousedown', handleMouseDown)
+    isomorphicWindow()?.addEventListener('mouseup', handleMouseUp)
 
     onCleanup(() => {
-      document.removeEventListener('pointerdown', handleTouchStart)
-      document.removeEventListener('pointerup', handleTouchEnd)
+      isomorphicWindow()?.removeEventListener('touchstart', handleTouchStart)
+      isomorphicWindow()?.removeEventListener('touchend', handleTouchEnd)
+      isomorphicWindow()?.removeEventListener('mousedown', handleMouseDown)
+      isomorphicWindow()?.removeEventListener('mouseup', handleMouseUp)
     })
   })
 

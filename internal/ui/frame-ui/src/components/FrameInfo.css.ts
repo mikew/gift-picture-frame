@@ -2,14 +2,10 @@ import { style } from '@vanilla-extract/css'
 import { themeContract } from 'shared/theme/contract.css.js'
 import { sprinkles } from 'shared/theme/sprinkles.css.js'
 
-export const surface = style([
-  sprinkles({
-    backgroundColor: 'surface',
-  }),
-])
+import { fancyPaperClasses } from './FancyPaper.css.ts'
 
 export const container = style([
-  surface,
+  fancyPaperClasses.root,
   sprinkles({
     position: 'absolute',
     display: 'flexRow',
@@ -25,9 +21,12 @@ export const container = style([
 ])
 
 export const menu = style([
-  surface,
+  fancyPaperClasses.root,
   sprinkles({
     borderRadius: 'default',
     padding: 'x2',
   }),
+  {
+    width: '300px',
+  },
 ])
