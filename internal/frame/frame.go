@@ -73,6 +73,7 @@ func (s *Server) Start() error {
 		return fmt.Errorf("failed to load settings: %v", err)
 	}
 	s.settings = settings
+	s.restoreSettings()
 
 	s.setupRoutes()
 
