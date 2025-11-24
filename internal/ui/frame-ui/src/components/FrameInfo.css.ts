@@ -27,6 +27,6 @@ export const menu = style([
     padding: 'x2',
   }),
   {
-    width: '300px',
+    width: '250px',
   },
 ])

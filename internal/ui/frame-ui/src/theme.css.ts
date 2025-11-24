@@ -11,9 +11,9 @@ export const lightThemeClass = createTheme(themeContract, {
     },
 
     secondary: {
-      light: '#7e57c2',
-      main: '#545454',
-      dark: '#311b92',
+      light: '#ff4081',
+      main: '#6f6f6f',
+      dark: '#c51162',
       contrastText: '#ffffff',
     },
 

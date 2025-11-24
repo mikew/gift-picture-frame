@@ -114,7 +114,7 @@ export default function FrameInfo(props: FrameInfoProps) {
           <div class={styles.menu}>
             <Button
               color="secondary"
-              size="small"
+              size="medium"
               onclick={() => {
                 setIsNetworkDialogOpen(true)
               }}

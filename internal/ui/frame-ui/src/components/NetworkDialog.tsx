@@ -114,17 +114,20 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
           color="primary"
           size="medium"
           sx={{ width: 'full', marginY: 'x2' }}
-          onClick={async () => {
-            await fetch(`${AppConfig.apiBase}/api/wifi/connect`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                ssid: ssid(),
-                password: password(),
-              }),
-            })
+          onClick={() => {
+            if (ssid()) {
+              fetch(`${AppConfig.apiBase}/api/wifi/connect`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  ssid: ssid(),
+                  password: password(),
+                }),
+              })
+            }
+
             props.onClose()
           }}
         >

@@ -29,7 +29,7 @@ func (s *Server) handleWifiScan(ctx *gin.Context) {
 
 type wifiConnectRequest struct {
 	SSID     string `json:"ssid" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Password string `json:"password"`
 }
 
 func (s *Server) handleWifiConnect(ctx *gin.Context) {
