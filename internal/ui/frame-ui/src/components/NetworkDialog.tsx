@@ -1,13 +1,17 @@
 import Box from 'shared/Box.jsx'
 import Button from 'shared/Button.tsx'
 import { clsx } from 'shared/clsx.js'
+import Icon from 'shared/Icon.jsx'
 import Input from 'shared/Input.tsx'
+import ArrowDropDown from 'shared/svgs/arrow_drop_down.svg?component-solid'
+import ArrowDropUp from 'shared/svgs/arrow_drop_up.svg?component-solid'
 import { sprinkles } from 'shared/theme/sprinkles.css.js'
 import {
   createEffect,
   createSignal,
   For,
   onMount,
+  Show,
   type Component,
 } from 'solid-js'
 
@@ -43,6 +47,7 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
   const [ssid, setSsid] = createSignal('')
   const [password, setPassword] = createSignal('')
   const [isPasswordVisible, setIsPasswordVisible] = createSignal(false)
+  const [areNetworksVisible, setAreNetworksVisible] = createSignal(false)
 
   createEffect(() => {
     if (dialogRef) {
@@ -138,24 +143,47 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
 
         <hr />
 
-        <div>Available Networks:</div>
-        <div>
-          <For each={data()?.networks ?? []}>
-            {(network) => {
-              return (
-                <div
-                  onclick={() => {
-                    setSsid(network.ssid)
-                    setPassword('')
-                    passwordElementRef?.focus()
-                  }}
-                >
-                  {network.ssid}
-                </div>
-              )
-            }}
-          </For>
-        </div>
+        <Button
+          color="secondary"
+          size="small"
+          onClick={() => {
+            setAreNetworksVisible((prev) => !prev)
+          }}
+          sx={{ marginY: 'x2', width: 'full', gap: 'x1' }}
+        >
+          <span>Available Networks</span>{' '}
+          {areNetworksVisible() ? (
+            <Icon>
+              <ArrowDropUp />
+            </Icon>
+          ) : (
+            <Icon>
+              <ArrowDropDown />
+            </Icon>
+          )}
+        </Button>
+
+        <Show when={areNetworksVisible()}>
+          <div>
+            <For each={data()?.networks ?? []}>
+              {(network) => {
+                return (
+                  <Box
+                    padding="x1"
+                    cursor="pointer"
+                    onClick={() => {
+                      setSsid(network.ssid)
+                      setPassword('')
+                      passwordElementRef?.focus()
+                    }}
+                  >
+                    {network.ssid}
+                  </Box>
+                )
+              }}
+            </For>
+          </div>
+        </Show>
       </div>
     </dialog>
   )
