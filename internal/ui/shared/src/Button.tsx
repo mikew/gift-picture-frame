@@ -1,8 +1,10 @@
-import { children, Component, JSX, splitProps } from 'solid-js'
-
-import { sprinkles, Sprinkles } from './theme/sprinkles.css.ts'
-import { buttonRecipe, ButtonRecipeProps } from './Button.css.ts'
+import type { ButtonRecipeProps } from './Button.css.ts'
+import { buttonRecipe } from './Button.css.ts'
 import { clsx } from './clsx.ts'
+import { sprinkles } from './theme/sprinkles.css.ts'
+import type { Sprinkles } from './theme/sprinkles.css.ts'
+import { splitProps } from 'solid-js'
+import type { Component, JSX } from 'solid-js'
 
 export type ButtonProps = ButtonRecipeProps
   & JSX.HTMLElementTags['button'] & {
@@ -13,10 +15,8 @@ const Button: Component<ButtonProps> = (props) => {
   const [recipeProps, styleProps, rest] = splitProps(
     props,
     buttonRecipe.variants(),
-    ['sx', 'class', 'children'],
+    ['sx', 'class'],
   )
-
-  const child = children(() => props.children)
 
   return (
     <button
@@ -26,9 +26,7 @@ const Button: Component<ButtonProps> = (props) => {
         styleProps.sx ? sprinkles(styleProps.sx) : undefined,
         styleProps.class,
       )}
-    >
-      {child()}
-    </button>
+    />
   )
 }
 

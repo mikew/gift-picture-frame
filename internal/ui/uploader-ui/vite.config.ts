@@ -81,5 +81,10 @@ export default defineConfig(async (env) => {
     transformer: 'lightningcss',
   }
 
+  config.resolve = {
+    ...config.resolve,
+    dedupe: [...(config.resolve?.dedupe || []), 'solid-js'],
+  }
+
   return config
 })

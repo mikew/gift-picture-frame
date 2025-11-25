@@ -1,4 +1,4 @@
-import { children, Component, JSX, splitProps } from 'solid-js'
+import { Component, JSX, splitProps } from 'solid-js'
 import { clsx } from './clsx'
 import { paperClasses } from './Paper.css'
 import { sprinkles, Sprinkles } from './theme/sprinkles.css'
@@ -8,9 +8,7 @@ export type PaperProps = JSX.HTMLElementTags['div'] & {
 }
 
 const Paper: Component<PaperProps> = (props) => {
-  const [styleProps, rest] = splitProps(props, ['sx', 'class', 'children'])
-
-  const child = children(() => styleProps.children)
+  const [styleProps, rest] = splitProps(props, ['sx', 'class'])
 
   return (
     <div
@@ -20,9 +18,7 @@ const Paper: Component<PaperProps> = (props) => {
         styleProps.sx ? sprinkles(styleProps.sx) : undefined,
         styleProps.class,
       )}
-    >
-      {child()}
-    </div>
+    />
   )
 }
 

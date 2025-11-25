@@ -9,7 +9,7 @@ export type IconButtonProps = JSX.HTMLElementTags['button'] & {
 }
 
 const IconButton: Component<IconButtonProps> = (props) => {
-  const [styleProps, children, rest] = splitProps(
+  const [styleProps, childrenProps, rest] = splitProps(
     props,
     ['sx', 'class'],
     ['children'],
@@ -24,7 +24,7 @@ const IconButton: Component<IconButtonProps> = (props) => {
         styleProps.class,
       )}
     >
-      <Icon>{children.children}</Icon>
+      <Icon>{childrenProps.children}</Icon>
     </button>
   )
 }
