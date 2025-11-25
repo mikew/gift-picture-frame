@@ -62,8 +62,6 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
 
   return (
     <dialog
-      // popover
-      // open
       ref={(el) => {
         dialogRef = el
       }}
@@ -74,20 +72,22 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
       }}
     >
       <div class={clsx(fancyPaperClasses.root, sprinkles({ padding: 'x2' }))}>
-        <Box marginY="x1">
-          Network Name (SSID):
-          <br />
+        <Box marginBottom="x1">
+          <div>Network Name (SSID):</div>
+
           <Input
             type="text"
             value={ssid()}
             onInput={(e) => {
               setSsid(e.currentTarget.value)
             }}
-            style={{ width: '100%' }}
+            sx={{ width: 'full' }}
           />
         </Box>
+
         <Box marginY="x1">
-          Password:
+          <div>Password:</div>
+
           <Input
             ref={(el) => {
               passwordElementRef = el
@@ -97,9 +97,10 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
             onInput={(e) => {
               setPassword(e.currentTarget.value)
             }}
-            style={{ width: '100%' }}
+            sx={{ width: 'full' }}
           />
         </Box>
+
         <Box marginY="x1">
           <label>
             <input
@@ -110,6 +111,7 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
             Show Password
           </label>
         </Box>
+
         <Button
           color="primary"
           size="medium"
@@ -133,8 +135,10 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
         >
           Connect
         </Button>
+
         <hr />
-        Available Networks:
+
+        <div>Available Networks:</div>
         <div>
           <For each={data()?.networks ?? []}>
             {(network) => {
