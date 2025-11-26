@@ -1,10 +1,10 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDir": "./",
     "outDir": "./tsc-output",
     "tsBuildInfoFile": "./tsc-output/tsconfig.tsbuildinfo"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "vite.config.ts", "eslint.config.js"],
   "references": [{ "path": "../shared" }]
 }

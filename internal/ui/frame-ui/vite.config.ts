@@ -76,7 +76,11 @@ export default defineConfig(async (env) => {
 
   config.resolve = {
     ...config.resolve,
-    dedupe: [...(config.resolve?.dedupe || []), 'solid-js'],
+    dedupe: [
+      ...(config.resolve?.dedupe || []),
+      'solid-js',
+      '@vanilla-extract/css',
+    ],
   }
 
   return config
