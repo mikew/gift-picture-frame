@@ -51,6 +51,7 @@ export default function MediaItemComponent(props: MediaItemProps) {
           muted
           loop
           autoplay
+          playsinline
           controls={false}
           onloadedmetadata={(event) => {
             event.currentTarget.play()

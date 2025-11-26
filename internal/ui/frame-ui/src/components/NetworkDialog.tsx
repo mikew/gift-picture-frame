@@ -5,6 +5,8 @@ import Icon from 'shared/Icon.jsx'
 import Input from 'shared/Input.tsx'
 import ArrowDropDown from 'shared/svgs/arrow_drop_down.svg?component-solid'
 import ArrowDropUp from 'shared/svgs/arrow_drop_up.svg?component-solid'
+import CheckBox from 'shared/svgs/check_box.svg?component-solid'
+import CheckBoxOutlineBlank from 'shared/svgs/check_box_outline_blank.svg?component-solid'
 import { sprinkles } from 'shared/theme/sprinkles.css.js'
 import {
   createEffect,
@@ -60,6 +62,8 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
       } else {
         setSsid('')
         setPassword('')
+        setAreNetworksVisible(false)
+        setIsPasswordVisible(false)
         dialogRef.close()
       }
     }
@@ -71,7 +75,6 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
         dialogRef = el
       }}
       style={{ 'z-index': 1 }}
-      id="network-dialog"
       onclose={() => {
         props.onClose()
       }}
@@ -106,15 +109,19 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
           />
         </Box>
 
-        <Box marginY="x1">
-          <label>
-            <input
-              type="checkbox"
-              checked={isPasswordVisible()}
-              onChange={(e) => setIsPasswordVisible(e.currentTarget.checked)}
-            />
-            Show Password
-          </label>
+        <Box
+          marginY="x1"
+          display="flexRow"
+          flexAlign="centerY"
+          gap="x1"
+          onClick={() => {
+            setIsPasswordVisible((prev) => !prev)
+          }}
+        >
+          <Icon>
+            {isPasswordVisible() ? <CheckBox /> : <CheckBoxOutlineBlank />}
+          </Icon>
+          <span>Show Password</span>
         </Box>
 
         <Button
@@ -149,18 +156,12 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
           onClick={() => {
             setAreNetworksVisible((prev) => !prev)
           }}
-          sx={{ marginY: 'x2', width: 'full', gap: 'x1' }}
+          sx={{ marginY: 'x2', width: 'full' }}
         >
-          <span>Available Networks</span>{' '}
-          {areNetworksVisible() ? (
-            <Icon>
-              <ArrowDropUp />
-            </Icon>
-          ) : (
-            <Icon>
-              <ArrowDropDown />
-            </Icon>
-          )}
+          <span>Available Networks</span>
+          <Icon>
+            {areNetworksVisible() ? <ArrowDropUp /> : <ArrowDropDown />}
+          </Icon>
         </Button>
 
         <Show when={areNetworksVisible()}>
@@ -183,7 +184,27 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
               }}
             </For>
           </div>
+
+          <Button
+            color="secondary"
+            size="small"
+            onClick={() => refetch()}
+            sx={{ marginY: 'x2', width: 'full' }}
+          >
+            Refresh
+          </Button>
         </Show>
+
+        <Button
+          color="secondary"
+          size="small"
+          sx={{ width: 'full' }}
+          onClick={() => {
+            props.onClose()
+          }}
+        >
+          Close
+        </Button>
       </div>
     </dialog>
   )
