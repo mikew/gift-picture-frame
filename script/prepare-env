@@ -3,6 +3,4 @@ set -ex
 
 pnpm install
 
-if [ -z "$CI" ]; then
-  pnpm exec tsc --build --emitDeclarationOnly
-fi
+pnpm exec tsc --build --emitDeclarationOnly
