@@ -1,11 +1,11 @@
-import type { Component, JSX} from 'solid-js';
+import type { Component, JSX } from 'solid-js'
 import { splitProps } from 'solid-js'
 
 import { clsx } from './clsx.ts'
 import Icon from './Icon.tsx'
-import type { IconButtonRecipeProps } from './IconButton.css.ts';
+import type { IconButtonRecipeProps } from './IconButton.css.ts'
 import { iconButtonRecipe } from './IconButton.css.ts'
-import type { Sprinkles } from './theme/sprinkles.css.ts';
+import type { Sprinkles } from './theme/sprinkles.css.ts'
 import { sprinkles } from './theme/sprinkles.css.ts'
 
 export type IconButtonProps = IconButtonRecipeProps
