@@ -27,7 +27,7 @@
   font-weight: 500;
 }
 
-.text-options input[type="color"] {
+.text-options input[type='color'] {
   width: 40px;
   height: 40px;
   border: none;

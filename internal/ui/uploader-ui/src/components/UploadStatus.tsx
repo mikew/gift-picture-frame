@@ -8,9 +8,7 @@ interface UploadStatusProps {
 
 export default function UploadStatus(props: UploadStatusProps) {
   return (
-    <div
-      class={`upload-status ${props.type} ${props.show ? 'show' : ''}`}
-    >
+    <div class={`upload-status ${props.type} ${props.show ? 'show' : ''}`}>
       {props.message}
     </div>
   )

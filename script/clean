@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -ex
+
+DIRS=(
+  "./"
+  "./internal/ui/shared/"
+  "./internal/ui/frame-ui/"
+  "./internal/ui/uploader-ui/"
+)
+
+for dir in "${DIRS[@]}"; do
+  pushd "$dir"
+    rm -rf "$dir/build"
+    rm -rf "$dir/dist"
+    rm -rf "$dir/tsc-output"
+    rm -rf "$dir/node_modules"
+  popd
+done

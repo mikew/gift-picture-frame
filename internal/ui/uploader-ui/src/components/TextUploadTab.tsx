@@ -1,3 +1,4 @@
+import Button from 'shared/Button.jsx'
 import { clsx } from 'shared/clsx.ts'
 import { normalizeStyleName } from 'shared/textStyles/normalizeStyleName.ts'
 import {
@@ -65,9 +66,14 @@ export default function TextUploadTab(props: TextUploadTabProps) {
         </div>
       </div>
 
-      <button class="upload-btn" onClick={handleUpload}>
+      <Button
+        size="large"
+        color="primary"
+        onClick={handleUpload}
+        sx={{ width: 'full' }}
+      >
         Upload Text
-      </button>
+      </Button>
     </div>
   )
 }

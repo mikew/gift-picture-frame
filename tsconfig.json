@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./internal/ui/shared/" },
+    { "path": "./internal/ui/frame-ui/" },
+    { "path": "./internal/ui/uploader-ui/" }
+  ]
+}

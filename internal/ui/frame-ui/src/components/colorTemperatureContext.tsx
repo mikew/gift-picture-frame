@@ -16,7 +16,9 @@ function clampValue(value: number, min: number, max: number) {
 export const ColorTemperatureProvider: ParentComponent = (props) => {
   const [temperature, setTemperature] = createSignal(
     clampValue(
-      Number(isomorphicWindow()?.localStorage.getItem('colorTemperature') || 0),
+      Number(
+        isomorphicWindow()?.localStorage.getItem('colorTemperature') || 40,
+      ),
       0,
       100,
     ),

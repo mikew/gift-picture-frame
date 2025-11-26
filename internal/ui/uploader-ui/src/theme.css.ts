@@ -7,33 +7,39 @@ export const lightThemeClass = createTheme(themeContract, {
       light: '#63a4ff',
       main: '#1976d2',
       dark: '#115293',
+      contrastText: '#ffffff',
     },
 
     secondary: {
       light: '#d05ce3',
       main: '#9c27b0',
       dark: '#6a0080',
+      contrastText: '#ffffff',
     },
 
     success: {
       light: '#81c784',
       main: '#4caf50',
       dark: '#388e3c',
+      contrastText: '#ffffff',
     },
     warning: {
       light: '#ffb74d',
       main: '#ff9800',
       dark: '#f57c00',
+      contrastText: '#ffffff',
     },
     error: {
       light: '#e57373',
       main: '#f44336',
       dark: '#d32f2f',
+      contrastText: '#ffffff',
     },
     info: {
       light: '#64b5f6',
       main: '#2196f3',
       dark: '#1976d2',
+      contrastText: '#ffffff',
     },
 
     background: '#000',

@@ -1,3 +1,5 @@
+import Box from 'shared/Box.tsx'
+import Button from 'shared/Button.jsx'
 import IconButton from 'shared/IconButton.tsx'
 import { isomorphicWindow } from 'shared/isomorphicWindow.ts'
 import BrightnessHigh from 'shared/svgs/brightness_high.svg?component-solid'
@@ -36,8 +38,8 @@ const OnlineStatusIndicator: Component<{ size: string }> = (props) => {
   }
 
   onMount(() => {
-    isomorphicWindow()?.addEventListener('online', () => setIsOnline(true))
-    isomorphicWindow()?.addEventListener('offline', () => setIsOnline(false))
+    isomorphicWindow()?.addEventListener('online', handleOnline)
+    isomorphicWindow()?.addEventListener('offline', handleOffline)
 
     onCleanup(() => {
       isomorphicWindow()?.removeEventListener('online', handleOnline)
@@ -110,70 +112,87 @@ export default function FrameInfo(props: FrameInfoProps) {
           }}
         >
           <div class={styles.menu}>
-            <div onclick={() => setIsNetworkDialogOpen(true)}>
+            <Button
+              color="secondary"
+              size="medium"
+              onclick={() => {
+                setIsNetworkDialogOpen(true)
+              }}
+              sx={{
+                gap: 'x1',
+                width: 'full',
+              }}
+            >
               <OnlineStatusIndicator size="1em" />
-            </div>
+              <span>Network Settings ...</span>
+            </Button>
 
             <div>Rotate Display</div>
-            <IconButton
-              onclick={async () => {
-                await fetch(`${AppConfig.apiBase}/api/rotate`, {
-                  method: 'POST',
-                  body: JSON.stringify({ direction: 'counterclockwise' }),
-                })
-              }}
-            >
-              <RotateLeft />
-            </IconButton>
+            <Box display="flexRow" flexAlign="spaceBetween" marginBottom="x1">
+              <IconButton
+                onclick={async () => {
+                  await fetch(`${AppConfig.apiBase}/api/rotate`, {
+                    method: 'POST',
+                    body: JSON.stringify({ direction: 'counterclockwise' }),
+                  })
+                }}
+              >
+                <RotateLeft />
+              </IconButton>
 
-            <IconButton
-              onclick={async () => {
-                await fetch(`${AppConfig.apiBase}/api/rotate`, {
-                  method: 'POST',
-                  body: JSON.stringify({ direction: 'clockwise' }),
-                })
-              }}
-            >
-              <RotateRight />
-            </IconButton>
+              <IconButton
+                onclick={async () => {
+                  await fetch(`${AppConfig.apiBase}/api/rotate`, {
+                    method: 'POST',
+                    body: JSON.stringify({ direction: 'clockwise' }),
+                  })
+                }}
+              >
+                <RotateRight />
+              </IconButton>
+            </Box>
 
             <div>Brightness</div>
-            <IconButton
-              onclick={async () => {
-                await fetch(`${AppConfig.apiBase}/api/brightness/decrease`, {
-                  method: 'POST',
-                })
-              }}
-            >
-              <BrightnessHigh style={{ 'font-size': '1em' }} />
-            </IconButton>
+            <Box display="flexRow" flexAlign="spaceBetween" marginBottom="x1">
+              <IconButton
+                onclick={async () => {
+                  await fetch(`${AppConfig.apiBase}/api/brightness/decrease`, {
+                    method: 'POST',
+                  })
+                }}
+              >
+                <BrightnessHigh style={{ 'font-size': '1em' }} />
+              </IconButton>
 
-            <IconButton
-              onclick={async () => {
-                await fetch(`${AppConfig.apiBase}/api/brightness/increase`, {
-                  method: 'POST',
-                })
-              }}
-            >
-              <BrightnessHigh />
-            </IconButton>
+              <IconButton
+                onclick={async () => {
+                  await fetch(`${AppConfig.apiBase}/api/brightness/increase`, {
+                    method: 'POST',
+                  })
+                }}
+              >
+                <BrightnessHigh />
+              </IconButton>
+            </Box>
 
             <div>Color Temperature</div>
-            <IconButton
-              onclick={() => {
-                setTemperature(temperature() - 20)
-              }}
-            >
-              -
-            </IconButton>
+            <Box display="flexRow" flexAlign="spaceBetween">
+              <IconButton
+                onclick={() => {
+                  setTemperature(temperature() - 20)
+                }}
+              >
+                -
+              </IconButton>
 
-            <IconButton
-              onclick={() => {
-                setTemperature(temperature() + 20)
-              }}
-            >
-              +
-            </IconButton>
+              <IconButton
+                onclick={() => {
+                  setTemperature(temperature() + 20)
+                }}
+              >
+                +
+              </IconButton>
+            </Box>
           </div>
         </div>
 

@@ -6,33 +6,39 @@ export const themeContract = createThemeContract({
       light: null,
       main: null,
       dark: null,
+      contrastText: null,
     },
 
     secondary: {
       light: null,
       main: null,
       dark: null,
+      contrastText: null,
     },
 
     success: {
       light: null,
       main: null,
       dark: null,
+      contrastText: null,
     },
     warning: {
       light: null,
       main: null,
       dark: null,
+      contrastText: null,
     },
     error: {
       light: null,
       main: null,
       dark: null,
+      contrastText: null,
     },
     info: {
       light: null,
       main: null,
       dark: null,
+      contrastText: null,
     },
 
     background: null,

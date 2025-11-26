@@ -1,3 +1,4 @@
+import Button from 'shared/Button.jsx'
 import { clsx } from 'shared/clsx.ts'
 import Icon from 'shared/Icon.jsx'
 import IconButton from 'shared/IconButton.tsx'
@@ -80,7 +81,7 @@ export default function FileUploadTab(props: FileUploadTabProps) {
   }
 
   return (
-    <div class="tab-content active">
+    <>
       <div
         class={clsx(styles.container, isDragOver() && 'dragover')}
         onDragOver={handleDragOver}
@@ -114,7 +115,6 @@ export default function FileUploadTab(props: FileUploadTabProps) {
               </div>
               <IconButton
                 class={sprinkles({
-                  cursor: 'pointer',
                   color: 'error.main',
                 })}
                 onClick={() => removeFile(index())}
@@ -126,13 +126,15 @@ export default function FileUploadTab(props: FileUploadTabProps) {
         </For>
       </div>
 
-      <button
-        class="upload-btn"
+      <Button
         disabled={props.selectedFiles.length === 0}
         onClick={props.onUpload}
+        size="large"
+        color="primary"
+        sx={{ width: 'full', marginTop: 'x1' }}
       >
         Upload Files
-      </button>
-    </div>
+      </Button>
+    </>
   )
 }
