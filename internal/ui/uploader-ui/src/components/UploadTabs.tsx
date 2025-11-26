@@ -1,4 +1,5 @@
-import './UploadTabs.css'
+import Box from 'shared/Box.tsx'
+import Button from 'shared/Button.tsx'
 
 interface UploadTabsProps {
   activeTab: 'file' | 'text'
@@ -7,19 +8,22 @@ interface UploadTabsProps {
 
 export default function UploadTabs(props: UploadTabsProps) {
   return (
-    <div class="upload-tabs">
-      <button
-        class={`tab-button ${props.activeTab === 'file' ? 'active' : ''}`}
+    <Box display="flexRow" gap="x1" marginBottom="x2">
+      <Button
+        size="medium"
+        color={props.activeTab === 'file' ? 'primary' : 'secondary'}
         onClick={() => props.onTabChange('file')}
       >
         Files
-      </button>
-      <button
-        class={`tab-button ${props.activeTab === 'text' ? 'active' : ''}`}
+      </Button>
+
+      <Button
+        size="medium"
+        color={props.activeTab === 'text' ? 'primary' : 'secondary'}
         onClick={() => props.onTabChange('text')}
       >
         Text
-      </button>
-    </div>
+      </Button>
+    </Box>
   )
 }
