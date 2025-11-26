@@ -10,6 +10,7 @@ import { createSignal, For } from 'solid-js'
 import * as styles from './TextUploadTab.css.ts'
 
 import './TextUploadTab.css'
+import Button from 'shared/Button.jsx'
 
 interface TextUploadTabProps {
   onUpload: (textData: { content: string; textStyle: string }) => void
@@ -65,9 +66,14 @@ export default function TextUploadTab(props: TextUploadTabProps) {
         </div>
       </div>
 
-      <button class="upload-btn" onClick={handleUpload}>
+      <Button
+        size="large"
+        color="primary"
+        onClick={handleUpload}
+        sx={{ width: 'full' }}
+      >
         Upload Text
-      </button>
+      </Button>
     </div>
   )
 }

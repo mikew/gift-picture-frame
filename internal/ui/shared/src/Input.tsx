@@ -1,6 +1,5 @@
 import type { Component, JSX } from 'solid-js'
 import { splitProps } from 'solid-js'
-import { Dynamic } from 'solid-js/web'
 
 import { clsx } from './clsx.ts'
 import { inputClasses } from './Input.css.ts'
@@ -12,12 +11,11 @@ export type InputProps = JSX.HTMLElementTags['input'] & {
 }
 
 const Input: Component<InputProps> = (props) => {
-  const [styleProps, rest] = splitProps(props, ['sx', 'class', 'children'])
+  const [styleProps, rest] = splitProps(props, ['sx', 'class'])
 
   return (
-    <Dynamic
+    <input
       {...rest}
-      component="input"
       class={clsx(
         inputClasses.root,
         styleProps.sx ? sprinkles(styleProps.sx) : undefined,
