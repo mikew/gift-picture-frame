@@ -1,8 +1,11 @@
-import { Component, createEffect, JSX, splitProps } from 'solid-js'
-import { sprinkles, Sprinkles } from './theme/sprinkles.css.ts'
+import type { Component, JSX } from 'solid-js'
+import { splitProps } from 'solid-js'
+import { Dynamic } from 'solid-js/web'
+
 import { clsx } from './clsx.ts'
 import { inputClasses } from './Input.css.ts'
-import { Dynamic } from 'solid-js/web'
+import type { Sprinkles } from './theme/sprinkles.css.ts'
+import { sprinkles } from './theme/sprinkles.css.ts'
 
 export type InputProps = JSX.HTMLElementTags['input'] & {
   sx?: Sprinkles

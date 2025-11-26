@@ -1,7 +1,9 @@
-import { Component, JSX, splitProps } from 'solid-js'
-import { Dynamic } from 'solid-js/web'
-import { sprinkles, Sprinkles } from './theme/sprinkles.css.ts'
+import type { Component, JSX } from 'solid-js'
+import { splitProps } from 'solid-js'
+
 import { clsx } from './clsx.ts'
+import type { Sprinkles } from './theme/sprinkles.css.ts'
+import { sprinkles } from './theme/sprinkles.css.ts'
 
 export type BoxProps = JSX.HTMLElementTags['div'] & Sprinkles
 

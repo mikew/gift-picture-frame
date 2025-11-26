@@ -1,7 +1,9 @@
 import { style } from '@vanilla-extract/css'
-import { recipe, RecipeVariants } from '@vanilla-extract/recipes'
-import { sprinkles } from './theme/sprinkles.css.ts'
+import type { RecipeVariants } from '@vanilla-extract/recipes';
+import { recipe } from '@vanilla-extract/recipes'
+
 import { themeContract } from './theme/contract.css.ts'
+import { sprinkles } from './theme/sprinkles.css.ts'
 
 export const buttonRecipe = recipe({
   base: sprinkles({
@@ -10,6 +12,7 @@ export const buttonRecipe = recipe({
     display: 'flexRow',
     flexAlign: 'centerAll',
   }),
+
   variants: {
     color: {
       primary: sprinkles({
@@ -41,7 +44,7 @@ export const buttonRecipe = recipe({
     size: {
       small: {
         padding: `calc(${themeContract.spacing.x1} / 2) ${themeContract.spacing.x1}`,
-        fontSize: '0.875rem',
+        fontSize: '0.875em',
       },
       medium: style([
         sprinkles({
@@ -49,7 +52,7 @@ export const buttonRecipe = recipe({
           paddingX: 'x2',
         }),
         {
-          fontSize: '1rem',
+          fontSize: '1em',
         },
       ]),
       large: style([
@@ -58,10 +61,15 @@ export const buttonRecipe = recipe({
           paddingX: 'x3',
         }),
         {
-          fontSize: '1.125rem',
+          fontSize: '1.125em',
         },
       ]),
     },
+  },
+
+  defaultVariants: {
+    color: 'primary',
+    size: 'medium',
   },
 })
 

@@ -1,7 +1,10 @@
-import { Component, JSX, splitProps } from 'solid-js'
+import type { Component, JSX} from 'solid-js';
+import { splitProps } from 'solid-js'
+
 import { clsx } from './clsx'
 import { paperClasses } from './Paper.css'
-import { sprinkles, Sprinkles } from './theme/sprinkles.css'
+import type { Sprinkles } from './theme/sprinkles.css';
+import { sprinkles } from './theme/sprinkles.css'
 
 export type PaperProps = JSX.HTMLElementTags['div'] & {
   sx?: Sprinkles

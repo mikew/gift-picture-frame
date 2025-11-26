@@ -1,8 +1,10 @@
-import { Component, JSX, splitProps } from 'solid-js'
+import type { Component, JSX} from 'solid-js';
+import { splitProps } from 'solid-js'
 
 import { clsx } from './clsx.ts'
 import { iconClasses } from './Icon.css.ts'
-import { sprinkles, Sprinkles } from './theme/sprinkles.css.ts'
+import type { Sprinkles } from './theme/sprinkles.css.ts';
+import { sprinkles } from './theme/sprinkles.css.ts'
 
 export type IconProps = JSX.HTMLElementTags['span'] & {
   sx?: Sprinkles

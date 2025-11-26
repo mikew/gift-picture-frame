@@ -1,5 +1,6 @@
-import { themeContract } from './contract.css.ts'
 import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles'
+
+import { themeContract } from './contract.css.ts'
 
 const spacing = {
   x1: themeContract.spacing.x1,

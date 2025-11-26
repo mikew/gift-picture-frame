@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css'
+
 import { sprinkles } from './theme/sprinkles.css'
 
 export const inputClasses = {

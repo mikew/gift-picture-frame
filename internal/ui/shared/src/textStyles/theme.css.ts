@@ -1,5 +1,9 @@
-import { style, styleVariants } from '@vanilla-extract/css'
-import { createThemeContract, createTheme } from '@vanilla-extract/css'
+import {
+  style,
+  styleVariants,
+  createThemeContract,
+  createTheme,
+} from '@vanilla-extract/css'
 
 // Theme contract (exported vars live in a .css.ts file as per vanilla-extract conventions)
 export const vars = createThemeContract({
@@ -244,4 +248,5 @@ export const messageStyles = styleVariants({
 
 // Convenience exports
 export type MessageStyle = keyof typeof messageStyles
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Needed to cast Object.keys result.
 export const allStyleNames = Object.keys(messageStyles) as MessageStyle[]
