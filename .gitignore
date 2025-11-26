@@ -47,12 +47,15 @@ data/
 /main
 node_modules/
 /internal/ui/frame-ui/build
+/internal/ui/frame-ui/tsc-output
 /internal/ui/uploader-ui/build
+/internal/ui/uploader-ui/tsc-output
+/internal/ui/shared/build
+/internal/ui/shared/tsc-output
 /build
 .eslintcache
 routeTree.gen.ts
 allowed_keys.json
 picture-frame
 
-*.d.ts
 tsconfig.tsbuildinfo

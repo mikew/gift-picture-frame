@@ -4,6 +4,7 @@ set -ex
 ./script/prepare-env
 
 exec pnpm exec concurrently \
+  "pnpm exec tsc --build --emitDeclarationOnly --watch " \
   "nodemon --watch ./ --ext go --signal SIGHUP --exec ./script/start-backends" \
   "cd ./internal/ui/frame-ui && react-scripts-vite start" \
   "cd ./internal/ui/uploader-ui && react-scripts-vite start"
