@@ -1,3 +1,4 @@
+import Button from 'shared/Button.jsx'
 import { clsx } from 'shared/clsx.ts'
 import { normalizeStyleName } from 'shared/textStyles/normalizeStyleName.ts'
 import {
@@ -10,7 +11,6 @@ import { createSignal, For } from 'solid-js'
 import * as styles from './TextUploadTab.css.ts'
 
 import './TextUploadTab.css'
-import Button from 'shared/Button.jsx'
 
 interface TextUploadTabProps {
   onUpload: (textData: { content: string; textStyle: string }) => void
