@@ -1,28 +1,9 @@
 import { style } from '@vanilla-extract/css'
-import type { RecipeVariants } from '@vanilla-extract/recipes';
+import type { RecipeVariants } from '@vanilla-extract/recipes'
 import { recipe } from '@vanilla-extract/recipes'
 
 import { themeContract } from './theme/contract.css'
 import { sprinkles } from './theme/sprinkles.css'
-
-export const iconButtonClasses = {
-  root: style([
-    sprinkles({
-      display: 'flexRow',
-      flexAlign: 'centerAll',
-      aspectRatio: 'square',
-      cursor: 'pointer',
-      borderRadius: 'circle',
-      color: 'inherit',
-      padding: 'x1',
-    }),
-    {
-      width: '48px',
-      display: 'inline-flex',
-      borderTop: '1px solid color-mix(in srgb, #fff 40%, transparent)',
-    },
-  ]),
-}
 
 export const iconButtonRecipe = recipe({
   base: style([
@@ -90,6 +71,11 @@ export const iconButtonRecipe = recipe({
         },
       ]),
     },
+  },
+
+  defaultVariants: {
+    color: 'inherit',
+    size: 'medium',
   },
 })
 

@@ -10,7 +10,11 @@ export const inputClasses = {
       paddingY: 'x1',
     }),
     {
-      border: '1px solid color-mix(in srgb, currentColor 50%, transparent)',
+      'border': '1px solid color-mix(in srgb, currentColor 30%, transparent)',
+
+      ':focus': {
+        borderColor: 'color-mix(in srgb, currentColor 80%, transparent)',
+      },
     },
   ]),
 }
