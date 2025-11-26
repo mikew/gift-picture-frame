@@ -54,7 +54,6 @@ node_modules/
 /internal/ui/shared/tsc-output
 /build
 .eslintcache
-routeTree.gen.ts
 allowed_keys.json
 picture-frame
 
