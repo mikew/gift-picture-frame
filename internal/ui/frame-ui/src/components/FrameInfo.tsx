@@ -93,8 +93,6 @@ export default function FrameInfo(props: FrameInfoProps) {
         <IconButton
           popovertarget="menu"
           style={{
-            // @ts-expect-error TODO switching to a comoponent that lives in
-            // shared/ broke the augmentations done in our .d.ts files.
             'anchor-name': '--menu-anchor',
           }}
         >
