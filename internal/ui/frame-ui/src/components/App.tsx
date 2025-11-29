@@ -9,7 +9,7 @@ import { ColorTemperatureProvider } from './colorTemperatureContext.tsx'
 import ColorTemperatureOverlay from './ColorTemperatureOverlay.tsx'
 import Controls from './Controls.tsx'
 import FrameInfo from './FrameInfo.tsx'
-import InterfaceCntainer from './InterfaceContainer.tsx'
+import InterfaceContainer from './InterfaceContainer.tsx'
 import MediaDisplay from './MediaDisplay.tsx'
 
 export default function App() {
@@ -105,7 +105,7 @@ export default function App() {
         <SwipeHandler onNext={nextSlide} onPrevious={previousSlide} />
         <MediaDisplay media={media()} currentIndex={currentIndex()} />
 
-        <InterfaceCntainer>
+        <InterfaceContainer>
           <FrameInfo media={media()} currentIndex={currentIndex()} />
 
           <Controls
@@ -114,8 +114,8 @@ export default function App() {
             onTogglePlayPause={togglePlayPause}
             isPlaying={isPlaying()}
           />
-        </InterfaceCntainer>
 
+        </InterfaceContainer>
         <ColorTemperatureOverlay />
       </div>
     </ColorTemperatureProvider>
