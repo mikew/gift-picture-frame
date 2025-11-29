@@ -14,7 +14,9 @@ import MediaDisplay from './MediaDisplay.tsx'
 
 export default function App() {
   const [media, setMedia] = createSignal<MediaItem[]>([])
-  const [currentIndex, setCurrentIndex] = createSignal(0)
+  const [currentIndex, setCurrentIndex] = createSignal(
+    Number(isomorphicWindow()?.localStorage.getItem('currentIndex')) || 0,
+  )
   const [isPlaying, setIsPlaying] = createSignal(true)
   const slideDuration = 60_000
   let slideTimeout: ReturnType<typeof setTimeout> | undefined
@@ -53,6 +55,13 @@ export default function App() {
   }
 
   createEffect(() => {
+    isomorphicWindow()?.localStorage.setItem(
+      'currentIndex',
+      currentIndex().toString(),
+    )
+  })
+
+  createEffect(() => {
     // HACK need to run this effect when either isPlaying or currentIndex
     // changes, but nothing actually uses currentIndex in the effect.
     currentIndex()
@@ -76,9 +85,7 @@ export default function App() {
 
   onMount(() => {
     loadMedia()
-  })
 
-  onMount(() => {
     const refreshInterval = setInterval(loadMedia, 5_000)
 
     onCleanup(() => {
