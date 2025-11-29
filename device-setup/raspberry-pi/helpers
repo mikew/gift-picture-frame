@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -ex
+
+__helper-enter-chroot() {
+  sudo arch-chroot ./raspbian-chroot /bin/bash
+}
+
+__helper-prepare-chroot-host() {
+  sudo pacman -S debootstrap arch-install-scripts
+  sudo mkdir ./raspbian-chroot
+  sudo debootstrap --arch=arm64 bookworm ./raspbian-chroot http://deb.debian.org/debian/
+}
+
+__helper-prepare-chroot-guest() {
+  apt update
+  apt install -y build-essential devscripts git curl gnupg
+
+  curl -sSL "http://archive.raspberrypi.org/debian/raspberrypi.gpg.key" | gpg --dearmor -o /usr/share/keyrings/raspberrypi-archive-keyring.gpg
+  echo "
+deb [signed-by=/usr/share/keyrings/raspberrypi-archive-keyring.gpg] http://archive.raspberrypi.com/debian/ trixie main
+deb-src [signed-by=/usr/share/keyrings/raspberrypi-archive-keyring.gpg] http://archive.raspberrypi.com/debian/ trixie main
+" > /etc/apt/sources.list.d/raspi.list
+  apt update
+
+  mkdir -p ~/work/apt
+  cd ~/work/apt
+  chown -R _apt:root .
+
+  export PATH=$PATH:/sbin:/usr/sbin
+  apt source squeekboard
+  cd squeekboard*/
+  mk-build-deps -i ./debian/control
+  DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -b -uc -us
+
+  # TODO Disable mouse emulation on touch display
+  # https://forums.raspberrypi.com/viewtopic.php?p=2293733#p2293733
+  # Might be better in ~/.config/labwc/rc.xml
+  # mouseEmulation="yes" -> mouseEmulation="no"
+
+  # TODO install squeekboard mods
+  # dpkg -i squeekboard.deb
+
+  # TODO custom labwc autostart
+  # - no panels
+  # - `killall squeekboard || true; SQUEEKBOARD_LAYER=overlay squeekboard &`
+}
