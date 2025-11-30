@@ -38,7 +38,6 @@ export const vars = createThemeContract({
   },
   sizes: {
     whisper: null,
-    normal: null,
     shout: null,
   },
 })
@@ -76,7 +75,6 @@ export const themeClass = createTheme(vars, {
   },
   sizes: {
     whisper: '0.9em',
-    normal: '1.05em',
     shout: '2em',
   },
 })
@@ -105,7 +103,6 @@ export const messageStyles = styleVariants({
     base,
     style({
       fontFamily: vars.fonts.sans,
-      fontSize: vars.sizes.normal,
       color: vars.colors.normalText,
       // background: 'transparent',
     }),
