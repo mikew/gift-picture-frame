@@ -14,10 +14,39 @@ import MediaDisplay from './MediaDisplay.tsx'
 
 export default function App() {
   const [media, setMedia] = createSignal<MediaItem[]>([])
+
   const [currentIndex, setCurrentIndex] = createSignal(
     Number(isomorphicWindow()?.localStorage.getItem('currentIndex')) || 0,
   )
-  const [isPlaying, setIsPlaying] = createSignal(true)
+  onMount(() => {
+    const storedValue = Number(
+      isomorphicWindow()?.localStorage.getItem('currentIndex'),
+    )
+    if (!isNaN(storedValue)) {
+      setCurrentIndex(storedValue)
+    }
+  })
+  createEffect(() => {
+    isomorphicWindow()?.localStorage.setItem(
+      'currentIndex',
+      currentIndex().toString(),
+    )
+  })
+
+  const [isPlaying, setIsPlaying] = createSignal(false)
+  onMount(() => {
+    const storedValue = isomorphicWindow()?.localStorage.getItem('isPlaying')
+    if (storedValue !== null) {
+      setIsPlaying(storedValue === 'true')
+    }
+  })
+  createEffect(() => {
+    isomorphicWindow()?.localStorage.setItem(
+      'isPlaying',
+      isPlaying().toString(),
+    )
+  })
+
   const slideDuration = 60_000
   let slideTimeout: ReturnType<typeof setTimeout> | undefined
 
@@ -53,13 +82,6 @@ export default function App() {
   const togglePlayPause = () => {
     setIsPlaying((prev) => !prev)
   }
-
-  createEffect(() => {
-    isomorphicWindow()?.localStorage.setItem(
-      'currentIndex',
-      currentIndex().toString(),
-    )
-  })
 
   createEffect(() => {
     // HACK need to run this effect when either isPlaying or currentIndex
@@ -114,7 +136,6 @@ export default function App() {
             onTogglePlayPause={togglePlayPause}
             isPlaying={isPlaying()}
           />
-
         </InterfaceContainer>
         <ColorTemperatureOverlay />
       </div>

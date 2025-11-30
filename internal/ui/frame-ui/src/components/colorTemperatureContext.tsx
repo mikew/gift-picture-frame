@@ -1,6 +1,6 @@
 import { isomorphicWindow } from 'shared/isomorphicWindow.js'
 import type { Accessor, ParentComponent } from 'solid-js'
-import { createContext, createSignal, useContext } from 'solid-js'
+import { createContext, createSignal, onMount, useContext } from 'solid-js'
 
 type ColorTemperatureContextValue = [
   Accessor<number>,
@@ -14,15 +14,15 @@ function clampValue(value: number, min: number, max: number) {
 }
 
 export const ColorTemperatureProvider: ParentComponent = (props) => {
-  const [temperature, setTemperature] = createSignal(
-    clampValue(
-      Number(
-        isomorphicWindow()?.localStorage.getItem('colorTemperature') || 40,
-      ),
-      0,
-      100,
-    ),
-  )
+  const [temperature, setTemperature] = createSignal(40)
+  onMount(() => {
+    const storedValue = Number(
+      isomorphicWindow()?.localStorage.getItem('colorTemperature'),
+    )
+    if (!isNaN(storedValue)) {
+      setTemperature(clampValue(storedValue, 0, 100))
+    }
+  })
 
   const contextValue: ColorTemperatureContextValue = [
     temperature,
