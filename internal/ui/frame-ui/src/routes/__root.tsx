@@ -10,7 +10,7 @@ import { HydrationScript } from 'solid-js/web'
 
 import { lightThemeClass } from '#src/theme.css.ts'
 
-import '#src/components/_transitions.css'
+import '#src/lib/_transitions.css'
 
 const RootComponent: Solid.Component = () => {
   return (

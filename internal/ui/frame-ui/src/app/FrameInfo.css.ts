@@ -2,7 +2,7 @@ import { style } from '@vanilla-extract/css'
 import { themeContract } from 'shared/theme/contract.css.js'
 import { sprinkles } from 'shared/theme/sprinkles.css.js'
 
-import { fancyPaperClasses } from './FancyPaper.css.ts'
+import { fancyPaperClasses } from '#src/lib/FancyPaper.css.ts'
 
 export const container = style([
   fancyPaperClasses.root,

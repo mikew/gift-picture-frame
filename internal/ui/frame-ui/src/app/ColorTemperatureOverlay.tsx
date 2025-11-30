@@ -1,7 +1,7 @@
-import { useColorTemperatureContext } from './colorTemperatureContext'
+import { useSettingsContext } from '#src/settings/settingsContext.tsx'
 
 const ColorTemperatureOverlay = () => {
-  const [wut] = useColorTemperatureContext()
+  const { settings } = useSettingsContext()
 
   return (
     <div
@@ -10,8 +10,8 @@ const ColorTemperatureOverlay = () => {
         'inset': '0',
         'pointer-events': 'none',
 
-        'background-color': '#ff8400',
-        'opacity': wut() / 100,
+        'background-color': '#ff9933',
+        'opacity': settings.colorTemperature / 100,
         'mix-blend-mode': 'multiply',
       }}
     />

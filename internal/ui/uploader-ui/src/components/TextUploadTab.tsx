@@ -1,6 +1,8 @@
 import Button from 'shared/Button.jsx'
 import { clsx } from 'shared/clsx.ts'
+import TextArea from 'shared/TextArea.jsx'
 import { normalizeStyleName } from 'shared/textStyles/normalizeStyleName.ts'
+import TextStyle from 'shared/textStyles/TextStyle.tsx'
 import {
   allStyleNames,
   messageStyles,
@@ -31,39 +33,34 @@ export default function TextUploadTab(props: TextUploadTabProps) {
   const previewText = () => textContent() || 'Your message will appear here...'
 
   return (
-    <div class="tab-content">
-      <div class="text-input-area">
-        <textarea
-          placeholder="Enter your message here..."
-          class={styles.textarea}
-          rows="6"
-          value={textContent()}
-          onInput={(e) => setTextContent(e.currentTarget.value)}
-        />
+    <>
+      <TextArea
+        placeholder="Enter your message here..."
+        rows="6"
+        value={textContent()}
+        onInput={(e) => setTextContent(e.currentTarget.value)}
+        sx={{ width: 'full', marginBottom: 'x1' }}
+      />
 
-        <div class="text-options">
-          <label>
-            <select
-              value={textStyle()}
-              onChange={(e) => setTextStyle(e.currentTarget.value)}
-            >
-              <For each={allStyleNames}>
-                {(style) => (
-                  <option value={style}>
-                    {style.charAt(0).toUpperCase() + style.slice(1)}
-                  </option>
-                )}
-              </For>
-            </select>
-            Text Style
-          </label>
-        </div>
+      <label>
+        <span>Text Style</span>
 
-        <div class={clsx(styles.textPreview, themeClass)}>
-          <div class={messageStyles[normalizeStyleName(textStyle())]}>
-            {previewText()}
-          </div>
-        </div>
+        <select
+          value={textStyle()}
+          onChange={(e) => setTextStyle(e.currentTarget.value)}
+        >
+          <For each={allStyleNames}>
+            {(style) => (
+              <option value={style}>
+                {style.charAt(0).toUpperCase() + style.slice(1)}
+              </option>
+            )}
+          </For>
+        </select>
+      </label>
+
+      <div class={styles.textPreview}>
+        <TextStyle textStyle={textStyle()}>{previewText()}</TextStyle>
       </div>
 
       <Button
@@ -74,6 +71,6 @@ export default function TextUploadTab(props: TextUploadTabProps) {
       >
         Upload Text
       </Button>
-    </div>
+    </>
   )
 }

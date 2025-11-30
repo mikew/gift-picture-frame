@@ -74,8 +74,8 @@ func main() {
 
 							brightnessController := frame.NewRPiBrightnessController()
 							outputRotator := frame.NewWlrRandrRotator()
-							wifiManager := frame.NewNmcliWifiManager()
-							// wifiManager := frame.NewMockWifiManager()
+							// wifiManager := frame.NewNmcliWifiManager()
+							wifiManager := frame.NewMockWifiManager()
 
 							s := frame.NewServer(id, serverURL, port, accessKey, ui.FrameFiles(), brightnessController, outputRotator, wifiManager)
 							return s.Start()

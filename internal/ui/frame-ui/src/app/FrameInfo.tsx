@@ -7,20 +7,14 @@ import Menu from 'shared/svgs/menu.svg?component-solid'
 import RotateLeft from 'shared/svgs/rotate_left.svg?component-solid'
 import RotateRight from 'shared/svgs/rotate_right.svg?component-solid'
 import { sprinkles } from 'shared/theme/sprinkles.css.js'
-import type { MediaItem } from 'shared/types.ts'
 import type { Component } from 'solid-js'
 import { createSignal, onCleanup, onMount } from 'solid-js'
 
-import AppConfig from '#src/appConfig.ts'
+import { useMediaContext } from '#src/media/mediaContext.tsx'
+import NetworkDialog from '#src/settings/NetworkDialog.tsx'
+import { useSettingsContext } from '#src/settings/settingsContext.tsx'
 
-import { useColorTemperatureContext } from './colorTemperatureContext.tsx'
 import * as styles from './FrameInfo.css.ts'
-import NetworkDialog from './NetworkDialog.tsx'
-
-interface FrameInfoProps {
-  media: MediaItem[]
-  currentIndex: number
-}
 
 const OnlineStatusIndicator: Component<{ size: string }> = (props) => {
   const [isOnline, setIsOnline] = createSignal(
@@ -47,14 +41,6 @@ const OnlineStatusIndicator: Component<{ size: string }> = (props) => {
     })
   })
 
-  // const intervalId = setInterval(() => {
-  //   console.log(navigator.onLine)
-  // }, 1_000)
-
-  // onCleanup(() => {
-  //   clearInterval(intervalId)
-  // })
-
   return (
     <div
       class={sprinkles({
@@ -69,16 +55,26 @@ const OnlineStatusIndicator: Component<{ size: string }> = (props) => {
   )
 }
 
-export default function FrameInfo(props: FrameInfoProps) {
+const FrameInfo: Component = () => {
+  const {
+    increaseBrightness,
+    decreaseBrightness,
+    rotateClockwise,
+    rotateCounterClockwise,
+    increaseColorTemperature,
+    decreaseColorTemperature,
+  } = useSettingsContext()
+
+  const { state } = useMediaContext()
+
   const getCounterText = () => {
-    if (props.media.length === 0) {
+    if (state.media.length === 0) {
       return '0 / 0'
     }
-    return `${props.currentIndex + 1} / ${props.media.length}`
+    return `${state.currentIndex + 1} / ${state.media.length}`
   }
 
   const [isNetworkDialogOpen, setIsNetworkDialogOpen] = createSignal(false)
-  const [temperature, { setTemperature }] = useColorTemperatureContext()
 
   return (
     <>
@@ -128,22 +124,16 @@ export default function FrameInfo(props: FrameInfoProps) {
             <div>Rotate Display</div>
             <Box display="flexRow" flexAlign="spaceBetween" marginBottom="x1">
               <IconButton
-                onclick={async () => {
-                  await fetch(`${AppConfig.apiBase}/api/rotate`, {
-                    method: 'POST',
-                    body: JSON.stringify({ direction: 'counterclockwise' }),
-                  })
+                onClick={() => {
+                  rotateCounterClockwise()
                 }}
               >
                 <RotateLeft />
               </IconButton>
 
               <IconButton
-                onclick={async () => {
-                  await fetch(`${AppConfig.apiBase}/api/rotate`, {
-                    method: 'POST',
-                    body: JSON.stringify({ direction: 'clockwise' }),
-                  })
+                onclick={() => {
+                  rotateClockwise()
                 }}
               >
                 <RotateRight />
@@ -153,20 +143,16 @@ export default function FrameInfo(props: FrameInfoProps) {
             <div>Brightness</div>
             <Box display="flexRow" flexAlign="spaceBetween" marginBottom="x1">
               <IconButton
-                onclick={async () => {
-                  await fetch(`${AppConfig.apiBase}/api/brightness/decrease`, {
-                    method: 'POST',
-                  })
+                onclick={() => {
+                  decreaseBrightness()
                 }}
               >
                 <BrightnessHigh style={{ 'font-size': '1em' }} />
               </IconButton>
 
               <IconButton
-                onclick={async () => {
-                  await fetch(`${AppConfig.apiBase}/api/brightness/increase`, {
-                    method: 'POST',
-                  })
+                onclick={() => {
+                  increaseBrightness()
                 }}
               >
                 <BrightnessHigh />
@@ -177,7 +163,7 @@ export default function FrameInfo(props: FrameInfoProps) {
             <Box display="flexRow" flexAlign="spaceBetween">
               <IconButton
                 onclick={() => {
-                  setTemperature(temperature() - 20)
+                  decreaseColorTemperature()
                 }}
               >
                 -
@@ -185,7 +171,7 @@ export default function FrameInfo(props: FrameInfoProps) {
 
               <IconButton
                 onclick={() => {
-                  setTemperature(temperature() + 20)
+                  increaseColorTemperature()
                 }}
               >
                 +
@@ -199,3 +185,5 @@ export default function FrameInfo(props: FrameInfoProps) {
     </>
   )
 }
+
+export default FrameInfo
