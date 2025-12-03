@@ -19,8 +19,8 @@ ARCHS=(
 )
 OSES=(
   linux
-  # darwin
-  # windows
+  darwin
+  windows
 )
 
 for os in "${OSES[@]}"; do

@@ -1,28 +1,51 @@
-import type { MediaItem } from 'shared/types.ts'
-import { createSignal, onMount } from 'solid-js'
+import Box from 'shared/Box.jsx'
+import type { Component } from 'solid-js'
+import { createSignal, onMount, Show } from 'solid-js'
 
 import AppConfig from '#src/appConfig.ts'
 
 import * as styles from './App.css.ts'
 import FileUploadTab from './FileUploadTab.tsx'
-import RecentUploads from './RecentUploads.tsx'
+import type { FrameInfo } from './FrameSelect.tsx'
+import FrameSelect from './FrameSelect.tsx'
 import TextUploadTab from './TextUploadTab.tsx'
 import UploadStatus from './UploadStatus.tsx'
 import UploadTabs from './UploadTabs.tsx'
 
 interface AppProps {
-  frameId: string
+  frameId?: string
 }
 
-export default function App(props: AppProps) {
+const App: Component<AppProps> = (props) => {
+  const [frames, setFrames] = createSignal<FrameInfo[]>([])
+  const [currentFrame, setCurrentFrame] = createSignal<
+    FrameInfo['name'] | null
+  >(props.frameId || null)
   const [activeTab, setActiveTab] = createSignal<'file' | 'text'>('file')
   const [selectedFiles, setSelectedFiles] = createSignal<File[]>([])
-  const [recentUploads, setRecentUploads] = createSignal<MediaItem[]>([])
   const [statusMessage, setStatusMessage] = createSignal('')
   const [statusType, setStatusType] = createSignal<
     'success' | 'error' | 'info'
   >('info')
   const [showStatus, setShowStatus] = createSignal(false)
+
+  onMount(async () => {
+    if (props.frameId) {
+      return
+    }
+
+    const frameInfoResponse = await fetch(`${AppConfig.apiBase}/frames`)
+
+    if (frameInfoResponse.ok) {
+      const frames: FrameInfo[] = await frameInfoResponse.json()
+
+      setFrames(frames)
+
+      if (frames.length > 0) {
+        setCurrentFrame(frames[0]?.name || null)
+      }
+    }
+  })
 
   const showStatusMessage = (
     message: string,
@@ -32,21 +55,6 @@ export default function App(props: AppProps) {
     setStatusType(type)
     setShowStatus(true)
     setTimeout(() => setShowStatus(false), 5000)
-  }
-
-  const loadRecentUploads = async () => {
-    try {
-      const response = await fetch(
-        `${AppConfig.apiBase}/${props.frameId}/media`,
-      )
-      if (!response.ok) throw new Error('Failed to load recent uploads')
-
-      const media = await response.json()
-      setRecentUploads(media)
-    } catch (error) {
-      console.error('Failed to load recent uploads:', error)
-      setRecentUploads([])
-    }
   }
 
   const uploadFiles = async () => {
@@ -62,7 +70,7 @@ export default function App(props: AppProps) {
         formData.append('file', file)
 
         const response = await fetch(
-          `${AppConfig.apiBase}/${props.frameId}/upload`,
+          `${AppConfig.apiBase}/${currentFrame()}/upload`,
           {
             method: 'POST',
             body: formData,
@@ -82,7 +90,6 @@ export default function App(props: AppProps) {
 
       showStatusMessage('All files uploaded successfully!', 'success')
       setSelectedFiles([])
-      loadRecentUploads()
     } catch (error) {
       if (error instanceof Error) {
         showStatusMessage(`Upload failed: ${error.message}`, 'error')
@@ -105,7 +112,7 @@ export default function App(props: AppProps) {
       formData.append('text', JSON.stringify(textData))
 
       const response = await fetch(
-        `${AppConfig.apiBase}/${props.frameId}/upload`,
+        `${AppConfig.apiBase}/${currentFrame()}/upload`,
         {
           method: 'POST',
           body: formData,
@@ -118,7 +125,6 @@ export default function App(props: AppProps) {
       }
 
       showStatusMessage('Text message uploaded successfully!', 'success')
-      loadRecentUploads()
     } catch (error) {
       if (error instanceof Error) {
         showStatusMessage(`Upload failed: ${error.message}`, 'error')
@@ -127,13 +133,21 @@ export default function App(props: AppProps) {
     }
   }
 
-  onMount(() => {
-    loadRecentUploads()
-  })
-
   return (
     <div class={styles.container}>
-      <div class={styles.uploadSection}>
+      <Box display="flexColumn" gap="x1">
+        <Show when={!props.frameId}>
+          <label>
+            <div>Share to ...</div>
+
+            <FrameSelect
+              frames={frames()}
+              value={currentFrame()}
+              onChange={setCurrentFrame}
+            />
+          </label>
+        </Show>
+
         <UploadTabs activeTab={activeTab()} onTabChange={setActiveTab} />
 
         {activeTab() === 'file' && (
@@ -145,13 +159,15 @@ export default function App(props: AppProps) {
         )}
 
         {activeTab() === 'text' && <TextUploadTab onUpload={uploadText} />}
-      </div>
-      <UploadStatus
-        message={statusMessage()}
-        type={statusType()}
-        show={showStatus()}
-      />
-      <RecentUploads frameId={props.frameId} uploads={recentUploads()} />
+
+        <UploadStatus
+          message={statusMessage()}
+          type={statusType()}
+          show={showStatus()}
+        />
+      </Box>
     </div>
   )
 }
+
+export default App

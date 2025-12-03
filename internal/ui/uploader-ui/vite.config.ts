@@ -33,12 +33,17 @@ export default defineConfig(async (env) => {
   config.plugins?.push(
     tanstackStart({
       pages: [
-        // Prerender the $catchall route.
+        {
+          path: '/',
+          prerender: {
+            enabled: true,
+          },
+        },
         {
           path: '/prerender',
           prerender: {
             enabled: true,
-            outputPath: 'index.html',
+            outputPath: 'id.html',
           },
         },
       ],
@@ -57,11 +62,6 @@ export default defineConfig(async (env) => {
       },
     }),
   )
-
-  config.server = {
-    ...config.server,
-    open: '/test',
-  }
 
   config.build = {
     ...config.build,

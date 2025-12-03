@@ -3,7 +3,7 @@ import { createEffect, createSignal, onCleanup } from 'solid-js'
 
 import * as styles from './InterfaceContainer.css.ts'
 
-const InterfaceCntainer: Solid.ParentComponent = (props) => {
+const InterfaceContainer: Solid.ParentComponent = (props) => {
   const [showUi, setShowUi] = createSignal(false)
   let hideTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -52,4 +52,4 @@ const InterfaceCntainer: Solid.ParentComponent = (props) => {
   )
 }
 
-export default InterfaceCntainer
+export default InterfaceContainer

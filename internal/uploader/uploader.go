@@ -26,7 +26,7 @@ type Server struct {
 	dataDir     string
 	router      *gin.Engine
 	fs          fs.FS
-	allowedKeys map[string][]string
+	knownFrames []FrameConfig
 }
 
 type MediaItem struct {
@@ -37,11 +37,18 @@ type MediaItem struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-type FrameAccessConfig struct {
+type FrameConfig struct {
+	Name        string   `json:"name"`
 	AllowedKeys []string `json:"allowed_keys"`
 }
 
-type AllowedKeysConfig map[string]FrameAccessConfig
+type FramesConfig struct {
+	KnownFrames []FrameConfig `json:"known_frames"`
+}
+
+type FrameInfo struct {
+	Name string `json:"name"`
+}
 
 func NewServer(fs fs.FS) *Server {
 	return &Server{
@@ -56,8 +63,8 @@ func (s *Server) Start(port int) error {
 		return fmt.Errorf("failed to create data directory: %v", err)
 	}
 
-	if err := s.loadAllowedKeys(); err != nil {
-		return fmt.Errorf("failed to load allowed keys: %v", err)
+	if err := s.loadFramesConfig(); err != nil {
+		return fmt.Errorf("failed to load frames config: %v", err)
 	}
 
 	s.setupRoutes()
@@ -75,7 +82,10 @@ func (s *Server) setupRoutes() {
 		ctx.Next()
 	})
 
+	s.router.GET("/frames", s.handleListFrames)
+
 	s.router.GET("/:id", s.handleUploadUI)
+	s.router.GET("/", s.handleUploadUI)
 
 	s.router.POST("/:id/upload", s.handleUpload)
 
@@ -88,19 +98,47 @@ func (s *Server) setupRoutes() {
 }
 
 func (s *Server) handleUploadUI(c *gin.Context) {
-	b, err := fs.ReadFile(s.fs, "index.html")
+	id := c.Param("id")
+
+	if id != "" && !s.isFrameAllowed(id) {
+		c.String(http.StatusForbidden, "Frame ID not allowed")
+		return
+	}
+
+	htmlFilePath := "index.html"
+	if id != "" {
+		htmlFilePath = "id.html"
+	}
+
+	b, err := fs.ReadFile(s.fs, htmlFilePath)
 	if err != nil {
 		c.Status(http.StatusInternalServerError)
 		return
 	}
-	// id := c.Param("id")
 	b = bytes.ReplaceAll(b, []byte("__APP_IS_EMBEDDED__"), []byte("true"))
 
 	c.Data(http.StatusOK, "text/html; charset=utf-8", b)
 }
 
+func (s *Server) handleListFrames(c *gin.Context) {
+	frames := make([]FrameInfo, 0, len(s.knownFrames))
+
+	for _, config := range s.knownFrames {
+		frames = append(frames, FrameInfo{
+			Name: config.Name,
+		})
+	}
+
+	c.JSON(http.StatusOK, frames)
+}
+
 func (s *Server) handleUpload(c *gin.Context) {
 	frameID := c.Param("id")
+
+	if !s.isFrameAllowed(frameID) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Frame ID not allowed"})
+		return
+	}
 
 	frameDir := filepath.Join(s.dataDir, frameID)
 	if err := os.MkdirAll(frameDir, 0755); err != nil {
@@ -132,7 +170,6 @@ func (s *Server) handleUpload(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No file uploaded"})
 		return
 	}
-	defer file.Close()
 
 	processor := GetMediaProcessor(header.Filename)
 	if processor == nil {
@@ -143,6 +180,8 @@ func (s *Server) handleUpload(c *gin.Context) {
 	mediaId := uuid.New().String()
 
 	go func() {
+		defer file.Close()
+
 		originalExt := filepath.Ext(header.Filename)
 		tempUploadFile, err := os.CreateTemp("", "upload-*"+originalExt)
 		if err != nil {
@@ -289,36 +328,48 @@ func (s *Server) loadMediaMetadata(frameDir string) ([]MediaItem, error) {
 	return media, nil
 }
 
-func (s *Server) loadAllowedKeys() error {
-	allowedKeysFile := "allowed_keys.json"
+func (s *Server) loadFramesConfig() error {
+	configFile := "frames.json"
 
-	data, err := os.ReadFile(allowedKeysFile)
+	data, err := os.ReadFile(configFile)
 	if err != nil {
 		if os.IsNotExist(err) {
-			s.allowedKeys = make(map[string][]string)
+			s.knownFrames = []FrameConfig{}
 			return nil
 		}
-		return fmt.Errorf("failed to read allowed_keys.json: %v", err)
+		return fmt.Errorf("failed to read frames.json: %v", err)
 	}
 
-	var config AllowedKeysConfig
+	var config FramesConfig
 	if err := json.Unmarshal(data, &config); err != nil {
-		return fmt.Errorf("failed to parse allowed_keys.json: %v", err)
+		return fmt.Errorf("failed to parse frames.json: %v", err)
 	}
 
-	s.allowedKeys = make(map[string][]string)
-	for frameID, frameConfig := range config {
-		s.allowedKeys[frameID] = frameConfig.AllowedKeys
+	s.knownFrames = config.KnownFrames
+
+	return nil
+}
+
+func (s *Server) findFrame(name string) *FrameConfig {
+	for _, frame := range s.knownFrames {
+		if frame.Name == name {
+			return &frame
+		}
 	}
 
 	return nil
 }
 
 func (s *Server) validateAccessKey(frameID, accessKey string) bool {
-	allowedKeys, exists := s.allowedKeys[frameID]
-	if !exists {
+	frameConfig := s.findFrame(frameID)
+	if frameConfig == nil {
 		return false
 	}
 
-	return slices.Contains(allowedKeys, accessKey)
+	return slices.Contains(frameConfig.AllowedKeys, accessKey)
+}
+
+func (s *Server) isFrameAllowed(frameID string) bool {
+	frameConfig := s.findFrame(frameID)
+	return frameConfig != nil
 }

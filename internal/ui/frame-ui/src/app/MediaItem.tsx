@@ -1,6 +1,4 @@
-import { clsx } from 'shared/clsx.ts'
-import { normalizeStyleName } from 'shared/textStyles/normalizeStyleName.ts'
-import { themeClass, messageStyles } from 'shared/textStyles/theme.css.ts'
+import TextStyle from 'shared/textStyles/TextStyle.tsx'
 import { sprinkles } from 'shared/theme/sprinkles.css.js'
 import type { MediaItem, TextData } from 'shared/types.ts'
 import { Show } from 'solid-js'
@@ -68,14 +66,18 @@ export default function MediaItemComponent(props: MediaItemProps) {
           const textData = parseTextData()
           return (
             <div
-              class={clsx(themeClass, sprinkles({ display: 'flexColumn' }))}
-              style={{ width: '100%', height: '100%' }}
+              class={sprinkles({
+                display: 'flexColumn',
+                width: 'full',
+                height: 'full',
+              })}
+              style={{
+                'font-size': '2.2cqmin',
+              }}
             >
-              <div
-                class={messageStyles[normalizeStyleName(textData.textStyle)]}
-              >
+              <TextStyle textStyle={textData.textStyle}>
                 {textData.content}
-              </div>
+              </TextStyle>
             </div>
           )
         })()}

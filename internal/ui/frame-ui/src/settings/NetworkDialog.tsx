@@ -18,8 +18,7 @@ import {
 } from 'solid-js'
 
 import AppConfig from '#src/appConfig.ts'
-
-import { fancyPaperClasses } from './FancyPaper.css'
+import { fancyPaperClasses } from '#src/lib/FancyPaper.css.ts'
 
 async function fetchNetworks() {
   const response = await fetch(`${AppConfig.apiBase}/api/wifi/scan`)
