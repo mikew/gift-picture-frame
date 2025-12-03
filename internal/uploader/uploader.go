@@ -84,6 +84,7 @@ func (s *Server) setupRoutes() {
 
 	s.router.GET("/frames", s.handleListFrames)
 
+	s.router.GET("/:id", s.handleUploadUI)
 	s.router.GET("/", s.handleUploadUI)
 
 	s.router.POST("/:id/upload", s.handleUpload)
@@ -97,7 +98,19 @@ func (s *Server) setupRoutes() {
 }
 
 func (s *Server) handleUploadUI(c *gin.Context) {
-	b, err := fs.ReadFile(s.fs, "index.html")
+	id := c.Param("id")
+
+	if id != "" && !s.isFrameAllowed(id) {
+		c.String(http.StatusForbidden, "Frame ID not allowed")
+		return
+	}
+
+	htmlFilePath := "index.html"
+	if id != "" {
+		htmlFilePath = "id.html"
+	}
+
+	b, err := fs.ReadFile(s.fs, htmlFilePath)
 	if err != nil {
 		c.Status(http.StatusInternalServerError)
 		return

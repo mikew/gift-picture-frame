@@ -10,32 +10,42 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as CatchallRouteImport } from './routes/$catchall'
+import { Route as IndexRouteImport } from './routes/index'
 
 const CatchallRoute = CatchallRouteImport.update({
   id: '/$catchall',
   path: '/$catchall',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/$catchall': typeof CatchallRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/$catchall': typeof CatchallRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/$catchall': typeof CatchallRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/$catchall'
+  fullPaths: '/' | '/$catchall'
   fileRoutesByTo: FileRoutesByTo
-  to: '/$catchall'
-  id: '__root__' | '/$catchall'
+  to: '/' | '/$catchall'
+  id: '__root__' | '/' | '/$catchall'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   CatchallRoute: typeof CatchallRoute
 }
 
@@ -48,10 +58,18 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof CatchallRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   CatchallRoute: CatchallRoute,
 }
 export const routeTree = rootRouteImport

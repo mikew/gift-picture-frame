@@ -1,13 +1,8 @@
 import Button from 'shared/Button.jsx'
-import { clsx } from 'shared/clsx.ts'
+import Select from 'shared/Select.jsx'
 import TextArea from 'shared/TextArea.jsx'
-import { normalizeStyleName } from 'shared/textStyles/normalizeStyleName.ts'
 import TextStyle from 'shared/textStyles/TextStyle.tsx'
-import {
-  allStyleNames,
-  messageStyles,
-  themeClass,
-} from 'shared/textStyles/theme.css.ts'
+import { allStyleNames } from 'shared/textStyles/theme.css.ts'
 import { createSignal, For } from 'solid-js'
 
 import * as styles from './TextUploadTab.css.ts'
@@ -43,11 +38,12 @@ export default function TextUploadTab(props: TextUploadTabProps) {
       />
 
       <label>
-        <span>Text Style</span>
+        <div>Text Style</div>
 
-        <select
+        <Select
           value={textStyle()}
           onChange={(e) => setTextStyle(e.currentTarget.value)}
+          sx={{ width: 'full' }}
         >
           <For each={allStyleNames}>
             {(style) => (
@@ -56,7 +52,7 @@ export default function TextUploadTab(props: TextUploadTabProps) {
               </option>
             )}
           </For>
-        </select>
+        </Select>
       </label>
 
       <div class={styles.textPreview}>

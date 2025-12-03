@@ -7,7 +7,7 @@ export const textPreview = style([
     borderRadius: 'default',
     marginBottom: 'x2',
     overflow: 'hidden',
-    backgroundColor: 'background',
+    backgroundColor: 'surface',
   }),
   {
     minHeight: '150px',
