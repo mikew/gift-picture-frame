@@ -1,0 +1,8 @@
+{
+  "known_frames": [
+    {
+      "name": "test",
+      "allowed_keys": ["test-key"]
+    }
+  ]
+}
