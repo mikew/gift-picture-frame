@@ -1,3 +1,4 @@
+import Box from 'shared/Box.jsx'
 import Button from 'shared/Button.jsx'
 import { clsx } from 'shared/clsx.ts'
 import Icon from 'shared/Icon.jsx'
@@ -5,18 +6,19 @@ import IconButton from 'shared/IconButton.tsx'
 import RemoveCircle from 'shared/svgs/remove_circle.svg?component-solid'
 import VideoFile from 'shared/svgs/video_file.svg?component-solid'
 import { sprinkles } from 'shared/theme/sprinkles.css.js'
+import type { Component } from 'solid-js'
 import { createSignal, For } from 'solid-js'
 
-// import './FileUploadTab.css'
 import * as styles from './FileUploadTab.css.ts'
 
 interface FileUploadTabProps {
   selectedFiles: File[]
   onFilesChange: (files: File[]) => void
   onUpload: () => void
+  frame: string | null
 }
 
-export default function FileUploadTab(props: FileUploadTabProps) {
+const FileUploadTab: Component<FileUploadTabProps> = (props) => {
   const [isDragOver, setIsDragOver] = createSignal(false)
   let fileInputRef: HTMLInputElement | undefined
 
@@ -89,9 +91,12 @@ export default function FileUploadTab(props: FileUploadTabProps) {
         onDrop={handleDrop}
         onClick={() => fileInputRef?.click()}
       >
-        <div class="upload-icon">📁</div>
-        <p>Drag and drop files here or click to browse</p>
-        <p class="file-types">Supported: JPG, PNG, GIF, MP4, AVI, MOV, WEBM</p>
+        <Box marginBottom="x2">Drop files here or tap to browse</Box>
+
+        <Box color="text.secondary" style={{ 'font-size': '0.825em' }}>
+          Images, Videos, GIFs are supported
+        </Box>
+
         <input
           ref={fileInputRef}
           type="file"
@@ -113,12 +118,7 @@ export default function FileUploadTab(props: FileUploadTabProps) {
                   {formatFileSize(file.size)}
                 </div>
               </div>
-              <IconButton
-                class={sprinkles({
-                  color: 'error.main',
-                })}
-                onClick={() => removeFile(index())}
-              >
+              <IconButton color="error" onClick={() => removeFile(index())}>
                 <RemoveCircle />
               </IconButton>
             </div>
@@ -133,8 +133,10 @@ export default function FileUploadTab(props: FileUploadTabProps) {
         color="primary"
         sx={{ width: 'full', marginTop: 'x1' }}
       >
-        Upload Files
+        Send to {props.frame}
       </Button>
     </>
   )
 }
+
+export default FileUploadTab

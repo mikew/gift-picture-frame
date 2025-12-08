@@ -10,8 +10,6 @@ import { HydrationScript } from 'solid-js/web'
 
 import { lightThemeClass } from '#src/theme.css.ts'
 
-// import '#src/components/_transitions.css'
-
 const RootComponent: Solid.Component = () => {
   return (
     <html>
@@ -32,6 +30,12 @@ const RootComponent: Solid.Component = () => {
 export const Route = createRootRoute({
   notFoundComponent: () => <div>404 Not Found</div>,
   head: () => ({
+    links: [
+      {
+        rel: 'apple-touch-icon',
+        href: '/static/logo.png',
+      },
+    ],
     meta: [
       {
         charSet: 'utf-8',
@@ -41,7 +45,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Picture Frame',
       },
     ],
     scripts: [

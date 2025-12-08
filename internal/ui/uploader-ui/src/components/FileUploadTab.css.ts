@@ -11,14 +11,14 @@ export const container = style([
     // TODO border color should be in theme as separator color or divider color
     // or something.
     // TODO Some of these exist as utils.
-    border: `2px dashed #dee2e6`,
+    border: `1px dashed color-mix(in srgb, currentColor 40%, transparent)`,
     textAlign: 'center',
     // cursor: 'pointer',
     transition: `var(--tr-base)`,
 
     selectors: {
       '&:hover, &.dragover': {
-        backgroundColor: '#f0f',
+        backgroundColor: `color-mix(in srgb, currentColor 20%, transparent)`,
       },
     },
   },

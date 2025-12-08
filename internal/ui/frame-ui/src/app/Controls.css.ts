@@ -5,7 +5,7 @@ import { sprinkles } from 'shared/theme/sprinkles.css.ts'
 
 export const container = style([
   sprinkles({
-    position: 'absolute',
+    position: 'fixed',
     display: 'flexRow',
     flexAlign: 'centerAll',
     gap: 'x3',

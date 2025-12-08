@@ -99,7 +99,7 @@ const FrameInfo: Component = () => {
           id="menu"
           popover
           style={{
-            'position': 'absolute',
+            'position': 'fixed',
             'position-anchor': '--menu-anchor',
             'inset-block-start': 'anchor(--menu-anchor bottom)',
             'inset-inline-start': 'anchor(--menu-anchor left)',

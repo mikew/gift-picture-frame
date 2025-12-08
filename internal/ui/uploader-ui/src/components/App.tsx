@@ -1,3 +1,4 @@
+import Alert from 'shared/Alert.tsx'
 import Box from 'shared/Box.jsx'
 import type { Component } from 'solid-js'
 import { createSignal, onMount, Show } from 'solid-js'
@@ -9,7 +10,6 @@ import FileUploadTab from './FileUploadTab.tsx'
 import type { FrameInfo } from './FrameSelect.tsx'
 import FrameSelect from './FrameSelect.tsx'
 import TextUploadTab from './TextUploadTab.tsx'
-import UploadStatus from './UploadStatus.tsx'
 import UploadTabs from './UploadTabs.tsx'
 
 interface AppProps {
@@ -22,7 +22,9 @@ const App: Component<AppProps> = (props) => {
     FrameInfo['name'] | null
   >(props.frameId || null)
   const [activeTab, setActiveTab] = createSignal<'file' | 'text'>('file')
+
   const [selectedFiles, setSelectedFiles] = createSignal<File[]>([])
+
   const [statusMessage, setStatusMessage] = createSignal('')
   const [statusType, setStatusType] = createSignal<
     'success' | 'error' | 'info'
@@ -155,16 +157,17 @@ const App: Component<AppProps> = (props) => {
             selectedFiles={selectedFiles()}
             onFilesChange={setSelectedFiles}
             onUpload={uploadFiles}
+            frame={currentFrame()}
           />
         )}
 
-        {activeTab() === 'text' && <TextUploadTab onUpload={uploadText} />}
+        {activeTab() === 'text' && (
+          <TextUploadTab onUpload={uploadText} frame={currentFrame()} />
+        )}
 
-        <UploadStatus
-          message={statusMessage()}
-          type={statusType()}
-          show={showStatus()}
-        />
+        <Show when={showStatus()}>
+          <Alert severity={statusType()}>{statusMessage()}</Alert>
+        </Show>
       </Box>
     </div>
   )

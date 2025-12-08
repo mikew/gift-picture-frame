@@ -7,7 +7,7 @@ import { fancyPaperClasses } from '#src/lib/FancyPaper.css.ts'
 export const container = style([
   fancyPaperClasses.root,
   sprinkles({
-    position: 'absolute',
+    position: 'fixed',
     display: 'flexRow',
     flexAlign: 'centerAll',
     borderRadius: 'infinite',
