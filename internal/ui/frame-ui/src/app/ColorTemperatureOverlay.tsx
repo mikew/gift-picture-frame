@@ -6,7 +6,7 @@ const ColorTemperatureOverlay = () => {
   return (
     <div
       style={{
-        'position': 'absolute',
+        'position': 'fixed',
         'inset': '0',
         'pointer-events': 'none',
 
