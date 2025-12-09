@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.0](https://github.com/mikew/gift-picture-frame/compare/v1.2.0...v1.3.0) (2025-12-09)
+
+
+### Features
+
+* Final????? ([#29](https://github.com/mikew/gift-picture-frame/issues/29)) ([bec2781](https://github.com/mikew/gift-picture-frame/commit/bec27816c1d44a9876ca669f45f07242ea40bc93)), closes [#10](https://github.com/mikew/gift-picture-frame/issues/10)
+* more more more ([#28](https://github.com/mikew/gift-picture-frame/issues/28)) ([beb24df](https://github.com/mikew/gift-picture-frame/commit/beb24df69999f3c1e7242cf1b9f2135addad29c2)), closes [#27](https://github.com/mikew/gift-picture-frame/issues/27) [#26](https://github.com/mikew/gift-picture-frame/issues/26)
+* YAGB (yet another grab bag) ([#23](https://github.com/mikew/gift-picture-frame/issues/23)) ([9b06bac](https://github.com/mikew/gift-picture-frame/commit/9b06bacfc328758c1361f8fd4507328f894c5bfa)), closes [#21](https://github.com/mikew/gift-picture-frame/issues/21)
+
 ## [1.2.0](https://github.com/mikew/gift-picture-frame/compare/v1.1.0...v1.2.0) (2025-11-21)
 
 
