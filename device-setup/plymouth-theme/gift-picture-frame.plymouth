@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Gift Picture Frame
+Description=
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/gift-picture-frame
+ScriptFile=/usr/share/plymouth/themes/gift-picture-frame/gift-picture-frame.script
