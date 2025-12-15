@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"picture-frame/internal/ui"
 	"sync"
@@ -97,6 +98,8 @@ func (s *Server) setupRoutes() {
 
 	s.router.GET("/", s.handleFrameDisplay)
 
+	s.router.POST("/api/ready", s.handleFrameReady)
+
 	s.router.NoRoute(
 		static.Serve("/", ui.StaticLocalFS{http.FS(s.fs)}),
 		static.Serve("/files", static.LocalFile(s.cacheDir, true)),
@@ -113,6 +116,15 @@ func (s *Server) handleFrameDisplay(ctx *gin.Context) {
 	b = bytes.ReplaceAll(b, []byte("__APP_IS_EMBEDDED__"), []byte("true"))
 
 	ctx.Data(http.StatusOK, "text/html; charset=utf-8", b)
+}
+
+func (s *Server) handleFrameReady(ctx *gin.Context) {
+	plymouthQuitCmd := exec.Command("plymouth", "quit")
+	if err := plymouthQuitCmd.Run(); err != nil {
+		fmt.Printf("Failed to run 'plymouth quit': %v\n", err)
+	}
+
+	ctx.Status(http.StatusOK)
 }
 
 func (s *Server) launchKioskMode() error {
