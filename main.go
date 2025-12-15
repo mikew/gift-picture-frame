@@ -72,7 +72,7 @@ func main() {
 							port := ctx.Int("port")
 							accessKey := ctx.String("access-key")
 
-							brightnessController := frame.NewRPiBrightnessController()
+							brightnessController := frame.NewBrightnessctlController()
 							outputRotator := frame.NewWlrRandrRotator()
 							wifiManager := frame.NewNmcliWifiManager()
 							// wifiManager := frame.NewMockWifiManager()
