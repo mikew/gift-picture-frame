@@ -1,7 +1,8 @@
 import Alert from 'shared/Alert.tsx'
 import Box from 'shared/Box.jsx'
+import { isomorphicWindow } from 'shared/isomorphicWindow.ts'
 import type { Component } from 'solid-js'
-import { createSignal, onMount, Show } from 'solid-js'
+import { createEffect, createSignal, onMount, Show } from 'solid-js'
 
 import AppConfig from '#src/appConfig.ts'
 
@@ -36,6 +37,9 @@ const App: Component<AppProps> = (props) => {
       return
     }
 
+    const previousFrame =
+      isomorphicWindow()?.localStorage.getItem('lastUsedFrame')
+
     const frameInfoResponse = await fetch(`${AppConfig.apiBase}/frames`)
 
     if (frameInfoResponse.ok) {
@@ -44,8 +48,16 @@ const App: Component<AppProps> = (props) => {
       setFrames(frames)
 
       if (frames.length > 0) {
-        setCurrentFrame(frames[0]?.name || null)
+        const foundFrame = frames.find((frame) => frame.name === previousFrame)
+        setCurrentFrame(foundFrame ? foundFrame.name : frames[0]?.name || null)
       }
+    }
+  })
+
+  createEffect(() => {
+    const frame = currentFrame()
+    if (frame) {
+      isomorphicWindow()?.localStorage.setItem('lastUsedFrame', frame)
     }
   })
 
@@ -145,7 +157,9 @@ const App: Component<AppProps> = (props) => {
             <FrameSelect
               frames={frames()}
               value={currentFrame()}
-              onChange={setCurrentFrame}
+              onChange={(value) => {
+                setCurrentFrame(value.name)
+              }}
             />
           </label>
         </Show>

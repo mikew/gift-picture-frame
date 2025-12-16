@@ -44,3 +44,35 @@ deb-src [signed-by=/usr/share/keyrings/raspberrypi-archive-keyring.gpg] http://a
   # - no panels
   # - `killall squeekboard || true; SQUEEKBOARD_LAYER=overlay squeekboard &`
 }
+
+__helper-prepare-device() {
+  SSH_BASE=""
+  sudo mkdir -p /opt/gift-picture-frame
+  sudo chown frame:frame /opt/gift-picture-frame
+
+  cd /opt/gift-picture-frame
+
+  scp "$SSH_BASE/build/gift-picture-frame-linux-arm64" .
+  chmod +x gift-picture-frame-linux-arm64
+
+  scp "$SSH_BASE/device-setup/raspberry-pi/squeekboard.deb" .
+  sudo dpkg -i squeekboard.deb
+
+  sudo apt install brightnessctl wlr-randr
+
+  mkdir -p ~/.config/labwc
+  cat <<EOF > ~/.config/labwc/autostart
+ps aux | grep xwaylandvideobridge | awk '{ print \$2 }' | while read -r line; do kill "\$line"; done || true
+
+ps aux | grep lwrespawn | awk '{ print \$2 }' | while read -r line; do kill "\$line"; done || true
+killall pcmanfm || true
+killall wf-panel-pi || true
+
+cd /opt/gift-picture-frame
+./gift-picture-frame-linux-arm64 frame start --server https://gfp-2025.mikewhy.xyz --id test --access-key test-key &
+EOF
+
+  sudo mkdir -p /usr/share/plymouth/themes/gift-picture-frame
+  sudo scp -r "$SSH_BASE/device-setup/plymouth-theme/*" /usr/share/plymouth/themes/gift-picture-frame/
+  sudo plymouth-set-default-theme -R gift-picture-frame
+}

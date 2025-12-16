@@ -1,5 +1,0 @@
-{
-  "test": {
-    "allowed_keys": ["test-key"]
-  }
-}
