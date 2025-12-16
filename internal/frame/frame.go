@@ -119,71 +119,21 @@ func (s *Server) handleFrameDisplay(ctx *gin.Context) {
 }
 
 func (s *Server) handleFrameReady(ctx *gin.Context) {
-	plymouthQuitCmd := exec.Command("plymouth", "quit")
-	if err := plymouthQuitCmd.Run(); err != nil {
-		fmt.Printf("Failed to run 'plymouth quit': %v\n", err)
-	}
+	// plymouthQuitCmd := exec.Command("plymouth", "quit")
+	// if err := plymouthQuitCmd.Run(); err != nil {
+	// 	fmt.Printf("Failed to run 'plymouth quit': %v\n", err)
+	// }
 
 	ctx.Status(http.StatusOK)
 }
 
 func (s *Server) launchKioskMode() error {
+	url := fmt.Sprintf("http://localhost:%d", s.port)
+
+	cmd := exec.Command("chromium", "--kiosk", "--noerrdialogs", "--disable-infobars", "--disable-session-crashed-bubble", url)
+	if err := cmd.Start(); err != nil {
+		return fmt.Errorf("failed to launch kiosk mode: %v", err)
+	}
+
 	return nil
 }
-
-// func (s *Server) launchKioskMode() error {
-// 	url := fmt.Sprintf("http://localhost:%d", s.port)
-
-// 	var cmd *exec.Cmd
-
-// 	switch runtime.GOOS {
-// 	case "linux":
-// 		// Try different browser options
-// 		browsers := []string{
-// 			"chromium-browser",
-// 			"google-chrome",
-// 			"chromium",
-// 			"firefox",
-// 		}
-
-// 		var browserPath string
-// 		for _, browser := range browsers {
-// 			if path, err := exec.LookPath(browser); err == nil {
-// 				browserPath = path
-// 				break
-// 			}
-// 		}
-
-// 		if browserPath == "" {
-// 			return fmt.Errorf("no suitable browser found. Please install chromium-browser, google-chrome, or firefox")
-// 		}
-
-// 		if filepath.Base(browserPath) == "firefox" {
-// 			cmd = exec.Command(browserPath, "--kiosk", url)
-// 		} else {
-// 			cmd = exec.Command(browserPath,
-// 				"--kiosk",
-// 				"--no-first-run",
-// 				"--disable-infobars",
-// 				"--disable-session-crashed-bubble",
-// 				"--disable-translate",
-// 				"--disable-features=TranslateUI",
-// 				"--disable-ipc-flooding-protection",
-// 				url)
-// 		}
-
-// 	case "darwin":
-// 		// macOS
-// 		cmd = exec.Command("open", "-a", "Google Chrome", "--args", "--kiosk", url)
-
-// 	case "windows":
-// 		// Windows
-// 		cmd = exec.Command("cmd", "/c", "start", "chrome", "--kiosk", url)
-
-// 	default:
-// 		return fmt.Errorf("unsupported operating system: %s", runtime.GOOS)
-// 	}
-
-// 	fmt.Printf("Launching browser in kiosk mode: %s\n", url)
-// 	return cmd.Start()
-// }

@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -ex
 
-pnpm install
-
-pnpm exec tsc --build --emitDeclarationOnly
-
 EMBEDDED_PATHS=(
   ./internal/ui/frame-ui
   ./internal/ui/uploader-ui
@@ -14,3 +10,11 @@ for path in "${EMBEDDED_PATHS[@]}"; do
   mkdir -p "$path/build/client"
   touch "$path/build/client/index.html"
 done
+
+if [ ! -e frames.json ]; then
+  ln -s ./frames.json-example ./frames.json
+fi
+
+pnpm install
+
+pnpm exec tsc --build --emitDeclarationOnly
