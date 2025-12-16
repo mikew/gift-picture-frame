@@ -160,7 +160,7 @@ const FrameInfo: Component = () => {
             </Box>
 
             <div>Color Temperature</div>
-            <Box display="flexRow" flexAlign="spaceBetween">
+            <Box display="flexRow" flexAlign="spaceBetween" marginBottom="x1">
               <IconButton
                 onclick={() => {
                   decreaseColorTemperature()
@@ -177,6 +177,15 @@ const FrameInfo: Component = () => {
                 +
               </IconButton>
             </Box>
+
+            <Button
+              color="secondary"
+              size="medium"
+              onclick={() => isomorphicWindow()?.location.reload()}
+              sx={{ width: 'full' }}
+            >
+              Reload
+            </Button>
           </div>
         </div>
 
