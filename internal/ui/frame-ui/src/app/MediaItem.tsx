@@ -72,7 +72,7 @@ export default function MediaItemComponent(props: MediaItemProps) {
                 height: 'full',
               })}
               style={{
-                'font-size': '2.2cqmin',
+                'font-size': '2.5em',
               }}
             >
               <TextStyle textStyle={textData.textStyle}>
