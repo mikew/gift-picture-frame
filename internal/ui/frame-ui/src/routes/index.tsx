@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/solid-router'
 import { onMount } from 'solid-js'
 
 import * as styles from '#src/app/App.css.ts'
+import AutoRefresh from '#src/app/AutoRefresh.tsx'
 import ColorTemperatureOverlay from '#src/app/ColorTemperatureOverlay.tsx'
 import Controls from '#src/app/Controls.tsx'
 import FrameInfo from '#src/app/FrameInfo.tsx'
@@ -30,6 +31,7 @@ function Home() {
             <KeyboardHandler />
             <SwipeHandler />
             <MediaDisplay />
+            <AutoRefresh />
 
             <InterfaceContainer>
               <FrameInfo />
