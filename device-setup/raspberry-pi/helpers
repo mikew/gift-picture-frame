@@ -47,6 +47,10 @@ deb-src [signed-by=/usr/share/keyrings/raspberrypi-archive-keyring.gpg] http://a
 
 __helper-prepare-device() {
   SSH_BASE=""
+  SERVER_HOST=""
+  FRAME_ID=""
+  FRAME_ACCESS_KEY=""
+
   sudo mkdir -p /opt/gift-picture-frame
   sudo chown frame:frame /opt/gift-picture-frame
 
@@ -69,7 +73,7 @@ killall pcmanfm || true
 killall wf-panel-pi || true
 
 cd /opt/gift-picture-frame
-./gift-picture-frame-linux-arm64 frame start --server https://gfp-2025.mikewhy.xyz --id test --access-key test-key &
+./gift-picture-frame-linux-arm64 frame start --server "$SERVER_HOST" --id "$FRAME_ID" --access-key "$FRAME_ACCESS_KEY" &
 EOF
 
   sudo mkdir -p /usr/share/plymouth/themes/gift-picture-frame
