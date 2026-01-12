@@ -3,11 +3,12 @@ import Button from 'shared/Button.jsx'
 import { clsx } from 'shared/clsx.ts'
 import Icon from 'shared/Icon.jsx'
 import IconButton from 'shared/IconButton.tsx'
+import ContentPaste from 'shared/svgs/content_paste.svg?component-solid'
 import RemoveCircle from 'shared/svgs/remove_circle.svg?component-solid'
 import VideoFile from 'shared/svgs/video_file.svg?component-solid'
 import { sprinkles } from 'shared/theme/sprinkles.css.js'
-import type { Component } from 'solid-js'
-import { createSignal, For } from 'solid-js'
+import { onCleanup, type Component } from 'solid-js'
+import { createSignal, For, onMount } from 'solid-js'
 
 import * as styles from './FileUploadTab.css.ts'
 
@@ -82,6 +83,37 @@ const FileUploadTab: Component<FileUploadTabProps> = (props) => {
     }
   }
 
+  onMount(() => {
+    async function handlePaste(event: ClipboardEvent) {
+      const items = event.clipboardData?.items
+
+      if (!items) {
+        return
+      }
+
+      const files: File[] = []
+
+      for (const item of items) {
+        if (item.kind === 'file') {
+          const file = item.getAsFile()
+          if (file && isValidFile()) {
+            files.push(file)
+          }
+        }
+      }
+
+      if (files.length > 0) {
+        addFiles(files)
+      }
+    }
+
+    document.addEventListener('paste', handlePaste)
+
+    onCleanup(() => {
+      document.removeEventListener('paste', handlePaste)
+    })
+  })
+
   return (
     <>
       <div
@@ -106,6 +138,27 @@ const FileUploadTab: Component<FileUploadTabProps> = (props) => {
           onChange={handleFileSelect}
         />
       </div>
+
+      <Button
+        color="secondary"
+        sx={{ gap: 'x1' }}
+        onClick={(event) => {
+          event.preventDefault()
+
+          // I know this is deprecated, but the modern clipboard API isn't
+          // working in all browsers yet, meanwhile this works in iOS 26.
+          if (!document.execCommand('paste')) {
+            console.warn(
+              'Paste command failed or is not supported in this browser.',
+            )
+          }
+        }}
+      >
+        <Icon>
+          <ContentPaste />
+        </Icon>
+        <span>Paste</span>
+      </Button>
 
       <div class={styles.fileListRoot}>
         <For each={props.selectedFiles}>
