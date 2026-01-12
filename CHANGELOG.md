@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.0](https://github.com/mikew/gift-picture-frame/compare/v1.3.0...v1.4.0) (2026-01-12)
+
+
+### Features
+
+* Add paste button ([#33](https://github.com/mikew/gift-picture-frame/issues/33)) ([3d0e6c8](https://github.com/mikew/gift-picture-frame/commit/3d0e6c82879bf01f6c6f6e5b74c741cb78a9ceb1))
+* more touchups ([#31](https://github.com/mikew/gift-picture-frame/issues/31)) ([1de327f](https://github.com/mikew/gift-picture-frame/commit/1de327f96b99288a802c5c1d11c024ba0bf744be)), closes [#25](https://github.com/mikew/gift-picture-frame/issues/25)
+
+
+### Bug Fixes
+
+* parameterize helper script ([b07b608](https://github.com/mikew/gift-picture-frame/commit/b07b608f25557d13e5840ac459995d131be2ea68))
+
 ## [1.3.0](https://github.com/mikew/gift-picture-frame/compare/v1.2.0...v1.3.0) (2025-12-09)
 
 
