@@ -17,6 +17,7 @@ interface FileUploadTabProps {
   onFilesChange: (files: File[]) => void
   onUpload: () => void
   frame: string | null
+  isUploading: boolean
 }
 
 const FileUploadTab: Component<FileUploadTabProps> = (props) => {
@@ -180,13 +181,13 @@ const FileUploadTab: Component<FileUploadTabProps> = (props) => {
       </div>
 
       <Button
-        disabled={props.selectedFiles.length === 0}
+        disabled={props.selectedFiles.length === 0 || props.isUploading}
         onClick={props.onUpload}
         size="large"
         color="primary"
         sx={{ width: 'full', marginTop: 'x1' }}
       >
-        Send to {props.frame}
+        {props.isUploading ? 'Uploading...' : `Send to ${props.frame}`}
       </Button>
     </>
   )

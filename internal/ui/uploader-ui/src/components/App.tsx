@@ -25,6 +25,7 @@ const App: Component<AppProps> = (props) => {
   const [activeTab, setActiveTab] = createSignal<'file' | 'text'>('file')
 
   const [selectedFiles, setSelectedFiles] = createSignal<File[]>([])
+  const [isUploading, setIsUploading] = createSignal(false)
 
   const [statusMessage, setStatusMessage] = createSignal('')
   const [statusType, setStatusType] = createSignal<
@@ -73,8 +74,11 @@ const App: Component<AppProps> = (props) => {
 
   const uploadFiles = async () => {
     const files = selectedFiles()
-    if (files.length === 0) return
+    if (files.length === 0 || isUploading()) {
+      return
+    }
 
+    setIsUploading(true)
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
@@ -109,6 +113,8 @@ const App: Component<AppProps> = (props) => {
         showStatusMessage(`Upload failed: ${error.message}`, 'error')
       }
       console.error(error)
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -172,6 +178,7 @@ const App: Component<AppProps> = (props) => {
             onFilesChange={setSelectedFiles}
             onUpload={uploadFiles}
             frame={currentFrame()}
+            isUploading={isUploading()}
           />
         )}
 
