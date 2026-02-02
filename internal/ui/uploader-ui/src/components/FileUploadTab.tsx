@@ -5,16 +5,16 @@ import Icon from 'shared/Icon.jsx'
 import IconButton from 'shared/IconButton.tsx'
 import ContentPaste from 'shared/svgs/content_paste.svg?component-solid'
 import RemoveCircle from 'shared/svgs/remove_circle.svg?component-solid'
-import VideoFile from 'shared/svgs/video_file.svg?component-solid'
 import { sprinkles } from 'shared/theme/sprinkles.css.js'
-import { onCleanup, type Component } from 'solid-js'
-import { createSignal, For, onMount } from 'solid-js'
+import type { Setter, Component } from 'solid-js'
+import { onCleanup, createSignal, For, onMount } from 'solid-js'
 
+import FilePreview from './FilePreview.tsx'
 import * as styles from './FileUploadTab.css.ts'
 
 interface FileUploadTabProps {
   selectedFiles: File[]
-  onFilesChange: (files: File[]) => void
+  onFilesChange: Setter<File[]>
   onUpload: () => void
   frame: string | null
   isUploading: boolean
@@ -55,13 +55,16 @@ const FileUploadTab: Component<FileUploadTabProps> = (props) => {
 
   const addFiles = (files: File[]) => {
     const validFiles = files.filter(isValidFile)
-    props.onFilesChange([...props.selectedFiles, ...validFiles])
+    props.onFilesChange((prev) => [...prev, ...validFiles])
   }
 
   const removeFile = (index: number) => {
-    const newFiles = [...props.selectedFiles]
-    newFiles.splice(index, 1)
-    props.onFilesChange(newFiles)
+    props.onFilesChange((prev) => {
+      const newFiles = [...prev]
+      newFiles.splice(index, 1)
+
+      return newFiles
+    })
   }
 
   const formatFileSize = (bytes: number) => {
@@ -70,18 +73,6 @@ const FileUploadTab: Component<FileUploadTabProps> = (props) => {
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
     const i = Math.floor(Math.log(bytes) / Math.log(k))
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
-  }
-
-  const createFilePreview = (file: File) => {
-    if (file.type.startsWith('image/')) {
-      return <img src={URL.createObjectURL(file)} alt={file.name} />
-    } else {
-      return (
-        <Icon style={{ 'font-size': '1.5em' }}>
-          <VideoFile />
-        </Icon>
-      )
-    }
   }
 
   onMount(() => {
@@ -165,7 +156,9 @@ const FileUploadTab: Component<FileUploadTabProps> = (props) => {
         <For each={props.selectedFiles}>
           {(file, index) => (
             <div class={styles.fileListItemRoot}>
-              <div class={styles.filePreview}>{createFilePreview(file)}</div>
+              <div class={styles.filePreview}>
+                <FilePreview file={file} />
+              </div>
               <div class={styles.fileInfo}>
                 <div class="file-name">{file.name}</div>
                 <div class={sprinkles({ color: 'text.secondary' })}>
