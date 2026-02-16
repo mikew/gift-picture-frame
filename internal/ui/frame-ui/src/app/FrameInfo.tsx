@@ -11,6 +11,7 @@ import type { Component } from 'solid-js'
 import { createSignal, onCleanup, onMount } from 'solid-js'
 
 import { useMediaContext } from '#src/media/mediaContext.tsx'
+import MediaSelectDialog from '#src/media/MediaSelectDialog.tsx'
 import NetworkDialog from '#src/settings/NetworkDialog.tsx'
 import { useSettingsContext } from '#src/settings/settingsContext.tsx'
 
@@ -75,6 +76,8 @@ const FrameInfo: Component = () => {
   }
 
   const [isNetworkDialogOpen, setIsNetworkDialogOpen] = createSignal(false)
+  const [isMediaSelectDialogOpen, setIsMediaSelectDialogOpen] =
+    createSignal(false)
 
   return (
     <>
@@ -82,6 +85,13 @@ const FrameInfo: Component = () => {
         open={isNetworkDialogOpen()}
         onClose={() => {
           setIsNetworkDialogOpen(false)
+        }}
+      />
+
+      <MediaSelectDialog
+        open={isMediaSelectDialogOpen()}
+        onClose={() => {
+          setIsMediaSelectDialogOpen(false)
         }}
       />
 
@@ -120,6 +130,8 @@ const FrameInfo: Component = () => {
               <OnlineStatusIndicator size="1em" />
               <span>Network Settings ...</span>
             </Button>
+
+            <hr />
 
             <div>Rotate Display</div>
             <Box display="flexRow" flexAlign="spaceBetween" marginBottom="x1">
@@ -177,6 +189,19 @@ const FrameInfo: Component = () => {
                 +
               </IconButton>
             </Box>
+
+            <hr />
+
+            <Button
+              color="secondary"
+              size="medium"
+              onclick={() => setIsMediaSelectDialogOpen(true)}
+              sx={{ width: 'full' }}
+            >
+              Manage Media ...
+            </Button>
+
+            <hr />
 
             <Button
               color="secondary"

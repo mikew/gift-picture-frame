@@ -21,10 +21,15 @@ export interface MediaState {
 export interface MediaContext {
   state: MediaState
 
+  loadMedia: () => Promise<void>
+  getMedia: (includeDeleted?: boolean) => Promise<MediaItem[]>
+
   goToNext: () => void
   goToPrevious: () => void
 
   togglePlayPause: () => void
+  bulkDelete: (ids: string[]) => Promise<void>
+  bulkRestore: (ids: string[]) => Promise<void>
 }
 
 const mediaContext = createContext<MediaContext>()
@@ -70,30 +75,100 @@ export const MediaProvider: ParentComponent = (props) => {
     togglePlayPause: () => {
       setState('isPlaying', (playing) => !playing)
     },
-  }
 
-  const loadMedia = async () => {
-    try {
-      const response = await fetch(`${AppConfig.apiBase}/api/media`)
-      if (!response.ok) {
-        throw new Error('Failed to fetch media')
+    bulkDelete: async (ids) => {
+      if (ids.length === 0) {
+        return
       }
 
-      const newMedia = await response.json()
+      try {
+        const response = await fetch(`${AppConfig.apiBase}/api/media/delete`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ids }),
+        })
 
-      if (JSON.stringify(newMedia) !== JSON.stringify(state.media)) {
-        setState('media', newMedia)
-
-        if (
-          state.media.length > 0
-          && state.currentIndex >= state.media.length
-        ) {
-          setState('currentIndex', Math.max(0, state.media.length - 1))
+        if (!response.ok) {
+          throw new Error('Failed to delete media')
         }
+
+        // Reload media to get updated list
+        // await contextValue.loadMedia()
+
+        // // Adjust current index if needed
+        // if (
+        //   state.currentIndex >= state.media.length
+        //   && state.media.length > 0
+        // ) {
+        //   setState('currentIndex', Math.max(0, state.media.length - 1))
+        // }
+      } catch (error) {
+        console.error('Failed to delete multiple media:', error)
       }
-    } catch (error) {
-      console.error('Failed to load media:', error)
-    }
+    },
+
+    bulkRestore: async (ids) => {
+      if (ids.length === 0) {
+        return
+      }
+
+      try {
+        const response = await fetch(`${AppConfig.apiBase}/api/media/restore`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ids }),
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to restore media')
+        }
+
+        // Reload media to get updated list
+        // await contextValue.loadMedia()
+      } catch (error) {
+        console.error('Failed to restore multiple media:', error)
+      }
+    },
+
+    loadMedia: async () => {
+      try {
+        const newMedia = await contextValue.getMedia()
+
+        if (JSON.stringify(newMedia) !== JSON.stringify(state.media)) {
+          setState('media', newMedia)
+
+          if (
+            state.media.length > 0
+            && state.currentIndex >= state.media.length
+          ) {
+            setState('currentIndex', Math.max(0, state.media.length - 1))
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load media:', error)
+      }
+    },
+
+    getMedia: async (includeDeleted = false) => {
+      try {
+        const response = await fetch(
+          `${AppConfig.apiBase}/api/media?includeDeleted=${includeDeleted}`,
+        )
+        if (!response.ok) {
+          throw new Error('Failed to fetch media')
+        }
+
+        const media = await response.json()
+        return media
+      } catch (error) {
+        console.error('Failed to get media:', error)
+        return []
+      }
+    },
   }
 
   let slideTimeout: ReturnType<typeof setTimeout> | undefined
@@ -121,7 +196,7 @@ export const MediaProvider: ParentComponent = (props) => {
   })
 
   onMount(() => {
-    loadMedia()
+    contextValue.loadMedia()
 
     const storedValue = localStorage.getItem('media')
     if (storedValue) {
@@ -138,7 +213,7 @@ export const MediaProvider: ParentComponent = (props) => {
       setState('isPlaying', true)
     }
 
-    const refreshInterval = setInterval(loadMedia, 5_000)
+    const refreshInterval = setInterval(contextValue.loadMedia, 5_000)
 
     onCleanup(() => {
       clearInterval(refreshInterval)
