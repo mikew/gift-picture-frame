@@ -79,6 +79,8 @@ const FrameInfo: Component = () => {
   const [isMediaSelectDialogOpen, setIsMediaSelectDialogOpen] =
     createSignal(false)
 
+  let menuRef: HTMLDivElement | undefined = undefined
+
   return (
     <>
       <NetworkDialog
@@ -108,6 +110,9 @@ const FrameInfo: Component = () => {
         <div
           id="menu"
           popover
+          ref={(el) => {
+            menuRef = el
+          }}
           style={{
             'position': 'fixed',
             'position-anchor': '--menu-anchor',
@@ -195,7 +200,10 @@ const FrameInfo: Component = () => {
             <Button
               color="secondary"
               size="medium"
-              onclick={() => setIsMediaSelectDialogOpen(true)}
+              onclick={() => {
+                setIsMediaSelectDialogOpen(true)
+                menuRef?.hidePopover()
+              }}
               sx={{ width: 'full' }}
             >
               Manage Media ...
