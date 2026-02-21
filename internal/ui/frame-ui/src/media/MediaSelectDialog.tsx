@@ -17,7 +17,8 @@ const MediaSelectDialog: Component<{
   open: boolean
   onClose: () => void
 }> = (props) => {
-  const { getMedia, bulkDelete, bulkRestore, loadMedia } = useMediaContext()
+  const { getMedia, bulkDelete, bulkRestore, loadMedia, state } =
+    useMediaContext()
 
   async function refetch() {
     const media = await getMedia(true)
@@ -84,6 +85,10 @@ const MediaSelectDialog: Component<{
                     cursor="pointer"
                     style={{
                       width: `calc(25% - calc(${themeContract.spacing.x1} * 2))`,
+                      outline:
+                        state.media[state.currentIndex]?.id === item.id
+                          ? `2px solid ${themeContract.color.white}`
+                          : undefined,
                     }}
                     onClick={() => {
                       setSelected((prev) => {
