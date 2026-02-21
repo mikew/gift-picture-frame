@@ -24,6 +24,7 @@ type MediaItem struct {
 	Filename  string    `json:"filename,omitempty"`
 	Content   string    `json:"content,omitempty"`
 	CreatedAt time.Time `json:"created_at"`
+	Deleted   bool      `json:"deleted"`
 }
 
 type Server struct {

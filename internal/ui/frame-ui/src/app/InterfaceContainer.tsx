@@ -1,3 +1,4 @@
+import { clsx } from 'shared/clsx.js'
 import type * as Solid from 'solid-js'
 import { createEffect, createSignal, onCleanup } from 'solid-js'
 
@@ -32,11 +33,7 @@ const InterfaceContainer: Solid.ParentComponent = (props) => {
 
   return (
     <div
-      class={styles.container}
-      classList={{
-        [styles.container]: true,
-        visible: showUi(),
-      }}
+      class={clsx(styles.container, showUi() && 'visible')}
       onpointermove={() => {
         bump()
       }}

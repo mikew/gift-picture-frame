@@ -1,5 +1,6 @@
 import { isomorphicWindow } from 'shared/isomorphicWindow.js'
-import { onMount, type Component } from 'solid-js'
+import type { Component } from 'solid-js'
+import { onMount } from 'solid-js'
 
 const AutoRefresh: Component = () => {
   // Reload the page every hour, helps with video.

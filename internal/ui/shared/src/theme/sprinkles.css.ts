@@ -85,7 +85,7 @@ const properties = defineProperties({
 
     position: ['relative', 'absolute', 'fixed', 'sticky'],
 
-    cursor: ['pointer', 'default', 'not-allowed', 'none'],
+    cursor: ['pointer', 'default', 'not-allowed', 'none', 'initial'],
 
     gap: spacing,
 

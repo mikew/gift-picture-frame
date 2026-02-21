@@ -20,3 +20,9 @@ globalStyle('body', {
   color: themeContract.color.textPrimary,
   fontFamily: 'system-ui, sans-serif',
 })
+
+globalStyle('hr', {
+  border: `1px solid ${themeContract.color.background}`,
+  width: '100%',
+  margin: `${themeContract.spacing.x2} 0`,
+})

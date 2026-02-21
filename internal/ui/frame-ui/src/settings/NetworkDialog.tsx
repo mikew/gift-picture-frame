@@ -8,14 +8,7 @@ import ArrowDropUp from 'shared/svgs/arrow_drop_up.svg?component-solid'
 import CheckBox from 'shared/svgs/check_box.svg?component-solid'
 import CheckBoxOutlineBlank from 'shared/svgs/check_box_outline_blank.svg?component-solid'
 import { sprinkles } from 'shared/theme/sprinkles.css.js'
-import {
-  createEffect,
-  createSignal,
-  For,
-  onMount,
-  Show,
-  type Component,
-} from 'solid-js'
+import { createEffect, createSignal, For, Show, type Component } from 'solid-js'
 
 import AppConfig from '#src/appConfig.ts'
 import { fancyPaperClasses } from '#src/lib/FancyPaper.css.ts'
@@ -41,8 +34,10 @@ const NetworkDialog: Component<{ open: boolean; onClose: () => void }> = (
     setData(networks)
   }
 
-  onMount(() => {
-    refetch()
+  createEffect(() => {
+    if (props.open) {
+      refetch()
+    }
   })
 
   const [ssid, setSsid] = createSignal('')

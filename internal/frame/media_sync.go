@@ -76,6 +76,14 @@ func (s *Server) syncMedia() error {
 	}
 
 	for _, item := range newMedia {
+		// Check if item is marked as deleted locally
+		if existingItem, exists := mediaMap[item.ID]; exists && existingItem.Deleted {
+			// Keep the deleted flag, don't download
+			item.Deleted = true
+			mediaMap[item.ID] = item
+			continue
+		}
+
 		if item.Filename != "" {
 			if err := s.downloadMediaFile(item); err != nil {
 				fmt.Printf("Warning: Failed to download media file %s: %v\n", item.Filename, err)

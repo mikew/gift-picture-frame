@@ -4,6 +4,7 @@ export interface MediaItem {
   filename: string
   content: string
   created_at: string
+  deleted: boolean
 }
 
 export interface PictureFrameConfig {
