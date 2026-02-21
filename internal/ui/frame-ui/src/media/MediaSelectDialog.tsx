@@ -1,5 +1,6 @@
 import Box from 'shared/Box.jsx'
 import Button from 'shared/Button.jsx'
+import { themeContract } from 'shared/theme/contract.css.js'
 import type { MediaItem } from 'shared/types.js'
 import type { Component } from 'solid-js'
 import { createEffect, createSignal, For, Show } from 'solid-js'
@@ -73,14 +74,16 @@ const MediaSelectDialog: Component<{
 
                 return (
                   <Box
-                    padding="x2"
+                    margin="x1"
+                    padding="x1"
+                    borderRadius="default"
                     aspectRatio="r16by9"
                     backgroundColor={
                       !selected().includes(item.id) ? undefined : 'primary.main'
                     }
                     cursor="pointer"
                     style={{
-                      width: '25%',
+                      width: `calc(25% - calc(${themeContract.spacing.x1} * 2))`,
                     }}
                     onClick={() => {
                       setSelected((prev) => {
