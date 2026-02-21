@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"sync"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -27,6 +28,7 @@ type Server struct {
 	router      *gin.Engine
 	fs          fs.FS
 	knownFrames []FrameConfig
+	metadataMu  sync.RWMutex
 }
 
 type MediaItem struct {
@@ -292,6 +294,9 @@ func (s *Server) handleGetMedia(c *gin.Context) {
 }
 
 func (s *Server) saveMediaMetadata(frameDir string, media MediaItem) error {
+	s.metadataMu.Lock()
+	defer s.metadataMu.Unlock()
+
 	metadataFile := filepath.Join(frameDir, "metadata.json")
 
 	var mediaList []MediaItem
@@ -310,6 +315,9 @@ func (s *Server) saveMediaMetadata(frameDir string, media MediaItem) error {
 }
 
 func (s *Server) loadMediaMetadata(frameDir string) ([]MediaItem, error) {
+	s.metadataMu.RLock()
+	defer s.metadataMu.RUnlock()
+
 	metadataFile := filepath.Join(frameDir, "metadata.json")
 
 	data, err := os.ReadFile(metadataFile)
