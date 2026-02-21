@@ -81,31 +81,16 @@ export const MediaProvider: ParentComponent = (props) => {
         return
       }
 
-      try {
-        const response = await fetch(`${AppConfig.apiBase}/api/media/delete`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ ids }),
-        })
+      const response = await fetch(`${AppConfig.apiBase}/api/media/delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids }),
+      })
 
-        if (!response.ok) {
-          throw new Error('Failed to delete media')
-        }
-
-        // Reload media to get updated list
-        // await contextValue.loadMedia()
-
-        // // Adjust current index if needed
-        // if (
-        //   state.currentIndex >= state.media.length
-        //   && state.media.length > 0
-        // ) {
-        //   setState('currentIndex', Math.max(0, state.media.length - 1))
-        // }
-      } catch (error) {
-        console.error('Failed to delete multiple media:', error)
+      if (!response.ok) {
+        throw new Error('Failed to delete media')
       }
     },
 
@@ -114,23 +99,16 @@ export const MediaProvider: ParentComponent = (props) => {
         return
       }
 
-      try {
-        const response = await fetch(`${AppConfig.apiBase}/api/media/restore`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ ids }),
-        })
+      const response = await fetch(`${AppConfig.apiBase}/api/media/restore`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids }),
+      })
 
-        if (!response.ok) {
-          throw new Error('Failed to restore media')
-        }
-
-        // Reload media to get updated list
-        // await contextValue.loadMedia()
-      } catch (error) {
-        console.error('Failed to restore multiple media:', error)
+      if (!response.ok) {
+        throw new Error('Failed to restore media')
       }
     },
 
@@ -154,20 +132,15 @@ export const MediaProvider: ParentComponent = (props) => {
     },
 
     getMedia: async (includeDeleted = false) => {
-      try {
-        const response = await fetch(
-          `${AppConfig.apiBase}/api/media?includeDeleted=${includeDeleted}`,
-        )
-        if (!response.ok) {
-          throw new Error('Failed to fetch media')
-        }
-
-        const media = await response.json()
-        return media
-      } catch (error) {
-        console.error('Failed to get media:', error)
-        return []
+      const response = await fetch(
+        `${AppConfig.apiBase}/api/media?includeDeleted=${includeDeleted}`,
+      )
+      if (!response.ok) {
+        throw new Error('Failed to fetch media')
       }
+
+      const media = await response.json()
+      return media
     },
   }
 
