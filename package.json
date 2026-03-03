@@ -1,6 +1,6 @@
 {
   "name": "gift-picture-frame",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "A Go-based picture frame application that allows uploading and displaying media content. The application consists of a server for media uploads and a client for displaying content in kiosk mode.",
   "main": "index.js",
   "type": "module",

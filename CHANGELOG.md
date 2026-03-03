@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/mikew/gift-picture-frame/compare/v1.4.0...v1.5.0) (2026-02-21)
+
+
+### Features
+
+* Enable / disable media on device ([#35](https://github.com/mikew/gift-picture-frame/issues/35)) ([51e203d](https://github.com/mikew/gift-picture-frame/commit/51e203d7a96e9244a3133901d3e8e2dd6b65ea8a))
+
+
+### Bug Fixes
+
+* Duplicate upload fix (attempt 1 of ???) ([#34](https://github.com/mikew/gift-picture-frame/issues/34)) ([69975a8](https://github.com/mikew/gift-picture-frame/commit/69975a87ec0074fb4d27e6c802dfdab43e6d48c8))
+
 ## [1.4.0](https://github.com/mikew/gift-picture-frame/compare/v1.3.0...v1.4.0) (2026-01-12)
 
 
